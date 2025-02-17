@@ -1,0 +1,16 @@
+<resources>
+
+    <style name="Widget.Theme.MyApplication2.MyView" parent="">
+        <item name="android:background">@color/gray_400</item>
+        <item name="exampleColor">@color/blue1</item>
+    </style>
+    
+    <style name="Widget.Theme.MyApplication2.MyView.custom">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <style name="AppTheme.Picker" parent="Theme.AppCompat.Light.NoActionBar" >
+        <item name="android:textColorPrimary">@android:color/black</item>
+    </style>
+</resources>
