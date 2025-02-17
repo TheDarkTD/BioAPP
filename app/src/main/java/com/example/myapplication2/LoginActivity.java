@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Verifique se os dados foram recuperados corretamente
                     if (configData != null) {
                         // Atualiza a instância de ConfigData com os dados do Firebase
-                        conectInsole.setConfigData(configData);
+                        //conectInsole.setConfigData(configData);
 
                         // Log para verificar os valores de S1 a S9
                         System.out.println("ConfigData recebida do Firebase:");

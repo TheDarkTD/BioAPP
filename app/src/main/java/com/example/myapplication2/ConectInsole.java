@@ -104,7 +104,6 @@ public class ConectInsole {
         sharedPreferences = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
         ipAddressp1s = sharedPreferences.getString("IP", "default");
         System.out.println(ipAddressp1s);
-        configData = new ConfigData();
         firebasehelper = new FirebaseHelper();
 
         // Obter SharedPreferences usando o contexto
@@ -334,47 +333,8 @@ public class ConectInsole {
             }
         });
     }
-    // Supondo que você já tenha uma instância de ConfigData dentro da ConectInsole
-    private ConfigData configData;
 
-    // Método para retornar a ConfigData
-    public HashMap<String, Integer> getConfigData() {
-        HashMap<String, Integer> configMap = new HashMap<>();
 
-        // Armazena os valores de ConfigData no HashMap
-        configMap.put("LIM1", configData.S1);
-        configMap.put("LIM2", configData.S2);
-        configMap.put("LIM3", configData.S3);
-        configMap.put("LIM4", configData.S4);
-        configMap.put("LIM5", configData.S5);
-        configMap.put("LIM6", configData.S6);
-        configMap.put("LIM7", configData.S7);
-        configMap.put("LIM8", configData.S8);
-        configMap.put("LIM9", configData.S9);
-
-        // Retorna o HashMap
-        return configMap;
-    }
-    // Método para substituir os valores da ConfigData
-    public void setConfigData(ConfigData configData) {
-        if (configData != null) {
-            this.configData.cmd = configData.cmd;
-            this.configData.hora = configData.hora;
-            this.configData.min = configData.min;
-            this.configData.seg = configData.seg;
-            this.configData.mSeg = configData.mSeg;
-            this.configData.freq = configData.freq;
-            this.configData.S1 = configData.S1;
-            this.configData.S2 = configData.S2;
-            this.configData.S3 = configData.S3;
-            this.configData.S4 = configData.S4;
-            this.configData.S5 = configData.S5;
-            this.configData.S6 = configData.S6;
-            this.configData.S7 = configData.S7;
-            this.configData.S8 = configData.S8;
-            this.configData.S9 = configData.S9;
-        }
-    }
     public static class Utils {
 
         // Função que verifica o login e só envia SendData se o usuário estiver logado

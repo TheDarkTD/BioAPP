@@ -2,6 +2,8 @@ package com.example.myapplication2.Register;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity
     DatabaseReference databaseReference;
     private ConectInsole conectar;
     private ConectInsole2 conectar2;
-    HashMap<String, Integer> configDataMap = conectar.getConfigData();  // Recebe o HashMap com os valores
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -140,39 +142,66 @@ public class RegisterActivity extends AppCompatActivity
             }
         });
     }
+    // Função para carregar os dados de S1 a S9 e retornar um HashMap com esses dados
+    private HashMap<String, Integer> loadConfigDataFromPrefs(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("ConfigPrefs", Context.MODE_PRIVATE);
 
-    private void saveUserData(String uid)
-    {
+        // Recuperando os valores de S1 a S9
+        HashMap<String, Integer> configData = new HashMap<>();
+        configData.put("S1", sharedPreferences.getInt("S1", 0));  // 0 é o valor padrão
+        configData.put("S2", sharedPreferences.getInt("S2", 0));
+        configData.put("S3", sharedPreferences.getInt("S3", 0));
+        configData.put("S4", sharedPreferences.getInt("S4", 0));
+        configData.put("S5", sharedPreferences.getInt("S5", 0));
+        configData.put("S6", sharedPreferences.getInt("S6", 0));
+        configData.put("S7", sharedPreferences.getInt("S7", 0));
+        configData.put("S8", sharedPreferences.getInt("S8", 0));
+        configData.put("S9", sharedPreferences.getInt("S9", 0));
+
+        return configData;
+    }
+
+    private void saveUserData(String uid) {
+        // Inicializando as instâncias
         conectar = new ConectInsole(this);
         conectar2 = new ConectInsole2(this);
+
         String getName = mName.getText().toString().trim();
         String getSurname = mSurname.getText().toString().trim();
         String getEmail = mEmail.getText().toString().trim();
         String getBirth = mBirth.getText().toString().trim();
 
-        if (TextUtils.isEmpty(getName) || TextUtils.isEmpty(getSurname) || TextUtils.isEmpty(getEmail) || TextUtils.isEmpty(getBirth))
-        {
+        // Verificando se algum campo está vazio
+        if (TextUtils.isEmpty(getName) || TextUtils.isEmpty(getSurname) || TextUtils.isEmpty(getEmail) || TextUtils.isEmpty(getBirth)) {
             Toast.makeText(this, "Todos os campos devem ser preenchidos.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Criando o HashMap para salvar os dados
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("name", getName);
         hashMap.put("surname", getSurname);
         hashMap.put("email", getEmail);
         hashMap.put("birth", getBirth);
+
+        // Carregando os dados de S1 a S9
+        HashMap<String, Integer> configData = loadConfigDataFromPrefs(this);
+
+        // Verificando se os dados de followInRight e followInLeft são verdadeiros
         if (followInRight.equals("true")) {
-
-
-// Exemplo de como adicionar o retorno do getConfigData a outro HashMap
-            hashMap.put("ConfigData", ConfigData.S1);  // Adiciona ao hashMap já existente
+            // Adicionando os dados de ConfigData ao HashMap
+            hashMap.put("ConfigData", configData);  // Adiciona os dados carregados ao HashMap
         }
+
         if (followInLeft.equals("true")) {
+            // Se conectar2 também tiver dados de ConfigData, adicione também
             hashMap.put("ConfigData", conectar2.getConfigData());
         }
 
+        // Enviando os dados para o Firebase
         databaseReference.child("Users").child(uid).setValue(hashMap)
                 .addOnSuccessListener(aVoid -> Toast.makeText(RegisterActivity.this, "Dados do usuário salvos", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Erro ao salvar dados: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 }

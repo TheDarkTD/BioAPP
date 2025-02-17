@@ -1,5 +1,6 @@
 package com.example.myapplication2.Register;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,9 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -190,7 +189,7 @@ public class Register7Activity extends AppCompatActivity {
 
                 byte cmd1 = 0x2A;
                 insole.createAndSendConfigData(cmd1, hour, minutes, seconds, milliseconds, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-
+                saveConfigDataToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
                 SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt("Lim1I1", limS[0]);
@@ -206,6 +205,25 @@ public class Register7Activity extends AppCompatActivity {
 
 
             }
+    // Função para armazenar os dados de S1 a S9
+    private void saveConfigDataToPrefs(int S1, int S2, int S3, int S4, int S5, int S6, int S7, int S8, int S9) {
+        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Salvando os valores de S1 a S9
+        editor.putInt("S1", S1);
+        editor.putInt("S2", S2);
+        editor.putInt("S3", S3);
+        editor.putInt("S4", S4);
+        editor.putInt("S5", S5);
+        editor.putInt("S6", S6);
+        editor.putInt("S7", S7);
+        editor.putInt("S8", S8);
+        editor.putInt("S9", S9);
+
+        // Aplicando as mudanças
+        editor.apply();
+    }
 
     private void processReceivedData2(@NonNull ConectInsole2 insole) {
                 calendar = Calendar.getInstance();
