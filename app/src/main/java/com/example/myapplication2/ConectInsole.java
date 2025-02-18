@@ -333,8 +333,27 @@ public class ConectInsole {
             }
         });
     }
-
-
+    private ConfigData configData;
+    // Método para substituir os valores da ConfigData
+    public void setConfigData(ConfigData configData) {
+        if (configData != null) {
+            this.configData.cmd = configData.cmd;
+            this.configData.hora = configData.hora;
+            this.configData.min = configData.min;
+            this.configData.seg = configData.seg;
+            this.configData.mSeg = configData.mSeg;
+            this.configData.freq = configData.freq;
+            this.configData.S1 = configData.S1;
+            this.configData.S2 = configData.S2;
+            this.configData.S3 = configData.S3;
+            this.configData.S4 = configData.S4;
+            this.configData.S5 = configData.S5;
+            this.configData.S6 = configData.S6;
+            this.configData.S7 = configData.S7;
+            this.configData.S8 = configData.S8;
+            this.configData.S9 = configData.S9;
+        }
+    }
     public static class Utils {
 
         // Função que verifica o login e só envia SendData se o usuário estiver logado

@@ -105,40 +105,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loadUserData(String uid, View v) {
-        // Pega a referência do Firebase para o usuário
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
 
-        // Realiza a leitura dos dados no Firebase
         databaseReference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
-                    // Recuperar os dados de ConfigData diretamente (apenas os sensores S1 a S9)
+                    // Recuperar os dados do usuário e ConfigData
                     ConectInsole.ConfigData configData = dataSnapshot.child("config_data").getValue(ConectInsole.ConfigData.class);
-
-                    // Verifique se os dados foram recuperados corretamente
-                    if (configData != null) {
-                        // Atualiza a instância de ConfigData com os dados do Firebase
-                        //conectInsole.setConfigData(configData);
-
-                        // Log para verificar os valores de S1 a S9
-                        System.out.println("ConfigData recebida do Firebase:");
-                        System.out.println("S1: " + configData.S1);
-                        System.out.println("S2: " + configData.S2);
-                        System.out.println("S3: " + configData.S3);
-                        System.out.println("S4: " + configData.S4);
-                        System.out.println("S5: " + configData.S5);
-                        System.out.println("S6: " + configData.S6);
-                        System.out.println("S7: " + configData.S7);
-                        System.out.println("S8: " + configData.S8);
-                        System.out.println("S9: " + configData.S9);
-
-                        // Após atualizar a ConfigData, você pode ir para a HomeActivity
-                        Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
-                        startActivity(myIntent);
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Configuração não encontrada.", Toast.LENGTH_SHORT).show();
-                    }
+                    conectInsole.setConfigData(configData);
+                    System.out.println("config data recebido do login" + configData);
+                    Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
+                    startActivity(myIntent);
                 } else {
                     Toast.makeText(LoginActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
                 }
