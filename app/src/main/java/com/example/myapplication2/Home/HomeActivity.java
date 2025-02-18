@@ -23,6 +23,8 @@ import com.example.myapplication2.Connection.ConnectionActivity;
 import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.DataCaptureService;
 import com.example.myapplication2.R;
+import com.example.myapplication2.Register.Register4Activity;
+import com.example.myapplication2.Register.Register5Activity;
 import com.example.myapplication2.Settings.SettingsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,6 +34,8 @@ import java.util.Calendar;
 
 
 public class HomeActivity extends AppCompatActivity {
+    private Register4Activity udpr;
+    private Register5Activity udpl;
     FloatingActionButton mPopBtn;
     private SharedPreferences sharedPreferences;
     BottomNavigationView bottomNavigationView;
@@ -54,7 +58,13 @@ public class HomeActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
+        if (followInRight.equals("true")) {
+            udpr.Insole_RightIP();
+        }
 
+        if (followInLeft.equals("true")) {
+            udpl.Insole_leftIP();
+        }
         serviceIntent = new Intent(this, DataCaptureService.class);
 
         // Referencie os círculos e o botão de atualização
@@ -95,7 +105,13 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             startService(serviceIntent_notify);
         }*/
+        if (followInRight.equals("true")) {
+            udpr.Insole_RightIP();
+        }
 
+        if (followInLeft.equals("true")) {
+            udpl.Insole_leftIP();
+        }
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
