@@ -357,7 +357,7 @@ public class ConectInsole {
     public static class Utils {
 
         // Função que verifica o login e só envia SendData se o usuário estiver logado
-        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, ConectInsole.SendData sendData, Context context) {
+        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, SendData sendData, Context context) {
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
 

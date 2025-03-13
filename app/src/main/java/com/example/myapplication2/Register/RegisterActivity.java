@@ -160,6 +160,23 @@ public class RegisterActivity extends AppCompatActivity
 
         return configData;
     }
+    private HashMap<String, Integer> loadConfigData2FromPrefs(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("ConfigPrefs2", Context.MODE_PRIVATE);
+
+        // Recuperando os valores de S1 a S9
+        HashMap<String, Integer> configData = new HashMap<>();
+        configData.put("S1", sharedPreferences.getInt("S1", 0));  // 0 é o valor padrão
+        configData.put("S2", sharedPreferences.getInt("S2", 0));
+        configData.put("S3", sharedPreferences.getInt("S3", 0));
+        configData.put("S4", sharedPreferences.getInt("S4", 0));
+        configData.put("S5", sharedPreferences.getInt("S5", 0));
+        configData.put("S6", sharedPreferences.getInt("S6", 0));
+        configData.put("S7", sharedPreferences.getInt("S7", 0));
+        configData.put("S8", sharedPreferences.getInt("S8", 0));
+        configData.put("S9", sharedPreferences.getInt("S9", 0));
+
+        return configData;
+    }
 
     private void saveUserData(String uid) {
         // Inicializando as instâncias
@@ -186,7 +203,7 @@ public class RegisterActivity extends AppCompatActivity
 
         // Carregando os dados de S1 a S9
         HashMap<String, Integer> configData = loadConfigDataFromPrefs(this);
-
+        HashMap<String, Integer> configData2 = loadConfigData2FromPrefs(this);
         // Verificando se os dados de followInRight e followInLeft são verdadeiros
         if (followInRight.equals("true")) {
             // Adicionando os dados de ConfigData ao HashMap
@@ -195,7 +212,7 @@ public class RegisterActivity extends AppCompatActivity
 
         if (followInLeft.equals("true")) {
             // Se conectar2 também tiver dados de ConfigData, adicione também
-            hashMap.put("ConfigData", conectar2.getConfigData());
+            hashMap.put("ConfigData", configData2);
         }
 
         // Enviando os dados para o Firebase

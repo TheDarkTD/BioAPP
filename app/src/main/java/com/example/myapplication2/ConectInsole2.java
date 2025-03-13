@@ -6,10 +6,14 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.Register.Register7Activity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -280,7 +284,7 @@ public class ConectInsole2 {
 
                             conectar.SendConfigData(cmd, PEST, INT, TMEST, INEST);
                         }
-
+                        Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         System.err.println("Erro ao processar resposta JSON: " + receivedData.SR1);
@@ -325,14 +329,9 @@ public class ConectInsole2 {
         });
     }
     // Supondo que você já tenha uma instância de ConfigData dentro da ConectInsole
-    private ConectInsole.ConfigData configData;
+    private ConfigData configData;
 
-    // Método para retornar a ConfigData
-    public ConectInsole.ConfigData getConfigData() {
-        return configData;
-    }
-    // Método para substituir os valores da ConfigData
-    public void setConfigData(ConectInsole.ConfigData configData) {
+    public void setConfigData(ConfigData configData) {
         if (configData != null) {
             this.configData.cmd = configData.cmd;
             this.configData.hora = configData.hora;
@@ -351,5 +350,33 @@ public class ConectInsole2 {
             this.configData.S9 = configData.S9;
         }
     }
+    public static class Utils {
 
+        // Função que verifica o login e só envia SendData se o usuário estiver logado
+        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, SendData sendData, Context context) {
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            if (currentUser != null) {
+                // Usuário está logado, salvar os dados
+                firebaseHelper.saveSendData2(sendData);
+
+                // Verificar se o Contexto é uma Activity antes de mostrar um Toast
+                if (context instanceof AppCompatActivity) {
+                    // Executar o Toast no thread principal
+                    ((AppCompatActivity) context).runOnUiThread(() ->
+                            Toast.makeText(context, "SendData enviado com sucesso!", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            } else {
+                // Verificar se o Contexto é uma Activity antes de mostrar um Toast
+                if (context instanceof AppCompatActivity) {
+                    // Executar o Toast no thread principal
+                    ((AppCompatActivity) context).runOnUiThread(() ->
+                            Toast.makeText(context, "Você precisa fazer login antes de enviar os dados.", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }
+        }
+    }
 }

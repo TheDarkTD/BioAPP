@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     DatabaseReference databaseReference;
     ConectInsole conectInsole;
+    ConectInsole2 conectInsole2;
     String uid = null; // Definir o uid como null
 
     @Override
@@ -86,7 +87,8 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = fAuth.getCurrentUser();
                             if (user != null) {
                                 uid = user.getUid();  // Pega o UID do usuário autenticado
-                                loadUserData(uid, v);  // Carrega os dados do Firebase
+                                loadUserData1(uid, v);  // Carrega os dados do Firebase
+                                loadUserData2(uid, v);  // Carrega os dados do Firebase
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, "Erro no login: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -104,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loadUserData(String uid, View v) {
+    private void loadUserData1(String uid, View v) {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
 
         databaseReference.get().addOnCompleteListener(task -> {
@@ -112,8 +114,29 @@ public class LoginActivity extends AppCompatActivity {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     // Recuperar os dados do usuário e ConfigData
-                    ConectInsole.ConfigData configData = dataSnapshot.child("config_data").getValue(ConectInsole.ConfigData.class);
+                    ConectInsole.ConfigData configData = dataSnapshot.child("config_data1").getValue(ConectInsole.ConfigData.class);
                     conectInsole.setConfigData(configData);
+                    System.out.println("config data recebido do login" + configData);
+                    Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
+                    startActivity(myIntent);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void loadUserData2(String uid, View v) {
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+
+        databaseReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot dataSnapshot = task.getResult();
+                if (dataSnapshot.exists()) {
+                    // Recuperar os dados do usuário e ConfigData
+                    ConectInsole2.ConfigData configData = dataSnapshot.child("config_data2").getValue(ConectInsole2.ConfigData.class);
+                    conectInsole2.setConfigData(configData);
                     System.out.println("config data recebido do login" + configData);
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
                     startActivity(myIntent);
