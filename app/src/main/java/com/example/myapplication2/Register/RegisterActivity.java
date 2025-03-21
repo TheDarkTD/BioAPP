@@ -144,7 +144,7 @@ public class RegisterActivity extends AppCompatActivity
     }
     // Função para carregar os dados de S1 a S9 e retornar um HashMap com esses dados
     private HashMap<String, Integer> loadConfigDataFromPrefs(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("ConfigPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("ConfigPrefs1", Context.MODE_PRIVATE);
 
         // Recuperando os valores de S1 a S9
         HashMap<String, Integer> configData = new HashMap<>();

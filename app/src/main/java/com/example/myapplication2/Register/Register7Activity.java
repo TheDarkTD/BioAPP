@@ -389,7 +389,7 @@ public class Register7Activity extends AppCompatActivity {
             }
     // Função para armazenar os dados de S1 a S9
     private void saveConfigData1ToPrefs(int S1, int S2, int S3, int S4, int S5, int S6, int S7, int S8, int S9) {
-        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs1", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Salvando os valores de S1 a S9
@@ -407,7 +407,7 @@ public class Register7Activity extends AppCompatActivity {
         editor.apply();
     }
     private void saveConfigData2ToPrefs(int S1, int S2, int S3, int S4, int S5, int S6, int S7, int S8, int S9) {
-        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs2", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Salvando os valores de S1 a S9

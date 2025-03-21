@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <SeekBar
-        android:id="@+id/seekBarajust"
+        android:id="@+id/limdown"
         android:layout_width="300dp"
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,10 +18,10 @@
         app:layout_constraintVertical_bias="0.843" />
 
     <TextView
-        android:id="@+id/limiarajustado"
+        android:id="@+id/limupText"
         android:layout_width="150dp"
         android:layout_height="34dp"
-        android:text="Limiar em : 0%"
+        android:text="Limiar:"
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,10 +31,10 @@
         app:layout_constraintVertical_bias="0.733" />
 
     <TextView
-        android:id="@+id/limiarajustado"
+        android:id="@+id/limdownText"
         android:layout_width="150dp"
         android:layout_height="34dp"
-        android:text="Limiar: 0%"
+        android:text="Limiar:"
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +44,7 @@
         app:layout_constraintVertical_bias="0.902" />
 
     <SeekBar
-        android:id="@+id/seekBarajust"
+        android:id="@+id/limup"
         android:layout_width="300dp"
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -112,18 +112,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.262" />
-
-    <ImageView
-        android:id="@+id/imageinstructionsinsole"
-        app:srcCompat="@drawable/definirpng"
-        android:layout_width="306dp"
-        android:layout_height="171dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.453" />
 
     <Button
         android:id="@+id/savechanges"

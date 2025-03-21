@@ -1,43 +1,34 @@
 package com.example.myapplication2.Settings;
 
-import android.content.Intent;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.ConectInsole;
-import com.example.myapplication2.FirebaseHelper;
-import com.example.myapplication2.Home.HomeActivity;
-import com.example.myapplication2.LoginActivity;
+import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.Calendar;
 
 
 public class ParametersActivity extends AppCompatActivity{
 
-    SeekBar ajustTresh;
-    TextView tresholdajust;
+    SeekBar limup, limdown;
+    TextView limdownText, limupText;
+    String InRight, InLeft;
     FloatingActionButton mBackBtn;
     Button saveChanges;
-    Float percentageAdjust;
-    FirebaseAuth fAuth;
-    DatabaseReference databaseReference;
-    String uid = null;
+    Float percentageAdjustLeft, percentageAdjustRight;
     ConectInsole conectInsole;
-    private FirebaseHelper firebasehelper;
+    ConectInsole2 conectInsole2;
     private Calendar calendar;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -49,48 +40,147 @@ public class ParametersActivity extends AppCompatActivity{
     public void onStart() {
         super.onStart();
 
-        //gifimagewait.setVisibility(View.GONE);
-        ajustTresh = findViewById(R.id.seekBarajust);
-        //ajustTresh2 = findViewById(R.id.seekBarajust);
-
-        tresholdajust = findViewById(R.id.limiarajustado);
+        limupText = findViewById(R.id.limupText);
+        limdownText = findViewById(R.id.limdownText);
         mBackBtn = findViewById(R.id.buttonback2);
         saveChanges = findViewById(R.id.savechanges);
+        limup = findViewById(R.id.limup);
+        limdown = findViewById(R.id.limdown);
 
-        ajustTresh.setProgress(0);
-        ajustTresh.incrementProgressBy(50);
-        ajustTresh.setMax(200);
+        sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        InRight = sharedPreferences.getString("Sright", "default");
+        InLeft = sharedPreferences.getString("Sleft", "default");
 
-        ajustTresh.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tresholdajust.setText("Limiar em:" + String.valueOf(progress));
-                percentageAdjust = (float) (progress/100);
 
-            }
+        if (InRight.equals("false") && InLeft.equals("true")) {
+            limdown.setVisibility(View.GONE);
+            limdownText.setVisibility(View.GONE);
+            limupText.setText("Limiar: 0%");
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            limup.setProgress(0);
+            limup.incrementProgressBy(50);
+            limup.setMax(200);
 
-            }
+            limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    limupText.setText("Limiar em:" + String.valueOf(progress));
+                    percentageAdjustLeft = (float) (progress/100);
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+                }
 
-            }
-        });
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
+        }
+        if (InLeft.equals("false") && InRight.equals("true")) {
+            limdown.setVisibility(View.GONE);
+            limdownText.setVisibility(View.GONE);
+            limupText.setText("Limiar: 0%");
+
+            limup.setProgress(0);
+            limup.incrementProgressBy(50);
+            limup.setMax(200);
+
+            limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    limupText.setText("Limiar em:" + String.valueOf(progress));
+                    percentageAdjustRight = (float) (progress/100);
+
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
+
+        }
+
+        if(InLeft.equals("true") && InRight.equals("true")) {
+
+            //configura palmilha direita
+            limupText.setText("Limiar palmilha direita: 0%");
+
+            limup.setProgress(0);
+            limup.incrementProgressBy(50);
+            limup.setMax(200);
+
+            limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    limupText.setText("Limiar palmilha direita:" + String.valueOf(progress));
+                    percentageAdjustRight = (float) (progress/100);
+
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+            //configura palmilha esquerda
+            limupText.setText("Limiar palmilha esquerda: 0%");
+
+            limup.setProgress(0);
+            limup.incrementProgressBy(50);
+            limup.setMax(200);
+
+            limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    limupText.setText("Limiar palmilha esquerda:" + String.valueOf(progress));
+                    percentageAdjustLeft = (float) (progress/100);
+
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
+        }
 
         saveChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //recalcular limiar, salvar no banco de dados e enviar novos limiares a palmilha
-
-                FirebaseUser user = fAuth.getCurrentUser();
-                if (user != null) {
-                    uid = user.getUid();  // Pega o UID do usuário autenticado
-                    loadTreshData(uid, percentageAdjust);
+                if(InRight.equals("true")){
+                    //recalcular limiar e enviar a palmilha direita
+                    loadTreshData(percentageAdjustRight);
                 }
+                if(InLeft.equals("true")){
+                    //recalcular limiar e enviar a palmilha esquerda
+                    loadTreshData2(percentageAdjustLeft);
+
+                }
+
 
             }
         });
@@ -105,60 +195,71 @@ public class ParametersActivity extends AppCompatActivity{
     }
 
 
-    private void loadTreshData(String uid, Float treshold) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+    private void loadTreshData(Float treshold) {
 
-        databaseReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot dataSnapshot = task.getResult();
-                if (dataSnapshot.exists()) {
-                    // Recuperar os dados do usuário e ConfigData
-                    ConectInsole.ConfigData configData = dataSnapshot.child("config").getValue(ConectInsole.ConfigData.class);
-                    int cmd = 0x2A;
-                    calendar = Calendar.getInstance();
-                    byte hora = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-                    byte min = (byte) calendar.get(Calendar.MINUTE);
-                    byte seg = (byte) calendar.get(Calendar.SECOND);
-                    byte mSeg  = (byte) calendar.get(Calendar.MILLISECOND);;
-                    int freq = configData.freq;
-                    int S1 = (int) (configData.S1 * treshold);
-                    int S2 = (int) (configData.S2*treshold);
-                    int S3 = (int) (configData.S3*treshold);
-                    int S4 = (int) (configData.S1*treshold);
-                    int S5 = (int) (configData.S5*treshold);
-                    int S6 = (int) (configData.S6*treshold);
-                    int S7 = (int) (configData.S7*treshold);
-                    int S8 = (int) (configData.S8*treshold);
-                    int S9 = (int) (configData.S9*treshold);
+        calendar = Calendar.getInstance();
+        byte hora = (byte) calendar.get(Calendar.HOUR_OF_DAY);
+        byte min = (byte) calendar.get(Calendar.MINUTE);
+        byte seg = (byte) calendar.get(Calendar.SECOND);
+        byte mSeg = (byte) calendar.get(Calendar.MILLISECOND);
+        byte cmd = 0x2A;
+        byte freq = 1;
 
-                    conectInsole.createAndSendConfigData( (byte) cmd, hora, min, seg, mSeg, (byte) freq, (short) S1, (short) S2, (short) S3,  (short) S4,  (short) S5,  (short) S6,  (short) S7, (short) S8, (short) S9);
+        short tnumbers[] = new short[9];
+        sharedPreferences = getSharedPreferences("ConfigPrefsR", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("percentageR", String.valueOf(treshold));
 
-                    configData = new ConectInsole.ConfigData();
-                    configData.cmd = cmd;
-                    configData.hora = hora;
-                    configData.min = min;
-                    configData.seg = seg;
-                    configData.mSeg = mSeg;
-                    configData.freq = freq;
-                    configData.S1 = S1;
-                    configData.S2 = S2;
-                    configData.S3 = S3;
-                    configData.S4 = S4;
-                    configData.S5 = S5;
-                    configData.S6 = S6;
-                    configData.S7 = S7;
-                    configData.S8 = S8;
-                    configData.S9 = S9;
-
-                    firebasehelper.saveConfigData(configData);
+        tnumbers[0] = (short) sharedPreferences.getInt("S1", 0);
+        tnumbers[1] = (short) sharedPreferences.getInt("S2", 0);
+        tnumbers[2] = (short) sharedPreferences.getInt("S3", 0);
+        tnumbers[3] = (short) sharedPreferences.getInt("S4", 0);
+        tnumbers[4] = (short) sharedPreferences.getInt("S5", 0);
+        tnumbers[5] = (short) sharedPreferences.getInt("S6", 0);
+        tnumbers[6] = (short) sharedPreferences.getInt("S7", 0);
+        tnumbers[7] = (short) sharedPreferences.getInt("S8", 0);
+        tnumbers[8] = (short) sharedPreferences.getInt("S9", 0);
 
 
-                } else {
-                    Toast.makeText(ParametersActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(ParametersActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        for (int i = 0; i < tnumbers.length; i++) {
+            tnumbers[i] = (short) (tnumbers[i]*treshold);
+        }
+        conectInsole.createAndSendConfigData(cmd, hora, min, seg, mSeg, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
     }
+
+    private void loadTreshData2(Float treshold) {
+
+        calendar = Calendar.getInstance();
+        byte hora = (byte) calendar.get(Calendar.HOUR_OF_DAY);
+        byte min = (byte) calendar.get(Calendar.MINUTE);
+        byte seg = (byte) calendar.get(Calendar.SECOND);
+        byte mSeg = (byte) calendar.get(Calendar.MILLISECOND);
+        byte cmd = 0x2A;
+        byte freq = 1;
+
+        short tnumbers[] = new short[9];
+        sharedPreferences = getSharedPreferences("ConfigPrefsL", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("percentageL", String.valueOf(treshold));
+
+        tnumbers[0] = (short) sharedPreferences.getInt("S1", 0);
+        tnumbers[1] = (short) sharedPreferences.getInt("S2", 0);
+        tnumbers[2] = (short) sharedPreferences.getInt("S3", 0);
+        tnumbers[3] = (short) sharedPreferences.getInt("S4", 0);
+        tnumbers[4] = (short) sharedPreferences.getInt("S5", 0);
+        tnumbers[5] = (short) sharedPreferences.getInt("S6", 0);
+        tnumbers[6] = (short) sharedPreferences.getInt("S7", 0);
+        tnumbers[7] = (short) sharedPreferences.getInt("S8", 0);
+        tnumbers[8] = (short) sharedPreferences.getInt("S9", 0);
+
+
+        for (int i = 0; i < tnumbers.length; i++) {
+            tnumbers[i] = (short) (tnumbers[i]*treshold);
+        }
+        conectInsole2.createAndSendConfigData(cmd, hora, min, seg, mSeg, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
+    }
+
+
+
+
 }
