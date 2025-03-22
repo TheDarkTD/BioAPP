@@ -114,9 +114,9 @@ public class LoginActivity extends AppCompatActivity {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     // Recuperar os dados do usuário e ConfigData
-                    ConectInsole.ConfigData configData = dataSnapshot.child("ConfigData1").getValue(ConectInsole.ConfigData.class);
-                    conectInsole.setConfigData(configData);
-                    System.out.println("config data recebido do login" + configData);
+                    ConectInsole.ConfigData configData1 = dataSnapshot.child("ConfigData1").getValue(ConectInsole.ConfigData.class);
+                    conectInsole.setConfigData(configData1);
+                    System.out.println("config data recebido do login" + configData1);
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
                     startActivity(myIntent);
                 } else {
@@ -135,9 +135,9 @@ public class LoginActivity extends AppCompatActivity {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     // Recuperar os dados do usuário e ConfigData
-                    ConectInsole2.ConfigData configData = dataSnapshot.child("ConfigData2").getValue(ConectInsole2.ConfigData.class);
-                    conectInsole2.setConfigData(configData);
-                    System.out.println("config data recebido do login" + configData);
+                    ConectInsole2.ConfigData configData2 = dataSnapshot.child("ConfigData2").getValue(ConectInsole2.ConfigData.class);
+                    conectInsole2.setConfigData(configData2);
+                    System.out.println("config data recebido do login" + configData2);
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
                     startActivity(myIntent);
                 } else {
