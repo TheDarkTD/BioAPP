@@ -54,7 +54,7 @@ public class Register5Activity extends AppCompatActivity {
     }
 
     public void Insole_leftIP() {
-        final int udpPortl = 20000; // Porta do ESP
+        final int udpPortl = 20001; // Porta do ESP
 
         new Thread(new Runnable() {
             @Override

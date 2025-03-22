@@ -202,17 +202,17 @@ public class RegisterActivity extends AppCompatActivity
         hashMap.put("birth", getBirth);
 
         // Carregando os dados de S1 a S9
-        HashMap<String, Integer> configData = loadConfigDataFromPrefs(this);
+        HashMap<String, Integer> configData1 = loadConfigDataFromPrefs(this);
         HashMap<String, Integer> configData2 = loadConfigData2FromPrefs(this);
         // Verificando se os dados de followInRight e followInLeft são verdadeiros
         if (followInRight.equals("true")) {
             // Adicionando os dados de ConfigData ao HashMap
-            hashMap.put("ConfigData", configData);  // Adiciona os dados carregados ao HashMap
+            hashMap.put("ConfigData1", configData1);  // Adiciona os dados carregados ao HashMap
         }
 
         if (followInLeft.equals("true")) {
             // Se conectar2 também tiver dados de ConfigData, adicione também
-            hashMap.put("ConfigData", configData2);
+            hashMap.put("ConfigData2", configData2);
         }
 
         // Enviando os dados para o Firebase
