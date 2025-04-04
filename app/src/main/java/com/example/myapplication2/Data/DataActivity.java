@@ -1,7 +1,9 @@
 package com.example.myapplication2.Data;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.myapplication2.Connection.ConnectionActivity;
 import com.example.myapplication2.Home.HomeActivity;
@@ -24,154 +27,38 @@ import java.util.Calendar;
 
 public class DataActivity extends AppCompatActivity {
 
-    private EditText mInicio;
-    private EditText mFim;
-
     Button mExportBtn;
     Button mDocumentBtn;
+    DatePickerDialog datePickerDialogInicio, datePickerDialogFim;
+    Button mInicio, mFim;
+
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
 
-        mInicio = findViewById(R.id.Inicio);
-        mFim = findViewById(R.id.Fim);
+        mInicio = findViewById(R.id.btnInicio);
+        mFim = findViewById(R.id.btnFim);
         mDocumentBtn = findViewById(R.id.btndocument);
         mExportBtn = findViewById(R.id.btnexport);
 
+        //seleçao do periodo dos dados
+        initDatePickers();
 
+        mInicio.setText(getTodaysDate());
+        mFim.setText(getTodaysDate());
 
-        mInicio.addTextChangedListener(new TextWatcher() {
-            private String current = "";
-            private String ddmmyyyy = "DDMMAAAA";
-            private Calendar cal = Calendar.getInstance();
+        mInicio.setOnClickListener(v -> datePickerDialogInicio.show());
+        mFim.setOnClickListener(v -> datePickerDialogFim.show());
 
+        //buscar dados com base no periodo selecionado
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!s.toString().equals(current)) {
-                    String clean = s.toString().replaceAll("[^\\d.]", "");
-                    String cleanC = current.replaceAll("[^\\d.]", "");
+        //exportar dados de acordo com o tipo selecionado
+        mExportBtn.setOnClickListener(v -> showExportDialog());
 
-                    int cl = clean.length();
-                    int sel = cl;
-                    for (int i = 2; i <= cl && i < 6; i += 2) {
-                        sel++;
-                    }
-                    //Fix for pressing delete next to a forward slash
-                    if (clean.equals(cleanC)) sel--;
-
-                    if (clean.length() < 8){
-                        clean = clean + ddmmyyyy.substring(clean.length());
-                    }else{
-                        //This part makes sure that when we finish entering numbers
-                        //the date is correct, fixing it otherwise
-                        int day  = Integer.parseInt(clean.substring(0,2));
-                        int mon  = Integer.parseInt(clean.substring(2,4));
-                        int year = Integer.parseInt(clean.substring(4,8));
-
-                        if(mon > 12) mon = 12;
-                        cal.set(Calendar.MONTH, mon-1);
-
-                        year = (year<1900)?1900:(year>2100)?2100:year;
-                        cal.set(Calendar.YEAR, year);
-                        // ^ first set year for the line below to work correctly
-                        //with leap years - otherwise, date e.g. 29/02/2012
-                        //would be automatically corrected to 28/02/2012
-
-                        day = (day > cal.getActualMaximum(Calendar.DATE))? cal.getActualMaximum(Calendar.DATE):day;
-                        clean = String.format("%02d%02d%02d",day, mon, year);
-                    }
-
-                    clean = String.format("%s/%s/%s", clean.substring(0, 2),
-                            clean.substring(2, 4),
-                            clean.substring(4, 8));
-
-                    sel = sel < 0 ? 0 : sel;
-                    current = clean;
-                    mInicio.setText(current);
-                    mInicio.setSelection(sel < current.length() ? sel : current.length());
-
-
-
-                }
-            }
-
-
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
-
-        mFim.addTextChangedListener(new TextWatcher() {
-            private String current = "";
-            private String ddmmyyyy = "DDMMAAAA";
-            private Calendar cal = Calendar.getInstance();
-
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!s.toString().equals(current)) {
-                    String clean = s.toString().replaceAll("[^\\d.]", "");
-                    String cleanC = current.replaceAll("[^\\d.]", "");
-
-                    int cl = clean.length();
-                    int sel = cl;
-                    for (int i = 2; i <= cl && i < 6; i += 2) {
-                        sel++;
-                    }
-                    //Fix for pressing delete next to a forward slash
-                    if (clean.equals(cleanC)) sel--;
-
-                    if (clean.length() < 8){
-                        clean = clean + ddmmyyyy.substring(clean.length());
-                    }else{
-                        //This part makes sure that when we finish entering numbers
-                        //the date is correct, fixing it otherwise
-                        int day  = Integer.parseInt(clean.substring(0,2));
-                        int mon  = Integer.parseInt(clean.substring(2,4));
-                        int year = Integer.parseInt(clean.substring(4,8));
-
-                        if(mon > 12) mon = 12;
-                        cal.set(Calendar.MONTH, mon-1);
-
-                        year = (year<1900)?1900:(year>2100)?2100:year;
-                        cal.set(Calendar.YEAR, year);
-                        // ^ first set year for the line below to work correctly
-                        //with leap years - otherwise, date e.g. 29/02/2012
-                        //would be automatically corrected to 28/02/2012
-
-                        day = (day > cal.getActualMaximum(Calendar.DATE))? cal.getActualMaximum(Calendar.DATE):day;
-                        clean = String.format("%02d%02d%02d",day, mon, year);
-                    }
-
-                    clean = String.format("%s/%s/%s", clean.substring(0, 2),
-                            clean.substring(2, 4),
-                            clean.substring(4, 8));
-
-                    sel = sel < 0 ? 0 : sel;
-                    current = clean;
-                    mFim.setText(current);
-                    mFim.setSelection(sel < current.length() ? sel : current.length());
-
-
-
-                }
-            }
-
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
+        //gerar documento de acordo com o tipo selecionado
+        mDocumentBtn.setOnClickListener( v -> showDocumentDialog());
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomnavview4);
         bottomNavigationView.setSelectedItemId(R.id.data);
@@ -195,23 +82,95 @@ public class DataActivity extends AppCompatActivity {
             return false;
         });
 
-        mExportBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // abrir pop up para seleção do tipo de arquivo
-            }
-        });
-
-        mDocumentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // abrir pop up para seleção do tipo de relatório
-            }
-        });
-
 
     }
 
 
+    private void showExportDialog() {
+        String[] fileTypes = {"PDF", "CSV", "TXT"};
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Escolha o tipo de arquivo:")
+                .setItems(fileTypes, (dialog, which) -> {
+                    String selected = fileTypes[which];
+                    Toast.makeText(this, "Exportando como: " + selected, Toast.LENGTH_SHORT).show();
+                    // Aqui você pode chamar a função para exportar os dados conforme o formato escolhido
+                });
+
+        builder.create().show();
+    }
+
+    private void showDocumentDialog() {
+        String[] reportTypes = {"Resumo", "Detalhado", "Gráficos"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Escolha o tipo de relatório:")
+                .setItems(reportTypes, (dialog, which) -> {
+                    String selected = reportTypes[which];
+                    Toast.makeText(this, "Gerando relatório: " + selected, Toast.LENGTH_SHORT).show();
+                    // Aqui você pode chamar a função para gerar o relatório conforme a escolha
+                });
+
+        builder.create().show();
+    }
+
+
+    private void initDatePickers() {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        datePickerDialogInicio = new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
+            month1++;
+            String date = makeDateString(dayOfMonth, month1, year1);
+            mInicio.setText(date);
+            SharedPreferences sharedPreferences = getSharedPreferences("Data_period", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("StartD", day);
+            editor.putInt("StartM", month);
+            editor.putInt("StartY", year);
+        }, year, month, day);
+
+
+
+        datePickerDialogFim = new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
+            month1++;
+            String date = makeDateString(dayOfMonth, month1, year1);
+            mFim.setText(date);
+            SharedPreferences sharedPreferences = getSharedPreferences("Data_period", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("EndD", day);
+            editor.putInt("EndM", month);
+            editor.putInt("EndY", year);
+        }, year, month, day);
+    }
+
+    // Mesmos métodos auxiliares de antes...
+    private String getTodaysDate() {
+        Calendar cal = Calendar.getInstance();
+        return makeDateString(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+    }
+
+    private String makeDateString(int day, int month, int year) {
+        return day + " " + getMonthFormat(month) + " " + year;
+    }
+
+    private String getMonthFormat(int month) {
+        switch (month) {
+            case 1: return "JAN";
+            case 2: return "FEB";
+            case 3: return "MAR";
+            case 4: return "ABR";
+            case 5: return "MAI";
+            case 6: return "JUN";
+            case 7: return "JUL";
+            case 8: return "AGO";
+            case 9: return "SET";
+            case 10: return "OUT";
+            case 11: return "NOV";
+            case 12: return "DEZ";
+            default: return "JAN";
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.example.myapplication2.Home;
 
 import static android.service.autofill.Validators.and;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -55,16 +56,17 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         super.onStart();
 
+
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
-        /*if (followInRight.equals("true")) {
+        if (followInRight.equals("true")) {
             udpr.Insole_RightIP();
         }
 
         if (followInLeft.equals("true")) {
             udpl.Insole_leftIP();
-        }*/
+        }
         serviceIntent = new Intent(this, DataCaptureService.class);
 
         // Referencie os círculos e o botão de atualização
@@ -104,14 +106,14 @@ public class HomeActivity extends AppCompatActivity {
             startForegroundService(serviceIntent_notify);
         } else {
             startService(serviceIntent_notify);
-        }
+        }*/
         if (followInRight.equals("true")) {
             udpr.Insole_RightIP();
         }
 
         if (followInLeft.equals("true")) {
             udpl.Insole_leftIP();
-        }*/
+        }
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
@@ -233,15 +235,17 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (followInRight.equals("true") && followInLeft.equals("false")){
                     atualizaçao.setText(senddatainsole1);
+                    //Atualiza os valores de pressão plotados na tela
+                    checkforcolors_right();
                 } else if (followInRight.equals("false") && followInLeft.equals("true")) {
                     atualizaçao.setText(senddatainsole2);
+                    //Atualiza os valores de pressão plotados na tela
+                    checkforcolors_left();
                 }else {
                     atualizaçao.setText(senddatainsole1 + senddatainsole2);
                 }
 
 
-                //Atualiza os valores de pressão plotados na tela
-                updateCircleColors();
                 //Reinicia o serviço de captura de dados quando há atualização destes
                 startService(serviceIntent);
 
@@ -254,74 +258,257 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void updateCircleColors() {// Método para atualizar as cores dos círculos com base nos níveis de pressão
+    private void checkforcolors_right() {
 
-        // Obtenha os dados dos sensores
-         if (followInRight.equals("true")){
-
-             //A booleana indica que se trata da palmilha direita
-             Boolean foot1 = false;
-             sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-             String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-             short[][] sensorReadings = new short[9][];
-
-             for (int i = 0; i < 9; i++) {
-                 sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-             }
-
-             short[] pressureValues = thresholdSensors_steady(sensorReadings, foot1);
+        //checar regiões de interesse
+        SharedPreferences sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Boolean S1 = sharedPreferences.getBoolean("S1r", false);
+        Boolean S2 =sharedPreferences.getBoolean("S2r", false);
+        Boolean S3 =sharedPreferences.getBoolean("S3r", false);
+        Boolean S4 =sharedPreferences.getBoolean("S4r", false);
+        Boolean S5 =sharedPreferences.getBoolean("S5r", false);
+        Boolean S6 =sharedPreferences.getBoolean("S6r", false);
+        Boolean S7 =sharedPreferences.getBoolean("S7r", false);
+        Boolean S8 =sharedPreferences.getBoolean("S8r", false);
+        Boolean S9 =sharedPreferences.getBoolean("S9r", false);
 
 
-             // Para cada sensor, calcule a cor correspondente e atualize o círculo
-             for (int i = 0; i < circlesright.length; i++) {
-                 int pressure = pressureValues[i];
-                 int color = calculateColor(pressure);
-                 circlesright[i].setBackgroundTintList(ColorStateList.valueOf(color));
-             }
-         }
-
-          if (followInLeft.equals("true")){
-
-              //A booleana indica que se trata da palmilha esquerda
-              Boolean foot2 = true;
-              sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-              String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-              short[][] sensorReadings = new short[9][];
-
-              for (int i = 0; i < 9; i++) {
-                  sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-              }
-
-              short[] pressureValues2 = thresholdSensors_steady(sensorReadings, foot2);
+        //checar limiares
+        sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
+        int S1_t = (short) sharedPreferences.getInt("Lim1I1", 8191);
+        int S2_t = (short) sharedPreferences.getInt("Lim2I1", 8191);
+        int S3_t = (short) sharedPreferences.getInt("Lim3I1", 8191);
+        int S4_t = (short) sharedPreferences.getInt("Lim4I1", 8191);
+        int S5_t = (short) sharedPreferences.getInt("Lim5I1", 8191);
+        int S6_t = (short) sharedPreferences.getInt("Lim6I1", 8191);
+        int S7_t = (short) sharedPreferences.getInt("Lim7I1", 8191);
+        int S8_t = (short) sharedPreferences.getInt("Lim8I1", 8191);
+        int S9_t = (short) sharedPreferences.getInt("Lim9I1", 8191);
 
 
-              // Para cada sensor, calcule a cor correspondente e atualize o círculo
-              for (int i = 0; i < circlesleft.length; i++) {
-                  int pressure = pressureValues2[i];
-                  int color = calculateColor(pressure);
-                  circlesleft[i].setBackgroundTintList(ColorStateList.valueOf(color));
-              }
+        //calcular valores para cada círculo
+        //definir menor valor de todas as leituras e maior valor de todas as leituras
+        sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+        String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+        short[][] sensorReadings = new short[9][];
 
-          }
+        for (int i = 0; i < 9; i++) {
+            sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
+        }
+
+        short[] minMax = findMinMax(sensorReadings);
+        int dimension = minMax[1] - minMax[0];
+        int plength = sensorReadings[1].length;
+
+        //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
+        short p1 = (short) ((sensorReadings[0][plength-1])- minMax[0]/dimension);
+        short p2 = (short) ((sensorReadings[1][plength-1]- minMax[0])/dimension);
+        short p3 = (short) ((sensorReadings[2][plength-1]- minMax[0])/dimension);
+        short p4 = (short) ((sensorReadings[3][plength-1]- minMax[0])/dimension);
+        short p5 = (short) ((sensorReadings[4][plength-1]- minMax[0])/dimension);
+        short p6 = (short) ((sensorReadings[5][plength-1]- minMax[0])/dimension);
+        short p7 = (short) ((sensorReadings[6][plength-1]- minMax[0])/dimension);
+        short p8 = (short) ((sensorReadings[7][plength-1]- minMax[0])/dimension);
+        short p9 = (short) ((sensorReadings[8][plength-1]- minMax[0])/dimension);
+        int[] ratioValues = {p1, p2, p3, p4, p5, p6, p7, p8, p9};
+
+        //definir cor com base na porcentagem
+
+        for (int i = 0; i < circlesright.length; i++) {
+            int pressure = ratioValues[i];
+            int color = calculateColor(pressure);
+            circlesright[i].setBackgroundTintList(ColorStateList.valueOf(color));
+        }
+
+        //comparar valores recebidos com limiar salvo para identificar local do evento
+        if (S1){
+            if (comparevalues(sensorReadings[0], S1_t)){
+                //tornar círculo vermelho
+                circlesright[0].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S2){
+            if (comparevalues(sensorReadings[1], S2_t)){
+                circlesright[1].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S3){
+            if (comparevalues(sensorReadings[2], S3_t)){
+                circlesright[2].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S4){
+            if (comparevalues(sensorReadings[3], S4_t)){
+                circlesright[3].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S5){
+            if (comparevalues(sensorReadings[4], S5_t)){
+                circlesright[4].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S6){
+            if (comparevalues(sensorReadings[5], S6_t)){
+                circlesright[5].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S7){
+            if (comparevalues(sensorReadings[6], S7_t)){
+                circlesright[6].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S8){
+            if (comparevalues(sensorReadings[7], S8_t)){
+                circlesright[7].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S9){
+            if (comparevalues(sensorReadings[8], S9_t)){
+                circlesright[8].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
 
 
     }
 
+
+    private void checkforcolors_left() {
+
+        //checar regiões de interesse
+        SharedPreferences sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Boolean S1 = sharedPreferences.getBoolean("S1", false);
+        Boolean S2 =sharedPreferences.getBoolean("S2", false);
+        Boolean S3 =sharedPreferences.getBoolean("S3", false);
+        Boolean S4 =sharedPreferences.getBoolean("S4", false);
+        Boolean S5 =sharedPreferences.getBoolean("S5", false);
+        Boolean S6 =sharedPreferences.getBoolean("S6", false);
+        Boolean S7 =sharedPreferences.getBoolean("S7", false);
+        Boolean S8 =sharedPreferences.getBoolean("S8", false);
+        Boolean S9 =sharedPreferences.getBoolean("S9", false);
+
+
+        //checar limiares
+        sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
+        int S1_t = (short) sharedPreferences.getInt("Lim1I2", 8191);
+        int S2_t = (short) sharedPreferences.getInt("Lim2I2", 8191);
+        int S3_t = (short) sharedPreferences.getInt("Lim3I2", 8191);
+        int S4_t = (short) sharedPreferences.getInt("Lim4I2", 8191);
+        int S5_t = (short) sharedPreferences.getInt("Lim5I2", 8191);
+        int S6_t = (short) sharedPreferences.getInt("Lim6I2", 8191);
+        int S7_t = (short) sharedPreferences.getInt("Lim7I2", 8191);
+        int S8_t = (short) sharedPreferences.getInt("Lim8I2", 8191);
+        int S9_t = (short) sharedPreferences.getInt("Lim9I2", 8191);
+
+
+        //calcular valores para cada círculo
+        //definir menor valor de todas as leituras e maior valor de todas as leituras
+        sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+        String[] sensorKeys = {"S1_2", "S2_2", "S3_2", "S4_2", "S5_2", "S6_2", "S7_2", "S8_2", "S9_2"};
+        short[][] sensorReadings = new short[9][];
+
+        for (int i = 0; i < 9; i++) {
+            sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
+        }
+
+        short[] minMax = findMinMax(sensorReadings);
+        int dimension = minMax[1] - minMax[0];
+        int plength = sensorReadings[1].length;
+
+        //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
+        short p1 = (short) ((sensorReadings[0][plength-1])- minMax[0]/dimension);
+        short p2 = (short) ((sensorReadings[1][plength-1]- minMax[0])/dimension);
+        short p3 = (short) ((sensorReadings[2][plength-1]- minMax[0])/dimension);
+        short p4 = (short) ((sensorReadings[3][plength-1]- minMax[0])/dimension);
+        short p5 = (short) ((sensorReadings[4][plength-1]- minMax[0])/dimension);
+        short p6 = (short) ((sensorReadings[5][plength-1]- minMax[0])/dimension);
+        short p7 = (short) ((sensorReadings[6][plength-1]- minMax[0])/dimension);
+        short p8 = (short) ((sensorReadings[7][plength-1]- minMax[0])/dimension);
+        short p9 = (short) ((sensorReadings[8][plength-1]- minMax[0])/dimension);
+        int[] ratioValues = {p1, p2, p3, p4, p5, p6, p7, p8, p9};
+
+        //definir cor com base na porcentagem
+
+        for (int i = 0; i < circlesleft.length; i++) {
+            int pressure = ratioValues[i];
+            int color = calculateColor(pressure);
+            circlesleft[i].setBackgroundTintList(ColorStateList.valueOf(color));
+        }
+
+        //comparar valores recebidos com limiar salvo para identificar local do evento
+        if (S1){
+            if (comparevalues(sensorReadings[0], S1_t)){
+                //tornar círculo vermelho
+                circlesleft[0].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S2){
+            if (comparevalues(sensorReadings[1], S2_t)){
+                circlesleft[1].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S3){
+            if (comparevalues(sensorReadings[2], S3_t)){
+                circlesleft[2].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S4){
+            if (comparevalues(sensorReadings[3], S4_t)){
+                circlesleft[3].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S5){
+            if (comparevalues(sensorReadings[4], S5_t)){
+                circlesleft[4].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S6){
+            if (comparevalues(sensorReadings[5], S6_t)){
+                circlesleft[5].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S7){
+            if (comparevalues(sensorReadings[6], S7_t)){
+                circlesleft[6].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S8){
+            if (comparevalues(sensorReadings[7], S8_t)){
+                circlesleft[7].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+        if (S9){
+            if (comparevalues(sensorReadings[8], S9_t)){
+                circlesleft[8].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+            }
+        }
+
+
+    }
+
+    private Boolean comparevalues(short[] array, int threshold) {
+        boolean event = false;
+        int num = array.length;
+
+        // Verifica se o array não está vazio antes de acessar o último elemento
+        if (num > 0 && array[num - 1] > threshold) {
+            event = true;
+        }
+
+        return event;
+    }
+
+
     // Método para calcular a cor com base no valor de pressão
     private int calculateColor(int pressure) {
-        // Defina os valores mínimos e máximos de pressão
-        int minPressure = 0;
-        int maxPressure = 4095; // Valor máximo de 12 bits
 
         // Defina as cores de referência (azul e vermelho)
         int startColor = Color.BLUE; // Cor inicial (azul)
         int endColor = Color.RED;    // Cor final (vermelho)
 
-        // Calcule a proporção do valor de pressão entre o mínimo e o máximo
-        float ratio = (float) (pressure - minPressure) / (maxPressure - minPressure);
-
         // Interpole entre as cores inicial e final com base na proporção
-        int interpolatedColor = interpolateColor(startColor, endColor, ratio);
+        int interpolatedColor = interpolateColor(startColor, endColor, pressure);
 
         return interpolatedColor;
     }
@@ -351,131 +538,27 @@ public class HomeActivity extends AppCompatActivity {
         return interpolatedColor;
     }
 
-    @NonNull
-    public short[] thresholdSensors_steady(short[][] sensorReadings, boolean whichfoot) {
-        short[] limS = new short[9];
-        ArrayList<Short>[] meanPeaks = new ArrayList[9];
-        int[] lim = new int[9];
-        String[] hex = new String[9];
-
-        for (int i = 0; i < 9; i++) {
-            meanPeaks[i] = getMeanPeaks(sensorReadings[i]);
-            lim[i] = getMean(meanPeaks[i]);
-            hex[i] = Integer.toHexString(lim[i]);
+    public static short[] findMinMax(short[][] array) {
+        if (array == null || array.length == 0) {
+            throw new IllegalArgumentException("O array não pode estar vazio!");
         }
-        if(whichfoot == true) {
-            sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
-            String[] regionKeys = {"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "Sn"};
-            Boolean[] regions = new Boolean[10];
 
-            for (int i = 0; i < 10; i++) {
-                regions[i] = sharedPreferences.getBoolean(regionKeys[i], false);
-                System.out.println("regionsS2"+ regions[i]);
-            }
+        short min = Short.MAX_VALUE;
+        short max = Short.MIN_VALUE;
 
-            for (int i = 0; i < 9; i++) {
-                short hexS = (short) Integer.parseInt(hex[i], 16);
-                limS[i] = regions[i].equals("true") ? (short) ((0x3 << 12) | (hexS & 0xFFF)) : (short) ((0x1 << 12) | (hexS & 0xFFF));
-            }
-
-
-        }
-        else{
-            SharedPreferences sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
-            String[] regionKeys = {"S1r", "S2r", "S3r", "S4r", "S5r", "S6r", "S7r", "S8r", "S9r", "Snr"};
-            Boolean[] regions = new Boolean[10];
-
-            for (int i = 0; i < 10; i++) {
-                regions[i] = sharedPreferences.getBoolean(regionKeys[i], false);
-                System.out.println("regionsSr2: " + regions[i]);
-            }
-
-
-            for (int i = 0; i < 9; i++) {
-                short hexS = (short) Integer.parseInt(hex[i], 16);
-                if (regions[i]) {
-                    // If regions[i] is true, use 0x3
-                    limS[i] = (short) ((0x3 << 12) | (hexS & 0xFFF));
-                } else {
-                    // If regions[i] is false, use 0x1
-                    limS[i] = (short) ((0x1 << 12) | (hexS & 0xFFF));
+        // Percorre cada subarray
+        for (short[] subArray : array) {
+            if (subArray != null) { // Evita NullPointerException
+                for (short value : subArray) {
+                    if (value < min) min = value;
+                    if (value > max) max = value;
                 }
             }
-
-
         }
-        return limS;
+
+        return new short[]{min, max}; // Retorna um array contendo o menor e maior valores
     }
 
-    @NonNull
-    private ArrayList<Short> getMeanPeaks(short[] readings) {
-        ArrayList<Short> meanPeaks = new ArrayList<>();
-        ArrayList<Integer> positionPeak = new ArrayList<>();
-        short max = findMax(readings);
-        short min = findMin(readings);
-        int difference = max - min;
-
-        // Encontra os picos nos dados dos sensores
-        for (int i = 1; i < readings.length - 1; i++) {
-            if (readings[i] > readings[i - 1] && readings[i] > readings[i + 1]) {
-                positionPeak.add(i);
-            }
-        }
-
-        // Calcula a média dos picos
-        for (int j = 0; j < positionPeak.size(); j++) {
-            int sumP = readings[positionPeak.get(j)];
-            int divD = 1;
-            for (int k = 1; k < 20; k++) {
-                if (positionPeak.get(j) - k >= 0 &&
-                        (j + 1 < positionPeak.size() && positionPeak.get(j) - k < positionPeak.get(j + 1)) &&
-                        (readings[positionPeak.get(j)] - readings[positionPeak.get(j) - k]) < (0.2 * difference)) {
-                    sumP += readings[positionPeak.get(j) - k];
-                    divD++;
-                }
-                if (positionPeak.get(j) + k < readings.length &&
-                        (j + 1 < positionPeak.size() && positionPeak.get(j) + k < positionPeak.get(j + 1)) &&
-                        (readings[positionPeak.get(j)] - readings[positionPeak.get(j) + k]) < (0.2 * difference)) {
-                    sumP += readings[positionPeak.get(j) + k];
-                    divD++;
-                }
-            }
-            meanPeaks.add((short) (sumP / divD));
-        }
-        return meanPeaks;
-    }
-
-
-    private int getMean(@NonNull ArrayList<Short> values) {
-        if (values.isEmpty()) {
-            return 0;
-        }
-        int sum = 0;
-        for (short value : values) {
-            sum += value;
-        }
-        return sum / values.size();
-    }
-
-    public short findMax(@NonNull short[] readings) {
-        short max = readings[0];
-        for (short reading : readings) {
-            if (reading > max) {
-                max = reading;
-            }
-        }
-        return max;
-    }
-
-    public short findMin(@NonNull short[] readings) {
-        short min = readings[0];
-        for (short reading : readings) {
-            if (reading < min) {
-                min = reading;
-            }
-        }
-        return min;
-    }
 
     public short[] stringToShortArray(String str) {
         str = str.replaceAll("[\\[\\]\\s]", ""); // Remove colchetes e espaços

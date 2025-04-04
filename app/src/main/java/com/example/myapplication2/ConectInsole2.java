@@ -3,13 +3,20 @@ package com.example.myapplication2;
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.example.myapplication2.Register.Register7Activity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +39,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ConectInsole2 {
+public class ConectInsole2 { //tratamento palmilha esquerda
 
     private OkHttpClient client;
     private SendData receivedData;
@@ -41,6 +48,7 @@ public class ConectInsole2 {
     private Register7Activity register7;
     private FirebaseHelper firebasehelper;
     private Calendar calendar;
+    private static final String CHANNEL_ID = "notify_pressure"; // ID do canal
 
     public static class ConfigData {
         public int cmd;
@@ -283,6 +291,23 @@ public class ConectInsole2 {
                             Byte cmd = 0x1A;
 
                             conectar.SendConfigData(cmd, PEST, INT, TMEST, INEST);
+
+                            //exibir notificação
+                            createNotificationChannel(context);
+                            Bitmap leftFootBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.leftfoot);
+
+
+                            Notification notification_alertR = new NotificationCompat.Builder(context, CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)
+                                    .setContentTitle("Pico de Pressão Plantar detectado!")
+                                    .setContentText(checkforevent(context))
+                                    .setLargeIcon(leftFootBitmap)
+                                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.logoapppp))
+                                    .setStyle(new NotificationCompat.BigPictureStyle()
+                                            .bigPicture(leftFootBitmap)
+                                            .bigLargeIcon(null))
+                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                    .build();
                         }
                         Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context);
                     } catch (JSONException e) {
@@ -333,6 +358,7 @@ public class ConectInsole2 {
 
     public void setConfigData(ConfigData configData) {
         if (configData != null) {
+
             this.configData.S1 = configData.S1;
             this.configData.S2 = configData.S2;
             this.configData.S3 = configData.S3;
@@ -373,4 +399,125 @@ public class ConectInsole2 {
             }
         }
     }
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Canal de Alertas";
+            String description = "Notificações de pressão plantar";
+            int importance = NotificationManager.IMPORTANCE_HIGH; // Define a prioridade
+
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            // Registrar o canal no sistema usando o contexto passado
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+
+    private String checkforevent(Context context) {
+
+        //checar regiões de interesse
+        SharedPreferences sharedPreferences = context.getSharedPreferences("My_Appregions", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Boolean S1 = sharedPreferences.getBoolean("S1", false);
+        Boolean S2 =sharedPreferences.getBoolean("S2", false);
+        Boolean S3 =sharedPreferences.getBoolean("S3", false);
+        Boolean S4 =sharedPreferences.getBoolean("S4", false);
+        Boolean S5 =sharedPreferences.getBoolean("S5", false);
+        Boolean S6 =sharedPreferences.getBoolean("S6", false);
+        Boolean S7 =sharedPreferences.getBoolean("S7", false);
+        Boolean S8 =sharedPreferences.getBoolean("S8", false);
+        Boolean S9 =sharedPreferences.getBoolean("S9", false);
+
+        //checar limiares
+        sharedPreferences = context.getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
+        int S1_t = (short) sharedPreferences.getInt("Lim1I2", 8191);
+        int S2_t = (short) sharedPreferences.getInt("Lim2I2", 8191);
+        int S3_t = (short) sharedPreferences.getInt("Lim3I2", 8191);
+        int S4_t = (short) sharedPreferences.getInt("Lim4I2", 8191);
+        int S5_t = (short) sharedPreferences.getInt("Lim5I2", 8191);
+        int S6_t = (short) sharedPreferences.getInt("Lim6I2", 8191);
+        int S7_t = (short) sharedPreferences.getInt("Lim7I2", 8191);
+        int S8_t = (short) sharedPreferences.getInt("Lim8I2", 8191);
+        int S9_t = (short) sharedPreferences.getInt("Lim9I2", 8191);
+
+        String alerttext = "";
+        StringBuilder sensoresevento = new StringBuilder();
+
+        //comparar valores recebidos com limiar salvo para identificar evento
+        if (S1){
+            if (comparevalues(receivedData.SR1, S1_t)){
+                sensoresevento.append("1");
+            }
+        }
+        if (S2){
+            if (comparevalues(receivedData.SR2, S2_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("2");
+            }
+        }
+        if (S3){
+            if (comparevalues(receivedData.SR3, S3_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("3");
+            }
+        }
+        if (S4){
+            if (comparevalues(receivedData.SR4, S4_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("4");
+            }
+        }
+        if (S5){
+            if (comparevalues(receivedData.SR5, S5_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("5");
+            }
+        }
+        if (S6){
+            if (comparevalues(receivedData.SR6, S6_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("6");
+            }
+        }
+        if (S7){
+            if (comparevalues(receivedData.SR7, S7_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("7");
+            }
+        }
+        if (S8){
+            if (comparevalues(receivedData.SR8, S8_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("8");
+            }
+        }
+        if (S9){
+            if (comparevalues(receivedData.SR9, S9_t)){
+                sensoresevento.append(", ");
+                sensoresevento.append("9");
+            }
+        }
+
+        String resultado = sensoresevento.toString();
+        alerttext = "Sensor(es):"+ resultado;
+        return alerttext;
+
+    }
+
+    private Boolean comparevalues(ArrayList<Integer> array, int threshold) {
+        boolean event = false;
+        int num = array.size();
+
+        // Verifica se o array não está vazio antes de acessar o último elemento
+        if (num > 0 && array.get(num - 1) > threshold) {
+            event = true;
+        }
+
+        return event;
+    }
+
 }
