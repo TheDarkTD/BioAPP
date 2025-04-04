@@ -58,13 +58,13 @@ public class HomeActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
-        if (followInRight.equals("true")) {
+        /*if (followInRight.equals("true")) {
             udpr.Insole_RightIP();
         }
 
         if (followInLeft.equals("true")) {
             udpl.Insole_leftIP();
-        }
+        }*/
         serviceIntent = new Intent(this, DataCaptureService.class);
 
         // Referencie os círculos e o botão de atualização
@@ -104,14 +104,14 @@ public class HomeActivity extends AppCompatActivity {
             startForegroundService(serviceIntent_notify);
         } else {
             startService(serviceIntent_notify);
-        }*/
+        }
         if (followInRight.equals("true")) {
             udpr.Insole_RightIP();
         }
 
         if (followInLeft.equals("true")) {
             udpl.Insole_leftIP();
-        }
+        }*/
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 

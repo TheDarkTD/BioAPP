@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (user != null) {
                                 uid = user.getUid();  // Pega o UID do usuário autenticado
                                 loadUserData1(uid, v);  // Carrega os dados do Firebase
-                                loadUserData2(uid, v);  // Carrega os dados do Firebase
+                                //loadUserData2(uid, v);  // Carrega os dados do Firebase
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, "Erro no login: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     // Recuperar os dados do usuário e ConfigData
-                    ConectInsole.ConfigData configData1 = dataSnapshot.child("ConfigData1").getValue(ConectInsole.ConfigData.class);
+                    ConectInsole.ConfigData configData1 = dataSnapshot.child("config_data1").getValue(ConectInsole.ConfigData.class);
                     conectInsole.setConfigData(configData1);
                     System.out.println("config data recebido do login" + configData1);
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
                     // Recuperar os dados do usuário e ConfigData
-                    ConectInsole2.ConfigData configData2 = dataSnapshot.child("ConfigData2").getValue(ConectInsole2.ConfigData.class);
+                    ConectInsole2.ConfigData configData2 = dataSnapshot.child("config_data2").getValue(ConectInsole2.ConfigData.class);
                     conectInsole2.setConfigData(configData2);
                     System.out.println("config data recebido do login" + configData2);
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);

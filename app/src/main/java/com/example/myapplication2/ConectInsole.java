@@ -337,12 +337,6 @@ public class ConectInsole {
     // Método para substituir os valores da ConfigData
     public void setConfigData(ConfigData configData) {
         if (configData != null) {
-            this.configData.cmd = configData.cmd;
-            this.configData.hora = configData.hora;
-            this.configData.min = configData.min;
-            this.configData.seg = configData.seg;
-            this.configData.mSeg = configData.mSeg;
-            this.configData.freq = configData.freq;
             this.configData.S1 = configData.S1;
             this.configData.S2 = configData.S2;
             this.configData.S3 = configData.S3;
