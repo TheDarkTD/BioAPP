@@ -8,6 +8,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -16,7 +17,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.myapplication2.Register.Register7Activity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -180,7 +183,6 @@ public class ConectInsole2 { //tratamento palmilha esquerda
                 }
             }
         });
-        firebasehelper.saveConfigData2(configData);
         System.out.println("ConfigData salvo no Firebase com sucesso!");
     }
 
@@ -297,7 +299,7 @@ public class ConectInsole2 { //tratamento palmilha esquerda
                             Bitmap leftFootBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.leftfoot);
 
 
-                            Notification notification_alertR = new NotificationCompat.Builder(context, CHANNEL_ID)
+                            Notification notification_alertL = new NotificationCompat.Builder(context, CHANNEL_ID)
                                     .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)
                                     .setContentTitle("Pico de Pressão Plantar detectado!")
                                     .setContentText(checkforevent(context))
@@ -308,6 +310,20 @@ public class ConectInsole2 { //tratamento palmilha esquerda
                                             .bigLargeIcon(null))
                                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                                     .build();
+
+                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+                            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                // TODO: Consider calling
+                                //    ActivityCompat#requestPermissions
+                                // here to request the missing permissions, and then overriding
+                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                //                                          int[] grantResults)
+                                // to handle the case where the user grants the permission. See the documentation
+                                // for ActivityCompat#requestPermissions for more details.
+                                return;
+                            }
+                            notificationManager.notify(2, notification_alertL);
+
                         }
                         Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context);
                     } catch (JSONException e) {

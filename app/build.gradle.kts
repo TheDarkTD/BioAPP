@@ -1,10 +1,10 @@
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 
     id("com.google.gms.google-services")
 }
-
 android {
     namespace = "com.example.myapplication2"
     compileSdk = 34
@@ -83,4 +83,9 @@ dependencies {
     // Add the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
+
+    implementation("com.itextpdf:itext7-core:7.1.15@pom")
+    implementation ("com.itextpdf:kernel:7.1.15")
+    implementation ("com.itextpdf:layout:7.1.15")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

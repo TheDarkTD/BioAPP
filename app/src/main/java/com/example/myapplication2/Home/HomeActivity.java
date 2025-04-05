@@ -60,13 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
-        if (followInRight.equals("true")) {
-            udpr.Insole_RightIP();
-        }
 
-        if (followInLeft.equals("true")) {
-            udpl.Insole_leftIP();
-        }
         serviceIntent = new Intent(this, DataCaptureService.class);
 
         // Referencie os círculos e o botão de atualização
@@ -102,18 +96,7 @@ public class HomeActivity extends AppCompatActivity {
         byte freq = 1;
         byte cmd = 0x3A;
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent_notify);
-        } else {
-            startService(serviceIntent_notify);
-        }*/
-        if (followInRight.equals("true")) {
-            udpr.Insole_RightIP();
-        }
 
-        if (followInLeft.equals("true")) {
-            udpl.Insole_leftIP();
-        }
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
@@ -205,6 +188,7 @@ public class HomeActivity extends AppCompatActivity {
         mBtnRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 atualizaçao = findViewById(R.id.textView3);
                 //Envia solicitação de leitura a palmilha
                 stopService(serviceIntent);
@@ -413,7 +397,8 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         short[] minMax = findMinMax(sensorReadings);
-        int dimension = minMax[1] - minMax[0];
+        int dimension = minMax[2];
+        System.out.println(dimension);
         int plength = sensorReadings[1].length;
 
         //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
@@ -555,8 +540,9 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         }
+        short dimension = (short) (max - min);
 
-        return new short[]{min, max}; // Retorna um array contendo o menor e maior valores
+        return new short[]{min, max, dimension}; // Retorna um array contendo o menor e maior valores
     }
 
 

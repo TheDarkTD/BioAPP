@@ -112,7 +112,7 @@ public class ParametersActivity extends AppCompatActivity{
 
         }
 
-        if(InLeft.equals("true") && InRight.equals("true")) {
+        else {
 
             //configura palmilha direita
             limupText.setText("Limiar palmilha direita: 0%");
@@ -140,16 +140,16 @@ public class ParametersActivity extends AppCompatActivity{
                 }
             });
             //configura palmilha esquerda
-            limupText.setText("Limiar palmilha esquerda: 0%");
+            limdownText.setText("Limiar palmilha esquerda: 0%");
 
-            limup.setProgress(0);
-            limup.incrementProgressBy(50);
-            limup.setMax(200);
+            limdown.setProgress(0);
+            limdown.incrementProgressBy(50);
+            limdown.setMax(200);
 
-            limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            limdown.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    limupText.setText("Limiar palmilha esquerda:" + String.valueOf(progress));
+                    limdownText.setText("Limiar palmilha esquerda:" + String.valueOf(progress));
                     percentageAdjustLeft = (float) (progress/100);
 
                 }
