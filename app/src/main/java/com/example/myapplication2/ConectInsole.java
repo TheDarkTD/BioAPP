@@ -2,7 +2,7 @@ package com.example.myapplication2;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
-
+import android.content.SharedPreferences;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -45,7 +45,7 @@ public class ConectInsole {
     private FirebaseHelper firebasehelper;
     private Calendar calendar;
     int LIM1,LIM2,LIM3,LIM4,LIM5,LIM6,LIM7,LIM8,LIM9;
-
+    String connectedinsole1;
     public static class ConfigData {
         public int cmd;
         public int hora, min, seg, mSeg;
@@ -286,6 +286,14 @@ public class ConectInsole {
 
                             conectar.SendConfigData(cmd, PEST, INT, TMEST, INEST);
                         }
+                        if (receivedData.cmd == 0X3E) {
+                            connectedinsole1 = "true";
+                            SharedPreferences sharedPreferences1 = context.getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                            editor = sharedPreferences1.edit();
+                            editor.putString("connectedinsole1", connectedinsole1);
+                            editor.apply();
+                        }
+
                         Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context);
                         System.out.println(" in1 Dados recebidos enviados ao Firebase com sucesso.");
                     } catch (JSONException e) {

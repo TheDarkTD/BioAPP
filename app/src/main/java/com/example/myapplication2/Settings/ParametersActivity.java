@@ -206,7 +206,7 @@ public class ParametersActivity extends AppCompatActivity{
         byte freq = 1;
 
         short tnumbers[] = new short[9];
-        sharedPreferences = getSharedPreferences("ConfigPrefsR", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("percentageR", String.valueOf(treshold));
 
@@ -224,6 +224,17 @@ public class ParametersActivity extends AppCompatActivity{
         for (int i = 0; i < tnumbers.length; i++) {
             tnumbers[i] = (short) (tnumbers[i]*treshold);
         }
+        System.out.println("percent1"+tnumbers[0]);
+        System.out.println("percent1"+tnumbers[1]);
+        System.out.println("percent1"+tnumbers[2]);
+        System.out.println("percent1"+tnumbers[3]);
+        System.out.println("percent1"+tnumbers[4]);
+        System.out.println("percent1"+tnumbers[5]);
+        System.out.println("percent1"+tnumbers[6]);
+        System.out.println("percent1"+tnumbers[7]);
+        System.out.println("percent1"+tnumbers[8]);
+        System.out.println("percent1"+treshold);
+
         conectInsole.createAndSendConfigData(cmd, hora, min, seg, mSeg, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
     }
 
@@ -238,7 +249,7 @@ public class ParametersActivity extends AppCompatActivity{
         byte freq = 1;
 
         short tnumbers[] = new short[9];
-        sharedPreferences = getSharedPreferences("ConfigPrefsL", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("percentageL", String.valueOf(treshold));
 

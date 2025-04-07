@@ -41,7 +41,7 @@ public class ConectInsole2 {
     private Register7Activity register7;
     private FirebaseHelper firebasehelper;
     private Calendar calendar;
-
+    String connectedinsole2;
     public static class ConfigData {
         public int cmd;
         public int hora, min, seg, mSeg;
@@ -108,10 +108,6 @@ public class ConectInsole2 {
     public void createAndSendConfigData(byte kcmd, byte khora, byte kmin, byte kseg, byte kmSeg, byte kfreq, short kS1, short kS2, short kS3, short kS4, short kS5, short kS6, short kS7, short kS8, short kS9) {
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.hora = khora;
-        configData.min = kmin;
-        configData.seg = kseg;
-        configData.mSeg = kmSeg;
         configData.freq = kfreq;
         configData.S1 = kS1;
         configData.S2 = kS2;
@@ -129,10 +125,6 @@ public class ConectInsole2 {
     public void sendConfigData(@NonNull ConfigData configData) {
         StringBuilder data = new StringBuilder();
         data.append(configData.cmd).append(",")
-                .append(configData.hora).append(",")
-                .append(configData.min).append(",")
-                .append(configData.seg).append(",")
-                .append(configData.mSeg).append(",")
                 .append(configData.freq).append(",")
                 .append(configData.S1).append(",")
                 .append(configData.S2).append(",")
@@ -172,8 +164,6 @@ public class ConectInsole2 {
                 }
             }
         });
-        firebasehelper.saveConfigData2(configData);
-        System.out.println("ConfigData salvo no Firebase com sucesso!");
     }
 
     public void receiveData(Context context) {
@@ -283,6 +273,14 @@ public class ConectInsole2 {
                             Byte cmd = 0x1A;
 
                             conectar.SendConfigData(cmd, PEST, INT, TMEST, INEST);
+                        }
+                        if (receivedData.cmd == 0X3E) {
+                            connectedinsole2 = "true";
+                            SharedPreferences sharedPreferences1 = context.getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                            editor = sharedPreferences1.edit();
+                            editor.putString("connectedinsole2", connectedinsole2);
+                            editor.apply();
+
                         }
                         Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context);
                     } catch (JSONException e) {

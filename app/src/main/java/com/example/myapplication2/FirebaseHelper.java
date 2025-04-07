@@ -4,6 +4,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 
 public class FirebaseHelper {
 
@@ -41,36 +45,28 @@ public class FirebaseHelper {
 
     // Método para salvar SendData no Firebase para o usuário logado
     public void saveSendData(ConectInsole.SendData sendData) {
-        // Usando push() para gerar um ID único para cada entrada
-        mDatabase.child("DATA").push().setValue(sendData)
+        // Formata a data atual no padrão dia-mês-ano
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
+        // Cria o caminho: DATA -> currentDate -> id único (push)
+        mDatabase.child("DATA").child(currentDate).push().setValue(sendData)
                 .addOnSuccessListener(aVoid -> {
                     // Sucesso ao salvar
                     System.out.println("SendData salvo no Firebase com sucesso!");
                 })
                 .addOnFailureListener(e -> {
-                    // Falha ao salvar
+                            // Falha ao salvar
                     System.err.println("Erro ao salvar SendData: " + e.getMessage());
                 });
     }
 
-    // Método para salvar ConfigData2 no Firebase para o usuário logado
-    public void saveConfigData2(ConectInsole2.ConfigData configData) {
-        // Usando push() para gerar um ID único para cada entrada
-        mDatabase.child("config2").push().setValue(configData)
-                .addOnSuccessListener(aVoid -> {
-                    // Sucesso ao salvar
-                    System.out.println("ConfigData2 salvo no Firebase com sucesso!");
-                })
-                .addOnFailureListener(e -> {
-                    // Falha ao salvar
-                    System.err.println("Erro ao salvar ConfigData2: " + e.getMessage());
-                });
-    }
 
     // Método para salvar SendData2 no Firebase para o usuário logado
     public void saveSendData2(ConectInsole2.SendData sendData) {
+        // Formata a data atual no padrão dia-mês-ano
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         // Usando push() para gerar um ID único para cada entrada
-        mDatabase.child("Data2").push().setValue(sendData)
+        mDatabase.child("DATA2").child(currentDate).push().setValue(sendData)
                 .addOnSuccessListener(aVoid -> {
                     // Sucesso ao salvar
                     System.out.println("SendData2 salvo no Firebase com sucesso!");

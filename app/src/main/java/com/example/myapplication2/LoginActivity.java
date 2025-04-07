@@ -1,8 +1,12 @@
 package com.example.myapplication2;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     ConectInsole conectInsole;
     ConectInsole2 conectInsole2;
     String uid = null; // Definir o uid como null
-
+    String left,right;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +91,8 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = fAuth.getCurrentUser();
                             if (user != null) {
                                 uid = user.getUid();  // Pega o UID do usuário autenticado
-                                loadUserData1(uid, v);  // Carrega os dados do Firebase
-                                //loadUserData2(uid, v);  // Carrega os dados do Firebase
+                                loadinsoleinfo(uid, v);
+
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, "Erro no login: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -113,8 +117,9 @@ public class LoginActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 DataSnapshot dataSnapshot = task.getResult();
                 if (dataSnapshot.exists()) {
-                    // Recuperar os dados do usuário e ConfigData
+
                     ConectInsole.ConfigData configData1 = dataSnapshot.child("config_data1").getValue(ConectInsole.ConfigData.class);
+                    right=dataSnapshot.child("InsolesR").getValue(String.class);
                     conectInsole.setConfigData(configData1);
                     System.out.println("config data recebido do login" + configData1);
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
@@ -126,6 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
     private void loadUserData2(String uid, View v) {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
@@ -137,7 +143,9 @@ public class LoginActivity extends AppCompatActivity {
                     // Recuperar os dados do usuário e ConfigData
                     ConectInsole2.ConfigData configData2 = dataSnapshot.child("config_data2").getValue(ConectInsole2.ConfigData.class);
                     conectInsole2.setConfigData(configData2);
+                    left=dataSnapshot.child("InsolesL").getValue(String.class);
                     System.out.println("config data recebido do login" + configData2);
+
                     Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
                     startActivity(myIntent);
                 } else {
@@ -147,6 +155,40 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
             }
         });
-    }
 
+    }
+    private void loadinsoleinfo(String uid, View v) {
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+
+        databaseReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot dataSnapshot = task.getResult();
+                if (dataSnapshot.exists()) {
+                    right = dataSnapshot.child("InsolesR").getValue(String.class);
+                    Log.e(TAG, "Falha ao verificar novos dados: " + right);
+                    left = dataSnapshot.child("InsolesL").getValue(String.class);
+                    Log.e(TAG, "Falha ao verificar novos dados: " + left);
+                    Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
+                    startActivity(myIntent);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if (right.equals("true")) {
+            loadUserData1(uid, v);  // Carrega os dados do Firebase
+        }
+        if (left.equals("true")) {
+            loadUserData2(uid, v);  // Carrega os dados do Firebase
+        }
+        SharedPreferences sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("Sleft", left);
+        editor.putString("Sright", right);
+        editor.apply();
+    }
 }

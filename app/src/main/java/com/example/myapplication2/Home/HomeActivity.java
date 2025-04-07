@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,6 +30,8 @@ import com.example.myapplication2.Settings.SettingsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -100,18 +103,6 @@ public class HomeActivity extends AppCompatActivity {
         byte freq = 1;
         byte cmd = 0x3A;
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent_notify);
-        } else {
-            startService(serviceIntent_notify);
-        }
-        if (followInRight.equals("true")) {
-            udpr.Insole_RightIP();
-        }
-
-        if (followInLeft.equals("true")) {
-            udpl.Insole_leftIP();
-        }*/
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
@@ -213,8 +204,8 @@ public class HomeActivity extends AppCompatActivity {
                         conectar.createAndSendConfigData(cmd3c, hour, minutes, seconds, milliseconds, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
                     }, 1000);
 
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar.receiveData(HomeActivity.this);}, 1500);
+                    //new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    //  conectar.receiveData(HomeActivity.this);}, 1500);
 
                 }
 
@@ -224,8 +215,8 @@ public class HomeActivity extends AppCompatActivity {
                         conectar2.createAndSendConfigData(cmd3c, hour, minutes, seconds, milliseconds, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                     }, 1000);
 
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar2.receiveData(HomeActivity.this);}, 1500);
+                    //new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    //   conectar2.receiveData(HomeActivity.this);}, 1500);
 
                 }
                 String senddatainsole1=conectar.getSendDataAsString();
@@ -250,7 +241,8 @@ public class HomeActivity extends AppCompatActivity {
             }
 
         });
-
+        Insole_RightIP();
+        Insole_leftIP();
     }
 
 
@@ -489,5 +481,58 @@ public class HomeActivity extends AppCompatActivity {
         return shortArray;
     }
 
+    public void Insole_RightIP() {
+        final int udpPortr = 20000; // Porta do ESP
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DatagramSocket socket = new DatagramSocket(udpPortr);
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+                    while (true) {
+                        socket.receive(packet);
+                        String IPR = new String(packet.getData(), 0, packet.getLength());
+                        Log.e("UDP", "Received IP: " + IPR + " on port: " + udpPortr);
+                        // Armazene o IP conforme necessário
+                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("IP", IPR);
+                        editor.apply();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    public void Insole_leftIP() {
+        final int udpPortl = 20001; // Porta do ESP
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DatagramSocket socket = new DatagramSocket(udpPortl);
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+                    while (true) {
+                        socket.receive(packet);
+                        String IPL = new String(packet.getData(), 0, packet.getLength());
+                        Log.e("UDP", "Received IP: " + IPL + " on port: " + udpPortl);
+                        // Armazene o IP conforme necessário
+                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("IP", IPL);
+                        editor.apply();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 }

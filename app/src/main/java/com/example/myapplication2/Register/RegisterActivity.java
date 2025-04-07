@@ -200,7 +200,8 @@ public class RegisterActivity extends AppCompatActivity
         hashMap.put("surname", getSurname);
         hashMap.put("email", getEmail);
         hashMap.put("birth", getBirth);
-
+        hashMap.put("InsolesR",followInRight);
+        hashMap.put("InsolesL",followInLeft);
         // Carregando os dados de S1 a S9
         HashMap<String, Integer> configData1 = loadConfigDataFromPrefs(this);
         HashMap<String, Integer> configData2 = loadConfigData2FromPrefs(this);
@@ -208,6 +209,7 @@ public class RegisterActivity extends AppCompatActivity
         if (followInRight.equals("true")) {
             // Adicionando os dados de ConfigData ao HashMap
             hashMap.put("ConfigData1", configData1);  // Adiciona os dados carregados ao HashMap
+
         }
 
         if (followInLeft.equals("true")) {

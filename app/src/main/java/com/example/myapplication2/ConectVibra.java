@@ -28,7 +28,7 @@ public class ConectVibra {
     private SendData receivedData;
     private SharedPreferences sharedPreferences;
     private String  ipAddressVs;
-
+    String connectedVibra;
 
     public static class ConfigData {
         public byte cmd;
@@ -136,6 +136,14 @@ public class ConectVibra {
                         System.out.println("Dados recebidos e processados com sucesso.");
                         System.out.println(responseData);
 
+                        if (receivedData.cmd == 0X1B) {
+                            connectedVibra = "true";
+                            SharedPreferences sharedPreferences1 = context.getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                            editor = sharedPreferences1.edit();
+                            editor.putString("connectedVibra", connectedVibra);
+                            editor.apply();
+
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         System.err.println("Erro ao processar resposta JSON: ");
