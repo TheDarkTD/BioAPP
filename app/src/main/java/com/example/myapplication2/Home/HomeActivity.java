@@ -144,13 +144,13 @@ public class HomeActivity extends AppCompatActivity {
 
 
         if (followInRight.equals("true")){
-            conectar.createAndSendConfigData(cmd, hour, minutes, seconds, milliseconds, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+            conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
 
         }
 
 
         if (followInLeft.equals("true")){
-            conectar2.createAndSendConfigData(cmd, hour, minutes, seconds, milliseconds, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+            conectar2.createAndSendConfigData(cmd,freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
 
         }
 
@@ -201,7 +201,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (followInRight.equals("true")){
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar.createAndSendConfigData(cmd3c, hour, minutes, seconds, milliseconds, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                        conectar.createAndSendConfigData(cmd3c,freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
                     }, 1000);
 
                     //new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -212,7 +212,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (followInLeft.equals("true")){
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar2.createAndSendConfigData(cmd3c, hour, minutes, seconds, milliseconds, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+                        conectar2.createAndSendConfigData(cmd3c,freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                     }, 1000);
 
                     //new Handler(Looper.getMainLooper()).postDelayed(() -> {

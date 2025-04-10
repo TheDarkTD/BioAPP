@@ -44,13 +44,26 @@ public class ConectInsole {
     private Register7Activity register7;
     private FirebaseHelper firebasehelper;
     private Calendar calendar;
-    int LIM1,LIM2,LIM3,LIM4,LIM5,LIM6,LIM7,LIM8,LIM9;
     String connectedinsole1;
     public static class ConfigData {
         public int cmd;
-        public int hora, min, seg, mSeg;
         public int freq;
         public int S1, S2, S3, S4, S5, S6, S7, S8, S9;
+
+        @Override
+        public String toString() {
+            return "ConfigData{" +
+                    "S1=" + S1 +
+                    ", S2=" + S2 +
+                    ", S3=" + S3 +
+                    ", S4=" + S4 +
+                    ", S5=" + S5 +
+                    ", S6=" + S6 +
+                    ", S7=" + S7 +
+                    ", S8=" + S8 +
+                    ", S9=" + S9 +
+                    '}';
+        }
     }
 
     public static class SendData {
@@ -111,13 +124,9 @@ public class ConectInsole {
 
     }
 
-    public void createAndSendConfigData(byte kcmd, byte khora, byte kmin, byte kseg, byte kmSeg, byte kfreq, short kS1, short kS2, short kS3, short kS4, short kS5, short kS6, short kS7, short kS8, short kS9) {
+    public void createAndSendConfigData(byte kcmd,byte kfreq, short kS1, short kS2, short kS3, short kS4, short kS5, short kS6, short kS7, short kS8, short kS9) {
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.hora = khora;
-        configData.min = kmin;
-        configData.seg = kseg;
-        configData.mSeg = kmSeg;
         configData.freq = kfreq;
         configData.S1 = kS1;
         configData.S2 = kS2;
@@ -135,10 +144,6 @@ public class ConectInsole {
     public void sendConfigData(@NonNull ConfigData configData) {
         StringBuilder data = new StringBuilder();
         data.append(configData.cmd).append(",")
-                .append(configData.hora).append(",")
-                .append(configData.min).append(",")
-                .append(configData.seg).append(",")
-                .append(configData.mSeg).append(",")
                 .append(configData.freq).append(",")
                 .append(configData.S1).append(",")
                 .append(configData.S2).append(",")
@@ -345,6 +350,18 @@ public class ConectInsole {
     // Método para substituir os valores da ConfigData
     public void setConfigData(ConfigData configData) {
         if (configData != null) {
+            // Loga o estado atual do objeto interno
+            if (this.configData == null) {
+                Log.d("ConectInsole", "this.configData is null, creating new instance.");
+                this.configData = new ConfigData();
+            } else {
+                Log.d("ConectInsole", "this.configData exists before substitution: " + this.configData.toString());
+            }
+
+            // Loga os novos valores que serão aplicados
+            Log.d("ConectInsole", "Substituting new ConfigData: " + configData.toString());
+
+            // Copia os valores do objeto recebido para a instância interna
             this.configData.S1 = configData.S1;
             this.configData.S2 = configData.S2;
             this.configData.S3 = configData.S3;
@@ -354,8 +371,15 @@ public class ConectInsole {
             this.configData.S7 = configData.S7;
             this.configData.S8 = configData.S8;
             this.configData.S9 = configData.S9;
+
+            // Loga o estado final após a substituição
+            Log.d("ConectInsole", "After substitution, this.configData: " + this.configData.toString());
+        } else {
+            Log.d("ConectInsole", "Received null ConfigData, skipping substitution.");
         }
     }
+
+
     public static class Utils {
 
         // Função que verifica o login e só envia SendData se o usuário estiver logado

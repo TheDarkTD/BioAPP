@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = fAuth.getCurrentUser();
                             if (user != null) {
                                 uid = user.getUid();  // Pega o UID do usuário autenticado
-                                loadinsoleinfo(uid, v);
+                                loadUserData(uid, v);
 
                             }
                         } else {
@@ -110,85 +110,123 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loadUserData1(String uid, View v) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+    private void loadUserData(String uid, View view) {
+        Log.d("LoadUserData", "Iniciando carregamento de dados para uid: " + uid);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
 
-        databaseReference.get().addOnCompleteListener(task -> {
+        userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DataSnapshot dataSnapshot = task.getResult();
-                if (dataSnapshot.exists()) {
+                Log.d("LoadUserData", "DataSnapshot recebido: " + dataSnapshot.getValue());
 
-                    ConectInsole.ConfigData configData1 = dataSnapshot.child("config_data1").getValue(ConectInsole.ConfigData.class);
-                    right=dataSnapshot.child("InsolesR").getValue(String.class);
-                    conectInsole.setConfigData(configData1);
-                    System.out.println("config data recebido do login" + configData1);
-                    Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
-                    startActivity(myIntent);
+                if (dataSnapshot.exists()) {
+                    Log.d("LoadUserData", "Dados encontrados para uid: " + uid);
+
+                    // Listando todas as chaves presentes para depuração
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Log.d("LoadUserData", "Chave encontrada: " + child.getKey());
+                    }
+
+                    // Recupera as flags para os insole e loga
+                    String flagInsoleR = dataSnapshot.child("InsolesR").getValue(String.class);
+                    String flagInsoleL = dataSnapshot.child("InsolesL").getValue(String.class);
+                    Log.d("LoadUserData", "FlagInsoleR: " + flagInsoleR + " | FlagInsoleL: " + flagInsoleL);
+
+                    // Carrega ConfigData1 caso o insole direito esteja ativado
+                    if ("true".equalsIgnoreCase(flagInsoleR)) {
+                        DataSnapshot configRightSnapshot = dataSnapshot.child("ConfigData1");
+                        Log.d("LoadUserData", "Dados do ConfigData1: " + configRightSnapshot.getValue());
+
+                        if (configRightSnapshot.exists()) {
+                            for (DataSnapshot child : configRightSnapshot.getChildren()) {
+                                Log.d("LoadUserData", "ConfigData1 Child: "
+                                        + child.getKey() + " - " + child.getValue());
+                            }
+                        } else {
+                            Log.e("LoadUserData", "Nó ConfigData1 não existe!");
+                        }
+
+                        ConectInsole.ConfigData configData1 = configRightSnapshot.getValue(ConectInsole.ConfigData.class);
+                        if (configData1 != null) {
+                            Log.d("LoadUserData", "ConfigData1 carregado com sucesso: " + configData1.toString());
+                        } else {
+                            Log.e("LoadUserData", "ConfigData1 retornou null!");
+                        }
+                        conectInsole.setConfigData(configData1);
+                    } else {
+                        Log.d("LoadUserData", "FlagInsoleR não está 'true'. Não carregou ConfigData1.");
+                    }
+
+                    // Carrega ConfigData2 caso o insole esquerdo esteja ativado
+                    if ("true".equalsIgnoreCase(flagInsoleL)) {
+                        DataSnapshot configLeftSnapshot = dataSnapshot.child("ConfigData2");
+                        Log.d("LoadUserData", "Dados do ConfigData2: " + configLeftSnapshot.getValue());
+
+                        ConectInsole2.ConfigData configData2 = configLeftSnapshot.getValue(ConectInsole2.ConfigData.class);
+                        if (configData2 != null) {
+                            Log.d("LoadUserData", "ConfigData2 carregado com sucesso: " + configData2.toString());
+                        } else {
+                            Log.e("LoadUserData", "ConfigData2 retornou null!");
+                        }
+                        conectInsole2.setConfigData(configData2);
+                    } else {
+                        Log.d("LoadUserData", "FlagInsoleL não está 'true'. Não carregou ConfigData2.");
+                    }
+
+                    // Salva as flags em SharedPreferences (já existente no seu código)
+                    SharedPreferences sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("Sright", flagInsoleR);
+                    editor.putString("Sleft", flagInsoleL);
+                    editor.apply();
+                    Log.d("LoadUserData", "Flags salvas nas SharedPreferences.");
+
+                    // --- Recuperando os dados de vibração ---
+                    DataSnapshot vibraSnapshot = dataSnapshot.child("vibra");
+                    if (vibraSnapshot.exists()) {
+                        Integer vibraTime = vibraSnapshot.child("time").getValue(Integer.class);
+                        Integer vibraThreshold = vibraSnapshot.child("threshold").getValue(Integer.class);
+                        Integer vibraInterval = vibraSnapshot.child("interval").getValue(Integer.class);
+                        Integer vibraPulse = vibraSnapshot.child("pulse").getValue(Integer.class);
+
+                        SharedPreferences vibraPref = getSharedPreferences("vibra", MODE_PRIVATE);
+                        SharedPreferences.Editor vibraEditor = vibraPref.edit();
+                        if (vibraTime != null) {
+                            vibraEditor.putInt("time", vibraTime);
+                        }
+                        if (vibraThreshold != null) {
+                            vibraEditor.putInt("threshold", vibraThreshold);
+                        }
+                        if (vibraInterval != null) {
+                            vibraEditor.putInt("interval", vibraInterval);
+                        }
+                        if (vibraPulse != null) {
+                            vibraEditor.putInt("pulse", vibraPulse);
+                        }
+                        vibraEditor.apply();
+                        Log.d("LoadUserData", "Dados de vibração salvos em SharedPreferences 'vibra'.");
+                    } else {
+                        Log.d("LoadUserData", "Nenhuns dados de vibração encontrados no DataSnapshot.");
+                    }
+                    // --- Fim da recuperação de vibração ---
+
+                    // Após carregar os dados, inicia a HomeActivity
+                    Log.d("LoadUserData", "Iniciando HomeActivity...");
+                    Intent intent = new Intent(view.getContext(), HomeActivity.class);
+                    startActivity(intent);
                 } else {
+                    Log.e("LoadUserData", "Nenhum dado encontrado para uid: " + uid);
                     Toast.makeText(LoginActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
                 }
             } else {
+                Log.e("LoadUserData", "Erro ao carregar os dados: " + task.getException().getMessage());
                 Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
-    private void loadUserData2(String uid, View v) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
 
-        databaseReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot dataSnapshot = task.getResult();
-                if (dataSnapshot.exists()) {
-                    // Recuperar os dados do usuário e ConfigData
-                    ConectInsole2.ConfigData configData2 = dataSnapshot.child("config_data2").getValue(ConectInsole2.ConfigData.class);
-                    conectInsole2.setConfigData(configData2);
-                    left=dataSnapshot.child("InsolesL").getValue(String.class);
-                    System.out.println("config data recebido do login" + configData2);
 
-                    Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
-                    startActivity(myIntent);
-                } else {
-                    Toast.makeText(LoginActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
-            }
-        });
 
-    }
-    private void loadinsoleinfo(String uid, View v) {
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
 
-        databaseReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DataSnapshot dataSnapshot = task.getResult();
-                if (dataSnapshot.exists()) {
-                    right = dataSnapshot.child("InsolesR").getValue(String.class);
-                    Log.e(TAG, "Falha ao verificar novos dados: " + right);
-                    left = dataSnapshot.child("InsolesL").getValue(String.class);
-                    Log.e(TAG, "Falha ao verificar novos dados: " + left);
-                    Intent myIntent = new Intent(v.getContext(), HomeActivity.class);
-                    startActivity(myIntent);
-                } else {
-                    Toast.makeText(LoginActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        if (right.equals("true")) {
-            loadUserData1(uid, v);  // Carrega os dados do Firebase
-        }
-        if (left.equals("true")) {
-            loadUserData2(uid, v);  // Carrega os dados do Firebase
-        }
-        SharedPreferences sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("Sleft", left);
-        editor.putString("Sright", right);
-        editor.apply();
-    }
 }

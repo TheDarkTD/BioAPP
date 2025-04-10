@@ -28,21 +28,6 @@ public class FirebaseHelper {
                     .child(userId);  // Salvar dados no nó "Users/{UID}"
         }
     }
-
-    // Método para salvar ConfigData no Firebase para o usuário logado
-    public void saveConfigData(ConectInsole.ConfigData configData) {
-        // Usando push() para gerar um ID único para cada entrada
-        mDatabase.child("config").push().setValue(configData)
-                .addOnSuccessListener(aVoid -> {
-                    // Sucesso ao salvar
-                    System.out.println("ConfigData salvo no Firebase com sucesso!");
-                })
-                .addOnFailureListener(e -> {
-                    // Falha ao salvar
-                    System.err.println("Erro ao salvar ConfigData: " + e.getMessage());
-                });
-    }
-
     // Método para salvar SendData no Firebase para o usuário logado
     public void saveSendData(ConectInsole.SendData sendData) {
         // Formata a data atual no padrão dia-mês-ano
