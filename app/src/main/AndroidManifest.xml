@@ -6,9 +6,12 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 
 
 
@@ -138,7 +141,8 @@
         <activity android:name=".Settings.AccountActivity"></activity>
         <activity android:name=".Settings.ParametersActivity"></activity>
         <activity android:name=".Settings.VibraActivity"></activity>
-        <activity android:name=".Settings.UpdateActivity"></activity>
+        <activity android:name=".Settings.UpdateActivity"
+            tools:ignore="Instantiatable"></activity>
 
 
     </application>

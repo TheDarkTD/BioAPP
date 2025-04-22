@@ -2,7 +2,7 @@ package com.example.myapplication2;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
-
+import java.util.Date;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,6 +32,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import java.text.SimpleDateFormat;
 
 public class ConectInsole2 {
 
@@ -69,6 +71,7 @@ public class ConectInsole2 {
         public int second;
         public int millisecond;
         public int battery;
+        public int sensor_trigger;
         public ArrayList<Integer> SR1 = new ArrayList<>();
         public ArrayList<Integer> SR2 = new ArrayList<>();
         public ArrayList<Integer> SR3 = new ArrayList<>();
@@ -78,14 +81,6 @@ public class ConectInsole2 {
         public ArrayList<Integer> SR7 = new ArrayList<>();
         public ArrayList<Integer> SR8 = new ArrayList<>();
         public ArrayList<Integer> SR9 = new ArrayList<>();
-
-        // Novo campo de timestamp
-        public long timestamp;
-
-        // Construtor
-        public SendData() {
-            this.timestamp = System.currentTimeMillis(); // Pega o timestamp atual
-        }
     }
     public String getSendDataAsString() {
         // Formata os dados de SendData como uma String
@@ -110,7 +105,7 @@ public class ConectInsole2 {
         client = new OkHttpClient();
         receivedData = new SendData();
 
-        firebasehelper = new FirebaseHelper();
+        firebasehelper = new FirebaseHelper(context);
         sharedPreferences = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
         ipAddressp2s = sharedPreferences.getString("IP2", "default");
         System.out.println(ipAddressp2s);
@@ -208,7 +203,8 @@ public class ConectInsole2 {
                         receivedData.minute =  calendar.get(Calendar.MINUTE);
                         receivedData.second =  calendar.get(Calendar.SECOND);
                         receivedData.millisecond =  calendar.get(Calendar.MILLISECOND);
-                        receivedData.battery = (int) jsonObject.getInt("battery");
+                        receivedData.battery = jsonObject.getInt("battery");
+                        receivedData.sensor_trigger =  jsonObject.getInt("sensor_trigger");
                         JSONArray sensorsReads = jsonObject.getJSONArray("sensors_reads");
 
                         // Clear previous data
@@ -374,31 +370,42 @@ public class ConectInsole2 {
     }
     public static class Utils {
 
-        // Função que verifica o login e só envia SendData se o usuário estiver logado
-        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, SendData sendData, Context context) {
+        // Função que verifica o login e só envia SendData2 se o usuário estiver logado
+        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, ConectInsole2.SendData sendData2, Context context) {
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
 
             if (currentUser != null) {
-                // Usuário está logado, salvar os dados
-                firebaseHelper.saveSendData2(sendData);
+                // Usuário está logado, verificar a conectividade
+                if (NetworkUtils.isNetworkAvailable(context)) {
+                    // Se estiver conectado à internet, salva os dados para o Firebase
+                    firebaseHelper.saveSendData2(sendData2);
 
-                // Verificar se o Contexto é uma Activity antes de mostrar um Toast
-                if (context instanceof AppCompatActivity) {
-                    // Executar o Toast no thread principal
-                    ((AppCompatActivity) context).runOnUiThread(() ->
-                            Toast.makeText(context, "SendData enviado com sucesso!", Toast.LENGTH_SHORT).show()
-                    );
+                    // Exibe Toast informando sucesso
+                    showToast(context, "SendData2 enviado com sucesso!");
+                } else {
+                    // Se não tiver conexão, salva os dados localmente
+                    firebaseHelper.saveSendData2Locally(sendData2, new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
+
+                    // Exibe Toast informando que os dados foram salvos localmente
+                    showToast(context, "Sem conexão. Dados salvos localmente. Será enviado quando a conexão for restaurada.");
                 }
             } else {
-                // Verificar se o Contexto é uma Activity antes de mostrar um Toast
-                if (context instanceof AppCompatActivity) {
-                    // Executar o Toast no thread principal
-                    ((AppCompatActivity) context).runOnUiThread(() ->
-                            Toast.makeText(context, "Você precisa fazer login antes de enviar os dados.", Toast.LENGTH_SHORT).show()
-                    );
-                }
+                // Verifica se o Contexto é uma Activity antes de mostrar um Toast
+                showToast(context, "Você precisa fazer login antes de enviar os dados.");
+            }
+        }
+
+        // Função para exibir o Toast no thread principal
+        private static void showToast(Context context, String message) {
+            if (context instanceof AppCompatActivity) {
+                // Executar o Toast no thread principal
+                ((AppCompatActivity) context).runOnUiThread(() ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                );
             }
         }
     }
+
+
 }

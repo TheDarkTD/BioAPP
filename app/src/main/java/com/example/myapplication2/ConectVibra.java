@@ -154,20 +154,6 @@ public class ConectVibra {
             }
         });
     }
-    // Supondo que você já tenha uma instância de ConfigData dentro da ConectInsole
-    private ConectInsole.ConfigData configData;
-
-    // Método para retornar a ConfigData
-    public ConectInsole.ConfigData getConfigData() {
-        return configData;
-    }
-    // Método para substituir os valores da ConfigData
-    public void setConfigData(ConectInsole.ConfigData configData) {
-        if (configData != null) {
-            this.configData.cmd = configData.cmd;
 
 
         }
-    }
-
-}
