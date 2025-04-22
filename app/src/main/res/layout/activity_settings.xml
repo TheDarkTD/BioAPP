@@ -51,19 +51,19 @@
         android:layout_width="200dp"
         android:layout_height="35dp"
         android:text="@string/Nome"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.777"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.166" />
+        app:layout_constraintVertical_bias="0.176" />
 
     <View
         android:id="@+id/divider"
-        android:layout_width="350dp"
-        android:layout_height="2dp"
+        android:layout_width="340dp"
+        android:layout_height="1dp"
         android:background="@color/blue2"
         android:backgroundTint="@color/blue2"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -71,67 +71,52 @@
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.319" />
-
-    <TextView
-        android:id="@+id/Update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="Atualizações"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:contextClickable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.203"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.622" />
+        app:layout_constraintVertical_bias="0.317" />
 
     <TextView
         android:id="@+id/Parametros"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="Parâmetros"
         android:contextClickable="true"
-        android:textSize="20sp"
+        android:text="Parâmetros"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.195"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.443" />
+        app:layout_constraintVertical_bias="0.45" />
 
     <TextView
         android:id="@+id/Manual"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="Manual de Uso"
-        android:textSize="20sp"
         android:contextClickable="true"
+        android:text="Manual de Uso"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.215"
+        app:layout_constraintHorizontal_bias="0.214"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.681" />
+        app:layout_constraintVertical_bias="0.625" />
 
     <TextView
         android:id="@+id/Conta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="Conta"
-        android:textSize="20sp"
         android:contextClickable="true"
+        android:text="Conta"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.167"
+        app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.38" />
+        app:layout_constraintVertical_bias="0.39" />
 
     <Button
         android:id="@+id/btnLogout"
@@ -139,45 +124,45 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/blue1"
         android:text="Logout"
-        android:textColorHighlight="@color/blue1"
         android:textColor="@color/white"
+        android:textColorHighlight="@color/blue1"
         android:textColorLink="@color/blue1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.188"
+        app:layout_constraintHorizontal_bias="0.207"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Manual"
-        app:layout_constraintVertical_bias="0.159" />
+        app:layout_constraintVertical_bias="0.251" />
 
     <TextView
         android:id="@+id/Notifica"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="Notificações"
-        android:textSize="20sp"
         android:contextClickable="true"
+        android:text="Notificações"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.201"
+        app:layout_constraintHorizontal_bias="0.204"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.562" />
+        app:layout_constraintVertical_bias="0.565" />
 
     <TextView
         android:id="@+id/Vibra"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="Vibra"
-        android:textSize="20sp"
         android:contextClickable="true"
+        android:text="Vibra"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintHorizontal_bias="0.177"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.508" />
+        app:layout_constraintVertical_bias="0.511" />
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"

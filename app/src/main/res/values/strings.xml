@@ -23,7 +23,7 @@
     <string name="surname">Sobrenome</string>
     <string name="confirm">Confirme sua senha</string>
     <string name="password">Senha</string>
-    <string name="confirmação">confirmação de senha</string>
+    <string name="confirmação">Confirmação de senha</string>
     <string name="next">Próximo</string>
     <string name="ret">Retornar Home</string>
     <string name="logback">Já possui uma conta? Faça seu login</string>

@@ -145,7 +145,8 @@
                 app:layout_constraintEnd_toEndOf="@+id/PressureMap"
                 app:layout_constraintStart_toStartOf="@+id/PressureMap"
                 app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
+                tools:ignore="MissingConstraints"
+                />
 
             <View
                 android:id="@+id/circle2"

@@ -2,7 +2,6 @@ package com.example.myapplication2.Home;
 
 import static android.service.autofill.Validators.and;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -11,9 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,31 +24,46 @@ import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.Connection.ConnectionActivity;
 import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.DataCaptureService;
+import com.example.myapplication2.LoginActivity;
 import com.example.myapplication2.R;
 import com.example.myapplication2.Register.Register4Activity;
 import com.example.myapplication2.Register.Register5Activity;
 import com.example.myapplication2.Settings.SettingsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class HomeActivity extends AppCompatActivity {
     private Register4Activity udpr;
     private Register5Activity udpl;
+    FirebaseAuth fAuth;
     FloatingActionButton mPopBtn;
     private SharedPreferences sharedPreferences;
     BottomNavigationView bottomNavigationView;
     private View[] circlesleft, circlesright;
     Button mBtnRead;
     private String followInRight, followInLeft;
+    String listeventsleft = "";
+    String  listeventsright= "";
+    String uid = null;
     Calendar calendar;
     Boolean restart;
     short S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2;
     Intent serviceIntent, serviceIntent_notify;
-    private TextView atualizaçao;
+    private TextView atualizacao;
+    DatabaseReference databaseReference;
+    ArrayList<String> Listevents = new ArrayList<String>();
 
 
     @Override
@@ -56,10 +72,11 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         super.onStart();
 
-
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
+
+        atualizacao = findViewById(R.id.textView3);
 
         serviceIntent = new Intent(this, DataCaptureService.class);
 
@@ -92,24 +109,88 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
 
+        FirebaseUser user = fAuth.getCurrentUser();
+        uid = user.getUid();
         startService(serviceIntent);
         byte freq = 1;
         byte cmd = 0x3A;
 
-
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
-        calendar = Calendar.getInstance();
-        int khour = calendar.get(Calendar.HOUR_OF_DAY);
-        int kminutes = calendar.get(Calendar.MINUTE);
-        int kseconds = calendar.get(Calendar.SECOND);
-        int kmiliseconds = calendar.get(Calendar.MILLISECOND);
+        if (followInRight.equals("true")){
 
-        byte hour = (byte) khour;
-        byte minutes = (byte) kminutes;
-        byte seconds = (byte) kseconds;
-        byte milliseconds = (byte) kmiliseconds;
+           databaseReference = FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(uid)
+                    .child("novaVariavel");
+
+
+            databaseReference.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        // Converter o valor para uma lista de strings
+                        for (DataSnapshot item : snapshot.getChildren()) {
+                            String valor = item.getValue(String.class);
+                            if (valor != null) {
+                                listeventsright = valor;
+                            }
+                        }
+
+                        // Agora você pode usar listeventsright como quiser
+                        Log.d("Firebase", "listeventsright: " + listeventsright.toString());
+
+                    } else {
+                        Log.d("Firebase", "novaVariavel está vazia ou não existe.");
+                    }
+                } else {
+                    Log.e("Firebase", "Erro ao buscar dados: ", task.getException());
+                }
+            });
+
+        }
+        if (followInLeft.equals("true")) {
+            databaseReference = FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(uid)
+                    .child("novaVariavel2");
+
+
+            databaseReference.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+                    if (snapshot.exists()) {
+                        // Converter o valor para uma lista de strings
+                        for (DataSnapshot item : snapshot.getChildren()) {
+                            String valor = item.getValue(String.class);
+                            if (valor != null) {
+                                listeventsleft=valor;
+                            }
+                        }
+
+                        // Agora você pode usar listeventsright como quiser
+                        Log.d("Firebase", "listeventsright: " + listeventsright.toString());
+
+                    } else {
+                        Log.d("Firebase", "novaVariavel está vazia ou não existe.");
+                    }
+                } else {
+                    Log.e("Firebase", "Erro ao buscar dados: ", task.getException());
+                }
+            });
+
+        }
+
+        Listevents.add(listeventsleft);
+        Listevents.add(listeventsright);
+
+        StringBuilder builder = new StringBuilder();
+        for (String item : Listevents) {
+            builder.append(item).append("\n");
+        }
+        atualizacao.setText(builder.toString());
+
 
 
         //Buscar valores de limiares já calculados para enviar com o comando 3C-leitura de dados (padronização do pacote de envio)
@@ -138,13 +219,13 @@ public class HomeActivity extends AppCompatActivity {
 
 
         if (followInRight.equals("true")){
-            conectar.createAndSendConfigData(cmd, hour, minutes, seconds, milliseconds, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+            conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
 
         }
 
 
         if (followInLeft.equals("true")){
-            conectar2.createAndSendConfigData(cmd, hour, minutes, seconds, milliseconds, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+            conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
 
         }
 
@@ -189,44 +270,37 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                atualizaçao = findViewById(R.id.textView3);
                 //Envia solicitação de leitura a palmilha
                 stopService(serviceIntent);
                 byte cmd3c = 0X3C;
 
                 if (followInRight.equals("true")){
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar.createAndSendConfigData(cmd3c, hour, minutes, seconds, milliseconds, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                        conectar.createAndSendConfigData(cmd3c, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
                     }, 1000);
 
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar.receiveData(HomeActivity.this);}, 1500);
+                    //new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    //    conectar.receiveData(HomeActivity.this);}, 1500);
+
+                    //Atualiza os valores de pressão plotados na tela
+                    checkforcolors_right();
+
 
                 }
 
 
                 if (followInLeft.equals("true")){
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar2.createAndSendConfigData(cmd3c, hour, minutes, seconds, milliseconds, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+                        conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                     }, 1000);
 
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar2.receiveData(HomeActivity.this);}, 1500);
+                    //new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    //   conectar2.receiveData(HomeActivity.this);}, 1500);
 
-                }
-                String senddatainsole1=conectar.getSendDataAsString();
-                String senddatainsole2=conectar2.getSendDataAsString();
-
-                if (followInRight.equals("true") && followInLeft.equals("false")){
-                    atualizaçao.setText(senddatainsole1);
-                    //Atualiza os valores de pressão plotados na tela
-                    checkforcolors_right();
-                } else if (followInRight.equals("false") && followInLeft.equals("true")) {
-                    atualizaçao.setText(senddatainsole2);
                     //Atualiza os valores de pressão plotados na tela
                     checkforcolors_left();
-                }else {
-                    atualizaçao.setText(senddatainsole1 + senddatainsole2);
+
+
                 }
 
 
@@ -238,7 +312,8 @@ public class HomeActivity extends AppCompatActivity {
             }
 
         });
-
+        Insole_RightIP();
+        Insole_leftIP();
     }
 
 
@@ -306,50 +381,16 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         //comparar valores recebidos com limiar salvo para identificar local do evento
-        if (S1){
-            if (comparevalues(sensorReadings[0], S1_t)){
-                //tornar círculo vermelho
-                circlesright[0].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S2){
-            if (comparevalues(sensorReadings[1], S2_t)){
-                circlesright[1].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S3){
-            if (comparevalues(sensorReadings[2], S3_t)){
-                circlesright[2].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S4){
-            if (comparevalues(sensorReadings[3], S4_t)){
-                circlesright[3].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S5){
-            if (comparevalues(sensorReadings[4], S5_t)){
-                circlesright[4].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S6){
-            if (comparevalues(sensorReadings[5], S6_t)){
-                circlesright[5].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S7){
-            if (comparevalues(sensorReadings[6], S7_t)){
-                circlesright[6].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S8){
-            if (comparevalues(sensorReadings[7], S8_t)){
-                circlesright[7].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S9){
-            if (comparevalues(sensorReadings[8], S9_t)){
-                circlesright[8].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+        // Array de flags (regiões ativas)
+        boolean[] sensoresAtivos = {S1, S2, S3, S4, S5, S6, S7, S8, S9};
+
+        // Array de limiares
+        int[] thresholds = {S1_t, S2_t, S3_t, S4_t, S5_t, S6_t, S7_t, S8_t, S9_t};
+
+        // Loop para comparar valores e colorir os círculos
+        for (int i = 0; i < 9; i++) {
+            if (sensoresAtivos[i] && comparevalues(sensorReadings[i], thresholds[i])) {
+                circlesright[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
             }
         }
 
@@ -422,50 +463,16 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         //comparar valores recebidos com limiar salvo para identificar local do evento
-        if (S1){
-            if (comparevalues(sensorReadings[0], S1_t)){
-                //tornar círculo vermelho
-                circlesleft[0].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S2){
-            if (comparevalues(sensorReadings[1], S2_t)){
-                circlesleft[1].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S3){
-            if (comparevalues(sensorReadings[2], S3_t)){
-                circlesleft[2].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S4){
-            if (comparevalues(sensorReadings[3], S4_t)){
-                circlesleft[3].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S5){
-            if (comparevalues(sensorReadings[4], S5_t)){
-                circlesleft[4].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S6){
-            if (comparevalues(sensorReadings[5], S6_t)){
-                circlesleft[5].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S7){
-            if (comparevalues(sensorReadings[6], S7_t)){
-                circlesleft[6].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S8){
-            if (comparevalues(sensorReadings[7], S8_t)){
-                circlesleft[7].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-        if (S9){
-            if (comparevalues(sensorReadings[8], S9_t)){
-                circlesleft[8].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+        // Array de flags (regiões ativas)
+        boolean[] sensoresAtivos = {S1, S2, S3, S4, S5, S6, S7, S8, S9};
+
+        // Array de limiares
+        int[] thresholds = {S1_t, S2_t, S3_t, S4_t, S5_t, S6_t, S7_t, S8_t, S9_t};
+
+        // Loop para comparar valores e colorir os círculos
+        for (int i = 0; i < 9; i++) {
+            if (sensoresAtivos[i] && comparevalues(sensorReadings[i], thresholds[i])) {
+                circlesright[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
             }
         }
 
@@ -558,5 +565,58 @@ public class HomeActivity extends AppCompatActivity {
         return shortArray;
     }
 
+    public void Insole_RightIP() {
+        final int udpPortr = 20000; // Porta do ESP
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DatagramSocket socket = new DatagramSocket(udpPortr);
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+                    while (true) {
+                        socket.receive(packet);
+                        String IPR = new String(packet.getData(), 0, packet.getLength());
+                        Log.e("UDP", "Received IP: " + IPR + " on port: " + udpPortr);
+                        // Armazene o IP conforme necessário
+                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("IP", IPR);
+                        editor.apply();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    public void Insole_leftIP() {
+        final int udpPortl = 20001; // Porta do ESP
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DatagramSocket socket = new DatagramSocket(udpPortl);
+                    byte[] buffer = new byte[1024];
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+                    while (true) {
+                        socket.receive(packet);
+                        String IPL = new String(packet.getData(), 0, packet.getLength());
+                        Log.e("UDP", "Received IP: " + IPL + " on port: " + udpPortl);
+                        // Armazene o IP conforme necessário
+                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("IP", IPL);
+                        editor.apply();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 }

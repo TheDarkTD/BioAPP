@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.ConectVibra;
 import com.example.myapplication2.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ public class VibraActivity extends AppCompatActivity {
 
     FirebaseAuth fAuth;
     Button mStartS;
+    FloatingActionButton mBackBtn;
     NumberPicker mintensity, mpulse, mtime;
     Socket socket;
     PrintWriter output;
@@ -39,6 +41,7 @@ public class VibraActivity extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
 
+        mBackBtn = findViewById(R.id.buttonback3);
         mintensity = findViewById(R.id.intensidade1);
         mtime = findViewById(R.id.tempo1);
         mpulse = findViewById(R.id.pulso1);
@@ -102,6 +105,12 @@ public class VibraActivity extends AppCompatActivity {
         });
 
 
+        mBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         //Botão para iniciar estímulo teste
         mStartS.setOnClickListener(new View.OnClickListener() {

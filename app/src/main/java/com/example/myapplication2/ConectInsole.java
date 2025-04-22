@@ -3,6 +3,8 @@ package com.example.myapplication2;
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
+import android.Manifest;
+import android.content.SharedPreferences;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -39,8 +41,14 @@ import okhttp3.Callback;
 import com.example.myapplication2.Register.Register7Activity;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class ConectInsole { //tratamento palmilha direita
     FirebaseAuth fAuth;
@@ -54,14 +62,29 @@ public class ConectInsole { //tratamento palmilha direita
     private Register7Activity register7;
     private FirebaseHelper firebasehelper;
     private Calendar calendar;
-    int LIM1,LIM2,LIM3,LIM4,LIM5,LIM6,LIM7,LIM8,LIM9;
+    Boolean connectedinsole1 = false;
     private static final String CHANNEL_ID = "notify_pressure"; // ID do canal
+    List<String> eventlist;
 
     public static class ConfigData {
         public int cmd;
-        public int hora, min, seg, mSeg;
         public int freq;
         public int S1, S2, S3, S4, S5, S6, S7, S8, S9;
+
+        @Override
+        public String toString() {
+            return "ConfigData{" +
+                    "S1=" + S1 +
+                    ", S2=" + S2 +
+                    ", S3=" + S3 +
+                    ", S4=" + S4 +
+                    ", S5=" + S5 +
+                    ", S6=" + S6 +
+                    ", S7=" + S7 +
+                    ", S8=" + S8 +
+                    ", S9=" + S9 +
+                    '}';
+        }
     }
 
     public static class SendData {
@@ -71,6 +94,7 @@ public class ConectInsole { //tratamento palmilha direita
         public int second;
         public int millisecond;
         public int battery;
+        public int sensor_trigger;
         public ArrayList<Integer> SR1 = new ArrayList<>();
         public ArrayList<Integer> SR2 = new ArrayList<>();
         public ArrayList<Integer> SR3 = new ArrayList<>();
@@ -81,13 +105,6 @@ public class ConectInsole { //tratamento palmilha direita
         public ArrayList<Integer> SR8 = new ArrayList<>();
         public ArrayList<Integer> SR9 = new ArrayList<>();
 
-        // Novo campo de timestamp
-        public long timestamp;
-
-        // Construtor
-        public SendData() {
-            this.timestamp = System.currentTimeMillis(); // Pega o timestamp atual
-        }
     }
     public String getSendDataAsString() {
         // Formata os dados de SendData como uma String
@@ -115,20 +132,16 @@ public class ConectInsole { //tratamento palmilha direita
         sharedPreferences = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
         ipAddressp1s = sharedPreferences.getString("IP", "default");
         System.out.println(ipAddressp1s);
-        firebasehelper = new FirebaseHelper();
+        firebasehelper = new FirebaseHelper(context);
 
         // Obter SharedPreferences usando o contexto
         //sharedPreferences = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
 
     }
 
-    public void createAndSendConfigData(byte kcmd, byte khora, byte kmin, byte kseg, byte kmSeg, byte kfreq, short kS1, short kS2, short kS3, short kS4, short kS5, short kS6, short kS7, short kS8, short kS9) {
+    public void createAndSendConfigData(byte kcmd, byte kfreq, short kS1, short kS2, short kS3, short kS4, short kS5, short kS6, short kS7, short kS8, short kS9) {
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.hora = khora;
-        configData.min = kmin;
-        configData.seg = kseg;
-        configData.mSeg = kmSeg;
         configData.freq = kfreq;
         configData.S1 = kS1;
         configData.S2 = kS2;
@@ -146,10 +159,6 @@ public class ConectInsole { //tratamento palmilha direita
     public void sendConfigData(@NonNull ConfigData configData) {
         StringBuilder data = new StringBuilder();
         data.append(configData.cmd).append(",")
-                .append(configData.hora).append(",")
-                .append(configData.min).append(",")
-                .append(configData.seg).append(",")
-                .append(configData.mSeg).append(",")
                 .append(configData.freq).append(",")
                 .append(configData.S1).append(",")
                 .append(configData.S2).append(",")
@@ -221,6 +230,7 @@ public class ConectInsole { //tratamento palmilha direita
                         receivedData.second =  calendar.get(Calendar.SECOND);
                         receivedData.millisecond =  calendar.get(Calendar.MILLISECOND);
                         receivedData.battery =  jsonObject.getInt("battery");
+                        receivedData.sensor_trigger =  jsonObject.getInt("sensor_trigger");
                         JSONArray sensorsReads = jsonObject.getJSONArray("sensors_reads");
 
                         // Clear previous data
@@ -299,7 +309,7 @@ public class ConectInsole { //tratamento palmilha direita
 
                             //exibir notificação
                             createNotificationChannel(context);
-                            Bitmap rightFootBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.rightfoot);
+                            Bitmap rightFootBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.rightfoot2);
 
 
                             Notification notification_alertR = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -315,7 +325,7 @@ public class ConectInsole { //tratamento palmilha direita
                                     .build();
 
                             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-                            if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                                 // TODO: Consider calling
                                 //    ActivityCompat#requestPermissions
                                 // here to request the missing permissions, and then overriding
@@ -326,8 +336,26 @@ public class ConectInsole { //tratamento palmilha direita
                                 return;
                             }
                             notificationManager.notify(1, notification_alertR);
+
+
+                            String hora = String.format("%02d", receivedData.hour);
+                            String min = String.format("%02d", receivedData.minute);
+                            String seg = String.format("%02d", receivedData.second);
+                            String textevent = checkforevent(context);
+                            String homepagetext = "Pico identificado na palmilha direita. " + textevent + " | " + hora + ":"+ min + ":"+ seg;
+
+                            eventlist.add(homepagetext);
+
                         }
-                        Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context);
+
+                        if (receivedData.cmd == 0X3E) {
+                            connectedinsole1 = true;
+                            SharedPreferences sharedPreferences1 = context.getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                            editor = sharedPreferences1.edit();
+                            editor.putBoolean("connectedinsole1", connectedinsole1);
+                            editor.apply();
+                        }
+                        Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context, eventlist);
                         System.out.println(" in1 Dados recebidos enviados ao Firebase com sucesso.");
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -378,7 +406,18 @@ public class ConectInsole { //tratamento palmilha direita
     // Método para substituir os valores da ConfigData
     public void setConfigData(ConfigData configData) {
         if (configData != null) {
+            // Loga o estado atual do objeto interno
+            if (this.configData == null) {
+                Log.d("ConectInsole", "this.configData is null, creating new instance.");
+                this.configData = new ConfigData();
+            } else {
+                Log.d("ConectInsole", "this.configData exists before substitution: " + this.configData.toString());
+            }
 
+            // Loga os novos valores que serão aplicados
+            Log.d("ConectInsole", "Substituting new ConfigData: " + configData.toString());
+
+            // Copia os valores do objeto recebido para a instância interna
             this.configData.S1 = configData.S1;
             this.configData.S2 = configData.S2;
             this.configData.S3 = configData.S3;
@@ -388,34 +427,50 @@ public class ConectInsole { //tratamento palmilha direita
             this.configData.S7 = configData.S7;
             this.configData.S8 = configData.S8;
             this.configData.S9 = configData.S9;
+
+            // Loga o estado final após a substituição
+            Log.d("ConectInsole", "After substitution, this.configData: " + this.configData.toString());
+        } else {
+            Log.d("ConectInsole", "Received null ConfigData, skipping substitution.");
         }
     }
+
+
     public static class Utils {
 
         // Função que verifica o login e só envia SendData se o usuário estiver logado
-        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, SendData sendData, Context context) {
+        public static void checkLoginAndSaveSendData(FirebaseHelper firebaseHelper, SendData sendData, Context context, List<String> eventlist) {
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
 
             if (currentUser != null) {
-                // Usuário está logado, salvar os dados
-                firebaseHelper.saveSendData(sendData);
+                // Usuário está logado, verificar a conectividade
+                if (NetworkUtils.isNetworkAvailable(context)) {
+                    // Se houver conexão com a internet, envia os dados para o Firebase
+                    firebaseHelper.saveSendData(sendData, eventlist);
 
-                // Verificar se o Contexto é uma Activity antes de mostrar um Toast
-                if (context instanceof AppCompatActivity) {
-                    // Executar o Toast no thread principal
-                    ((AppCompatActivity) context).runOnUiThread(() ->
-                            Toast.makeText(context, "SendData enviado com sucesso!", Toast.LENGTH_SHORT).show()
-                    );
+                    // Exibe Toast informando sucesso
+                    showToast(context, "SendData enviado com sucesso!");
+                } else {
+                    // Se não houver conexão, salva os dados localmente
+                    firebaseHelper.saveSendDataLocally(sendData, new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
+
+                    // Exibe Toast informando que os dados foram salvos localmente
+                    showToast(context, "Sem conexão. Dados salvos localmente. Será enviado quando a conexão for restaurada.");
                 }
             } else {
-                // Verificar se o Contexto é uma Activity antes de mostrar um Toast
-                if (context instanceof AppCompatActivity) {
-                    // Executar o Toast no thread principal
-                    ((AppCompatActivity) context).runOnUiThread(() ->
-                            Toast.makeText(context, "Você precisa fazer login antes de enviar os dados.", Toast.LENGTH_SHORT).show()
-                    );
-                }
+                // Verifica se o Contexto é uma Activity antes de mostrar um Toast
+                showToast(context, "Você precisa fazer login antes de enviar os dados.");
+            }
+        }
+
+        // Função para exibir o Toast no thread principal
+        private static void showToast(Context context, String message) {
+            if (context instanceof AppCompatActivity) {
+                // Executar o Toast no thread principal
+                ((AppCompatActivity) context).runOnUiThread(() ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                );
             }
         }
     }
@@ -466,67 +521,22 @@ public class ConectInsole { //tratamento palmilha direita
         int S8_t = (short) sharedPreferences.getInt("Lim8I1", 8191);
         int S9_t = (short) sharedPreferences.getInt("Lim9I1", 8191);
 
-        String alerttext = "";
-        StringBuilder sensoresevento = new StringBuilder();
+        List<String> sensoresComEvento = new ArrayList<>();
 
-        //comparar valores recebidos com limiar salvo para identificar evento
-        if (S1){
-            if (comparevalues(receivedData.SR1, S1_t)){
-                sensoresevento.append("1");
-            }
-        }
-        if (S2){
-            if (comparevalues(receivedData.SR2, S2_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("2");
-            }
-        }
-        if (S3){
-            if (comparevalues(receivedData.SR3, S3_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("3");
-            }
-        }
-        if (S4){
-            if (comparevalues(receivedData.SR4, S4_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("4");
-            }
-        }
-        if (S5){
-            if (comparevalues(receivedData.SR5, S5_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("5");
-            }
-        }
-        if (S6){
-            if (comparevalues(receivedData.SR6, S6_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("6");
-            }
-        }
-        if (S7){
-            if (comparevalues(receivedData.SR7, S7_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("7");
-            }
-        }
-        if (S8){
-            if (comparevalues(receivedData.SR8, S8_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("8");
-            }
-        }
-        if (S9){
-            if (comparevalues(receivedData.SR9, S9_t)){
-                sensoresevento.append(", ");
-                sensoresevento.append("9");
-            }
-        }
+        if (S1 && comparevalues(receivedData.SR1, S1_t)) sensoresComEvento.add("1");
+        if (S2 && comparevalues(receivedData.SR2, S2_t)) sensoresComEvento.add("2");
+        if (S3 && comparevalues(receivedData.SR3, S3_t)) sensoresComEvento.add("3");
+        if (S4 && comparevalues(receivedData.SR4, S4_t)) sensoresComEvento.add("4");
+        if (S5 && comparevalues(receivedData.SR5, S5_t)) sensoresComEvento.add("5");
+        if (S6 && comparevalues(receivedData.SR6, S6_t)) sensoresComEvento.add("6");
+        if (S7 && comparevalues(receivedData.SR7, S7_t)) sensoresComEvento.add("7");
+        if (S8 && comparevalues(receivedData.SR8, S8_t)) sensoresComEvento.add("8");
+        if (S9 && comparevalues(receivedData.SR9, S9_t)) sensoresComEvento.add("9");
 
-        String resultado = sensoresevento.toString();
-        alerttext = "Sensor(es):"+ resultado;
+        String resultado = String.join(", ", sensoresComEvento);
+        String alerttext = "Sensor(es): " + resultado;
         return alerttext;
+
 
     }
 
@@ -541,7 +551,6 @@ public class ConectInsole { //tratamento palmilha direita
 
         return event;
     }
-
 
 }
 

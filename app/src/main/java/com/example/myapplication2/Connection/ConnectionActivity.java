@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication2.ConectInsole;
+import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.Home.HomeActivity;
 import com.example.myapplication2.R;
@@ -17,25 +18,63 @@ import com.example.myapplication2.Settings.SettingsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.net.InetAddress;
+import java.util.Calendar;
+
 
 public class ConnectionActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
-    Switch conect1, conect2;
+    private ConectInsole conectar;
+    private ConectInsole2 conectar2;
+    Switch conect1R, conect1L, conect2;
     String batInsoleright, batInsoleleft, batVibra;
     TextView batp, batv;
+    private String InRight, InLeft;
+    private TextView batlevel;
+    Boolean connectedR, connectedL, connectedV;
+    private Calendar calendar;
+    private short S1, S2, S3, S4, S5, S6, S7, S8, S9;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection);
+
+        conect1R = findViewById(R.id.switch1);
+        conect1L = findViewById(R.id.switch3);
+        conect2 = findViewById(R.id.switch2);
+        batp = findViewById(R.id.batinsole);
+        batv = findViewById(R.id.batvibra);
+        batlevel = findViewById(R.id.textView7);
+
+        conectar = new ConectInsole(this);
+        conectar2 = new ConectInsole2(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        ///checar se esp está conectado ao smartphone, se não -> switch off, se sim  -> switch on
+        //checar quantidade de palmilhas
+        SharedPreferences sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        InRight = sharedPreferences.getString("Sright", "default");
+        InLeft = sharedPreferences.getString("Sleft", "default");
+
+        //enviar solicitação de status de conexão
+        calendar = Calendar.getInstance();
+        byte cmd = 0X3E;
+        byte freq = 1;
+        byte hour = (byte) calendar.get(Calendar.HOUR_OF_DAY);
+        byte minutes = (byte) calendar.get(Calendar.MINUTE);
+        byte seconds = (byte) calendar.get(Calendar.SECOND);
+        byte milliseconds = (byte) calendar.get(Calendar.MILLISECOND);
+        S1 = S2 = S3 = S4 = S5 = S6 = S7 = S8 = S9 = 0x1FFF;
+
+        if (InRight.equals("true")) {
+            conectar.createAndSendConfigData(cmd, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+        }
+        if (InLeft.equals("true")) {
+            conectar2.createAndSendConfigData(cmd, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+        }
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomnavview3);
         bottomNavigationView.setSelectedItemId(R.id.connection);
@@ -58,33 +97,51 @@ public class ConnectionActivity extends AppCompatActivity {
             return false;
         });
 
-        conect1 = findViewById(R.id.switch1);
-        conect2 = findViewById(R.id.switch2);
-        batp = findViewById(R.id.batinsole);
-        batv = findViewById(R.id.batvibra);
-
-        conect1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //reconectar com palmilha
-            }
-        });
-
-        conect2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //reconectar com vibra
-            }
-        });
-
 
         //função para retornar valores de bateria vibra e palmilha e alterar mensagem
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Battery_info", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("Battery_info", MODE_PRIVATE);
         batVibra = String.valueOf(sharedPreferences.getInt("batVibra", 0));
         batInsoleright = String.valueOf(sharedPreferences.getInt("Insole_right", 0));
         batInsoleleft = String.valueOf(sharedPreferences.getInt("Insole_left", 0));
 
-        batv.setText(batVibra);
-        batp.setText(batInsoleright);
-    }
 
+        //checar status de conexão
+        SharedPreferences sharedPreferences1 = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        connectedR  = sharedPreferences1.getBoolean("connectedinsole1", false);
+        connectedL  = sharedPreferences1.getBoolean("connectedinsole2", false);
+
+        if (InRight.equals("false") && InLeft.equals("true")) {
+            conect1L.setChecked(connectedL);
+
+            conect1R.setVisibility(View.GONE);
+            batlevel.setText("Nível de bateria palmilha esquerda:");
+            batp.setText(batInsoleleft);
+        }
+        if (InLeft.equals("false") && InRight.equals("true")) {
+            conect1R.setChecked(connectedR);
+
+            conect1L.setVisibility(View.GONE);
+            batlevel.setText("Nível de bateria palmilha direita:");
+            batp.setText(batInsoleright);
+
+        }
+        else{
+            conect1L.setChecked(connectedL);
+            conect1R.setChecked(connectedR);
+
+            batlevel.setText("Nível de bateria palmilhas direita e esquerda:");
+            batp.setText(batInsoleleft + batInsoleright);
+
+        }
+
+
+        sharedPreferences1 = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        connectedV = sharedPreferences1.getBoolean("connectedVibra", false);
+        conect2.setChecked(connectedR);
+
+        batv.setText(batVibra);
+
+
+        }
 }

@@ -28,7 +28,7 @@ public class ConectVibra {
     private SendData receivedData;
     private SharedPreferences sharedPreferences;
     private String  ipAddressVs;
-
+    Boolean connectedVibra = false;
 
     public static class ConfigData {
         public byte cmd;
@@ -136,6 +136,14 @@ public class ConectVibra {
                         System.out.println("Dados recebidos e processados com sucesso.");
                         System.out.println(responseData);
 
+                        if (receivedData.cmd == 0X1B) {
+                            connectedVibra = true;
+                            SharedPreferences sharedPreferences1 = context.getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                            editor = sharedPreferences1.edit();
+                            editor.putBoolean("connectedVibra", connectedVibra);
+                            editor.apply();
+
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         System.err.println("Erro ao processar resposta JSON: ");
@@ -149,11 +157,11 @@ public class ConectVibra {
     // Supondo que você já tenha uma instância de ConfigData dentro da ConectInsole
     private ConectInsole.ConfigData configData;
 
-    // Método para retornar a ConfigData
+    // Metodo para retornar a ConfigData
     public ConectInsole.ConfigData getConfigData() {
         return configData;
     }
-    // Método para substituir os valores da ConfigData
+    // Metodo para substituir os valores da ConfigData
     public void setConfigData(ConectInsole.ConfigData configData) {
         if (configData != null) {
             this.configData.cmd = configData.cmd;

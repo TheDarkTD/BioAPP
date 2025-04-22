@@ -115,18 +115,14 @@ public class Register7Activity extends AppCompatActivity {
         });}
 
     private void sendCommand(byte cmd, byte freq) {
-                calendar = Calendar.getInstance();
-                byte hour = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-                byte minutes = (byte) calendar.get(Calendar.MINUTE);
-                byte seconds = (byte) calendar.get(Calendar.SECOND);
-                byte milliseconds = (byte) calendar.get(Calendar.MILLISECOND);
+
                 S1 = S2 = S3 = S4 = S5 = S6 = S7 = S8 = S9 = 0x1FFF;
 
                 if (followInRight.equals("true")) {
-                    conectar.createAndSendConfigData(cmd, hour, minutes, seconds, milliseconds, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+                    conectar.createAndSendConfigData(cmd, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
                 }
                 if (followInLeft.equals("true")) {
-                    conectar2.createAndSendConfigData(cmd, hour, minutes, seconds, milliseconds, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+                    conectar2.createAndSendConfigData(cmd, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
                 }
             }
 
@@ -158,12 +154,6 @@ public class Register7Activity extends AppCompatActivity {
 
 
     private void processReceivedData(@NonNull ConectInsole insole) {
-                calendar = Calendar.getInstance();
-                byte hour = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-                byte minutes = (byte) calendar.get(Calendar.MINUTE);
-                byte seconds = (byte) calendar.get(Calendar.SECOND);
-                byte milliseconds = (byte) calendar.get(Calendar.MILLISECOND);
-
 
                 Boolean foot = false;
                 sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
@@ -188,7 +178,7 @@ public class Register7Activity extends AppCompatActivity {
                 short[] limS = thresholdSensors_steady(sensorReadings, foot);
 
                 byte cmd1 = 0x2A;
-                insole.createAndSendConfigData(cmd1, hour, minutes, seconds, milliseconds, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+                insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
                 saveConfigData1ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
                 SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -207,11 +197,7 @@ public class Register7Activity extends AppCompatActivity {
             }
 
     private void processReceivedData2(@NonNull ConectInsole2 insole) {
-                calendar = Calendar.getInstance();
-                byte hour = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-                byte minutes = (byte) calendar.get(Calendar.MINUTE);
-                byte seconds = (byte) calendar.get(Calendar.SECOND);
-                byte milliseconds = (byte) calendar.get(Calendar.MILLISECOND);
+
                 Boolean foot = false;
                 sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
                 String Sleft = sharedPreferences.getString("Sleft", "default");
@@ -235,7 +221,7 @@ public class Register7Activity extends AppCompatActivity {
                 short[] limS = thresholdSensors_steady(sensorReadings, foot);
 
                 byte cmd1 = 0x2A;
-                insole.createAndSendConfigData(cmd1, hour, minutes, seconds, milliseconds, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+                insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
                 saveConfigData2ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
                 SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();

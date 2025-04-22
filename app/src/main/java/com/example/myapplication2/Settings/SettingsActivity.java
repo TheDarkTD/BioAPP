@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication2.ConectInsole;
 import com.example.myapplication2.Connection.ConnectionActivity;
 import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.Home.HomeActivity;
@@ -19,6 +21,11 @@ import com.example.myapplication2.LoginActivity;
 import com.example.myapplication2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -27,16 +34,36 @@ public class SettingsActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     ImageView fotoid;
     String userName, userEmail;
+    DatabaseReference databaseReference;
     private SharedPreferences sharedPreferences;
+    private String uid;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        sharedPreferences = getSharedPreferences("User_info", MODE_PRIVATE);
-        userName = sharedPreferences.getString("Name", "default");
-        userEmail = sharedPreferences.getString("Email", "default");
+        FirebaseUser user = fAuth.getCurrentUser();
+        uid = user.getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+
+        databaseReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DataSnapshot dataSnapshot = task.getResult();
+                if (dataSnapshot.exists()) {
+
+                    userName = dataSnapshot.child("name").getValue(String.class);
+                    userEmail = dataSnapshot.child("email").getValue(String.class);
+
+                } else {
+                    Toast.makeText(SettingsActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(SettingsActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
 
@@ -47,10 +74,8 @@ public class SettingsActivity extends AppCompatActivity {
         mAccountBtn = findViewById(R.id.Conta);
         mParametersBtn = findViewById(R.id.Parametros);
         mVibraBtn = findViewById(R.id.Vibra);
-        mNotificationsBtn = findViewById(R.id.Notifica);
-        mUpdatesBtn = findViewById(R.id.Update);
         mUseInstructionsBtn = findViewById(R.id.Manual);
-        fotoid=findViewById(R.id.fotoid);
+        fotoid = findViewById(R.id.fotoid);
         TextView mNamespace = findViewById(R.id.nomeusuario);
         TextView mEmailspace = findViewById(R.id.emailusuario);
 
@@ -115,19 +140,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        mNotificationsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), NotificationsActivity.class));
-            }
-        });
 
-        mUpdatesBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), UpdateActivity.class));
-            }
-        });
 
         mUseInstructionsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,10 +158,10 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    protected void onActivityForResult(int RequestCode, int ResultCode, Intent dados){
+    protected void onActivityForResult(int RequestCode, int ResultCode, Intent dados) {
         super.onActivityResult(RequestCode, ResultCode, dados);
-        if(ResultCode == Activity.RESULT_OK){
-            if(RequestCode == 1){
+        if (ResultCode == Activity.RESULT_OK) {
+            if (RequestCode == 1) {
                 fotoid.setImageURI(dados.getData());
             }
         }

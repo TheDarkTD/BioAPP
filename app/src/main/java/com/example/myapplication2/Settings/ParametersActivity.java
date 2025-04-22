@@ -224,7 +224,7 @@ public class ParametersActivity extends AppCompatActivity{
         for (int i = 0; i < tnumbers.length; i++) {
             tnumbers[i] = (short) (tnumbers[i]*treshold);
         }
-        conectInsole.createAndSendConfigData(cmd, hora, min, seg, mSeg, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
+        conectInsole.createAndSendConfigData(cmd, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
     }
 
     private void loadTreshData2(Float treshold) {
@@ -256,7 +256,7 @@ public class ParametersActivity extends AppCompatActivity{
         for (int i = 0; i < tnumbers.length; i++) {
             tnumbers[i] = (short) (tnumbers[i]*treshold);
         }
-        conectInsole2.createAndSendConfigData(cmd, hora, min, seg, mSeg, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
+        conectInsole2.createAndSendConfigData(cmd, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
     }
 
 

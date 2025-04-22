@@ -56,7 +56,6 @@ public class RegisterActivity extends AppCompatActivity
         mEmail = findViewById(R.id.email);
         mPassword = findViewById(R.id.password);
         mPassword2 = findViewById(R.id.password2);
-        mBirth = findViewById(R.id.birth);
         mNextBtn = findViewById(R.id.btnNext);
         mLoginBtn = findViewById(R.id.textLogin);
 
@@ -179,46 +178,65 @@ public class RegisterActivity extends AppCompatActivity
     }
 
     private void saveUserData(String uid) {
-        // Inicializando as instâncias
+        // Inicializando as instâncias para os insole
         conectar = new ConectInsole(this);
         conectar2 = new ConectInsole2(this);
 
+        // Obtendo os dados dos campos de usuário
         String getName = mName.getText().toString().trim();
         String getSurname = mSurname.getText().toString().trim();
         String getEmail = mEmail.getText().toString().trim();
-        String getBirth = mBirth.getText().toString().trim();
 
-        // Verificando se algum campo está vazio
-        if (TextUtils.isEmpty(getName) || TextUtils.isEmpty(getSurname) || TextUtils.isEmpty(getEmail) || TextUtils.isEmpty(getBirth)) {
+        // Verifica se algum campo obrigatório está vazio
+        if (TextUtils.isEmpty(getName) || TextUtils.isEmpty(getSurname) ||
+                TextUtils.isEmpty(getEmail)) {
             Toast.makeText(this, "Todos os campos devem ser preenchidos.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Criando o HashMap para salvar os dados
+        // Criando o HashMap para salvar os dados do usuário
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("name", getName);
         hashMap.put("surname", getSurname);
         hashMap.put("email", getEmail);
-        hashMap.put("birth", getBirth);
+        hashMap.put("InsolesR", followInRight);
+        hashMap.put("InsolesL", followInLeft);
 
-        // Carregando os dados de S1 a S9
+        // Carrega os dados de configurações dos sensores (S1 a S9) em HashMaps
         HashMap<String, Integer> configData1 = loadConfigDataFromPrefs(this);
         HashMap<String, Integer> configData2 = loadConfigData2FromPrefs(this);
-        // Verificando se os dados de followInRight e followInLeft são verdadeiros
-        if (followInRight.equals("true")) {
-            // Adicionando os dados de ConfigData ao HashMap
-            hashMap.put("ConfigData1", configData1);  // Adiciona os dados carregados ao HashMap
-        }
 
+        // Se os flags indicarem, adiciona as configurações
+        if (followInRight.equals("true")) {
+            hashMap.put("ConfigData1", configData1);
+        }
         if (followInLeft.equals("true")) {
-            // Se conectar2 também tiver dados de ConfigData, adicione também
             hashMap.put("ConfigData2", configData2);
         }
 
-        // Enviando os dados para o Firebase
+        // --- Adicionando os dados de vibração ---
+        SharedPreferences vibraPrefs = getSharedPreferences("My_Appvibra", MODE_PRIVATE);
+
+        String vibraTime = vibraPrefs.getString("s_time", "");
+        String vibraThreshold = vibraPrefs.getString("s_threshold", "");
+        String vibraInterval = vibraPrefs.getString("s_interval", "");
+        String vibraPulse = vibraPrefs.getString("s_pulse", "");
+
+        HashMap<String, Object> vibraMap = new HashMap<>();
+        vibraMap.put("time", vibraTime);
+        vibraMap.put("threshold", vibraThreshold);
+        vibraMap.put("interval", vibraInterval);
+        vibraMap.put("pulse", vibraPulse);
+        // Adiciona o vibraMap ao HashMap principal
+        hashMap.put("vibra", vibraMap);
+        // --- Fim da seção de vibração ---
+
+        // Envia os dados para o Firebase
         databaseReference.child("Users").child(uid).setValue(hashMap)
-                .addOnSuccessListener(aVoid -> Toast.makeText(RegisterActivity.this, "Dados do usuário salvos", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Erro ao salvar dados: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(RegisterActivity.this, "Dados do usuário salvos", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(RegisterActivity.this, "Erro ao salvar dados: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
 }
