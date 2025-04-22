@@ -109,8 +109,6 @@ public class HomeActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
 
-        FirebaseUser user = fAuth.getCurrentUser();
-        uid = user.getUid();
         startService(serviceIntent);
         byte freq = 1;
         byte cmd = 0x3A;
@@ -119,67 +117,13 @@ public class HomeActivity extends AppCompatActivity {
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
         if (followInRight.equals("true")){
-
-           databaseReference = FirebaseDatabase.getInstance()
-                    .getReference("Users")
-                    .child(uid)
-                    .child("novaVariavel");
-
-
-            databaseReference.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        // Converter o valor para uma lista de strings
-                        for (DataSnapshot item : snapshot.getChildren()) {
-                            String valor = item.getValue(String.class);
-                            if (valor != null) {
-                                listeventsright = valor;
-                            }
-                        }
-
-                        // Agora você pode usar listeventsright como quiser
-                        Log.d("Firebase", "listeventsright: " + listeventsright.toString());
-
-                    } else {
-                        Log.d("Firebase", "novaVariavel está vazia ou não existe.");
-                    }
-                } else {
-                    Log.e("Firebase", "Erro ao buscar dados: ", task.getException());
-                }
-            });
+            sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
+            listeventsright = sharedPreferences.getString("eventlist", "default");
 
         }
         if (followInLeft.equals("true")) {
-            databaseReference = FirebaseDatabase.getInstance()
-                    .getReference("Users")
-                    .child(uid)
-                    .child("novaVariavel2");
-
-
-            databaseReference.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        // Converter o valor para uma lista de strings
-                        for (DataSnapshot item : snapshot.getChildren()) {
-                            String valor = item.getValue(String.class);
-                            if (valor != null) {
-                                listeventsleft=valor;
-                            }
-                        }
-
-                        // Agora você pode usar listeventsright como quiser
-                        Log.d("Firebase", "listeventsright: " + listeventsright.toString());
-
-                    } else {
-                        Log.d("Firebase", "novaVariavel está vazia ou não existe.");
-                    }
-                } else {
-                    Log.e("Firebase", "Erro ao buscar dados: ", task.getException());
-                }
-            });
-
+            sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
+            listeventsleft = sharedPreferences.getString("eventlist2", "default");
         }
 
         Listevents.add(listeventsleft);
