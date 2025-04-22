@@ -2,6 +2,7 @@ package com.example.myapplication2.Data;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,14 +39,27 @@ public class DataActivity extends AppCompatActivity {
     String dataInicio, dataFim, followInRight, followInLeft;
     String uid;
     FirebaseAuth fAuth;
+    DatabaseReference databaseReference;
+    private SharedPreferences sharedPreferences;
     private static final OkHttpClient client = new OkHttpClient();
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
-        FirebaseUser user = fAuth.getCurrentUser();
-        uid = user.getUid();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            uid = user.getUid();  // Pega o UID do usuário logado
+            databaseReference = FirebaseDatabase.getInstance("https://bioapp-496ae-default-rtdb.firebaseio.com/")
+                    .getReference()
+                    .child("Users")
+                    .child(uid);  // Salvar dados no nó "Users/{UID}"
+
+            // Inicializando SharedPreferences para armazenar dados localmente
+            sharedPreferences = getSharedPreferences("offline_data", Context.MODE_PRIVATE);
+        }
 
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomnavview4);

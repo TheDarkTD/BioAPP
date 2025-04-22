@@ -1,5 +1,6 @@
 package com.example.myapplication2.Home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -56,8 +57,18 @@ public class Pop extends AppCompatActivity{
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
 
-        FirebaseUser user = fAuth.getCurrentUser();
-        uid = user.getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            uid = user.getUid();  // Pega o UID do usuário logado
+            databaseReference = FirebaseDatabase.getInstance("https://bioapp-496ae-default-rtdb.firebaseio.com/")
+                    .getReference()
+                    .child("Users")
+                    .child(uid);  // Salvar dados no nó "Users/{UID}"
+
+            // Inicializando SharedPreferences para armazenar dados localmente
+            sharedPreferences = getSharedPreferences("offline_data", Context.MODE_PRIVATE);
+        }
 
         if (followInRight.equals("true")){
 

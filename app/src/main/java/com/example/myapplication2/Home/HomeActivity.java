@@ -118,12 +118,12 @@ public class HomeActivity extends AppCompatActivity {
 
         if (followInRight.equals("true")){
             sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
-            listeventsright = sharedPreferences.getString("eventlist", "default");
+            listeventsright = sharedPreferences.getString("eventlist", "Não há leituras.");
 
         }
         if (followInLeft.equals("true")) {
             sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
-            listeventsleft = sharedPreferences.getString("eventlist2", "default");
+            listeventsleft = sharedPreferences.getString("eventlist2", "Não há leituras.");
         }
 
         Listevents.add(listeventsleft);
