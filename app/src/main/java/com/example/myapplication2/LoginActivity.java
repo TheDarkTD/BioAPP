@@ -134,6 +134,16 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Carrega ConfigData1 caso o insole direito esteja ativado
                     if ("true".equalsIgnoreCase(flagInsoleR)) {
+                        DataSnapshot evento= dataSnapshot.child("DATA");
+                        if (evento.exists()) {
+                            String eventlist = evento.child("eventlist").getValue(String.class);
+                            SharedPreferences event = getSharedPreferences("eventos", MODE_PRIVATE);
+                            SharedPreferences.Editor eventEditor = event.edit();
+                            eventEditor.putString("eventlist", eventlist);
+                        }
+
+
+
                         DataSnapshot configRightSnapshot = dataSnapshot.child("ConfigData1");
                         Log.d("LoadUserData", "Dados do ConfigData1: " + configRightSnapshot.getValue());
 
@@ -159,6 +169,13 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Carrega ConfigData2 caso o insole esquerdo esteja ativado
                     if ("true".equalsIgnoreCase(flagInsoleL)) {
+                        DataSnapshot evento= dataSnapshot.child("DATA");
+                        if (evento.exists()) {
+                            String eventlist2 = evento.child("eventlist2").getValue(String.class);
+                            SharedPreferences event = getSharedPreferences("eventos", MODE_PRIVATE);
+                            SharedPreferences.Editor eventEditor = event.edit();
+                            eventEditor.putString("eventlist2", eventlist2);
+                        }
                         DataSnapshot configLeftSnapshot = dataSnapshot.child("ConfigData2");
                         Log.d("LoadUserData", "Dados do ConfigData2: " + configLeftSnapshot.getValue());
 

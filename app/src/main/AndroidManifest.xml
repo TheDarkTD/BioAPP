@@ -27,7 +27,8 @@
         tools:targetApi="31"
         android:usesCleartextTraffic="true"
         >
-
+        <service android:name=".AppForegroundService"
+            android:permission="android.permission.FOREGROUND_SERVICE" />
         <service
             android:name=".DataCaptureService"
             android:exported="false" />

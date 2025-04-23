@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication2.AppForegroundService;
 import com.example.myapplication2.ConectInsole;
 import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.Connection.ConnectionActivity;
@@ -61,14 +62,8 @@ public class HomeActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
-        /*if (followInRight.equals("true")) {
-            udpr.Insole_RightIP();
-        }
+        // Criando o primeiro Intent para o serviço em primeiro plano
 
-        if (followInLeft.equals("true")) {
-            udpl.Insole_leftIP();
-        }*/
-        serviceIntent = new Intent(this, DataCaptureService.class);
 
         // Referencie os círculos e o botão de atualização
         circlesleft = new View[] {
@@ -98,8 +93,10 @@ public class HomeActivity extends AppCompatActivity {
     }
     public void onStart(){
         super.onStart();
-
-        startService(serviceIntent);
+        Intent serviceIntent1 = new Intent(this, AppForegroundService.class);
+        Intent serviceIntent2 = new Intent(this, DataCaptureService.class);
+        startService(serviceIntent1);
+        startService(serviceIntent2);
         byte freq = 1;
         byte cmd = 0x3A;
 
@@ -196,7 +193,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 atualizaçao = findViewById(R.id.textView3);
                 //Envia solicitação de leitura a palmilha
-                stopService(serviceIntent);
                 byte cmd3c = 0X3C;
 
                 if (followInRight.equals("true")){
@@ -233,8 +229,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 //Atualiza os valores de pressão plotados na tela
                 updateCircleColors();
-                //Reinicia o serviço de captura de dados quando há atualização destes
-                startService(serviceIntent);
+
 
 
 
