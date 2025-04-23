@@ -23,119 +23,46 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
-public class Pop extends AppCompatActivity{
+public class Pop extends AppCompatActivity {
 
     FloatingActionButton mCloseBtn;
-    private String followInRight, followInLeft;
+    private String followInRight = "", followInLeft = "";
     TextView atualiza;
+    private SharedPreferences sharedPreferences;
     DatabaseReference databaseReference;
     private List<String> Listevents;
     private FirebaseAuth fAuth;
-    String senddatainsole1="Não há leituras.";
-    String senddatainsole2="Não há leituras.";
+    String senddatainsole1 = " ";
+    String senddatainsole2 = " ";
     private String uid;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.popupwindow);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-
         int width = dm.widthPixels;
         int height = dm.heightPixels;
+        getWindow().setLayout((int) (width * .8), (int) (height * .8));
 
-        getWindow().setLayout((int)(width*.8),(int)(height*.8));
+        atualiza = findViewById(R.id.textView5); // Substitua pelo ID real do TextView
 
         ConectInsole conectar = new ConectInsole(this);
         ConectInsole2 conectar2 = new ConectInsole2(this);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
-        followInRight = sharedPreferences.getString("Sright", "default");
-        followInLeft = sharedPreferences.getString("Sleft", "default");
+        sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
+        followInRight = sharedPreferences.getString("followInRight", "false");
+        followInLeft = sharedPreferences.getString("followInLeft", "false");
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Listevents = new java.util.ArrayList<>();
 
-        if (user != null) {
-            uid = user.getUid();  // Pega o UID do usuário logado
-            databaseReference = FirebaseDatabase.getInstance("https://bioapp-496ae-default-rtdb.firebaseio.com/")
-                    .getReference()
-                    .child("Users")
-                    .child(uid);  // Salvar dados no nó "Users/{UID}"
-
-            // Inicializando SharedPreferences para armazenar dados localmente
-            sharedPreferences = getSharedPreferences("offline_data", Context.MODE_PRIVATE);
-        }
-
-        if (followInRight.equals("true")){
-
-            databaseReference = FirebaseDatabase.getInstance()
-                    .getReference("Users")
-                    .child(uid)
-                    .child("novaVariavel");
-
-
-            databaseReference.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        // Converter o valor para uma lista de strings
-                        for (DataSnapshot item : snapshot.getChildren()) {
-                            String valor = item.getValue(String.class);
-                            if (valor != null) {
-                                senddatainsole1 = valor;
-                            }
-                        }
-
-                        // Agora você pode usar listeventsright como quiser
-                        Log.d("Firebase", "listeventsright: " + senddatainsole1.toString());
-
-                    } else {
-                        Log.d("Firebase", "novaVariavel está vazia ou não existe.");
-                    }
-                } else {
-                    Log.e("Firebase", "Erro ao buscar dados: ", task.getException());
-                }
-            });
-
-
+        if (followInRight.equals("true")) {
+            senddatainsole1 = sharedPreferences.getString("eventlist", " ");
         }
         if (followInLeft.equals("true")) {
-            databaseReference = FirebaseDatabase.getInstance()
-                    .getReference("Users")
-                    .child(uid)
-                    .child("novaVariavel2");
-
-
-            databaseReference.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        // Converter o valor para uma lista de strings
-                        for (DataSnapshot item : snapshot.getChildren()) {
-                            String valor = item.getValue(String.class);
-                            if (valor != null) {
-                                senddatainsole2=valor;
-                            }
-                        }
-
-                        // Agora você pode usar listeventsright como quiser
-                        Log.d("Firebase", "listeventsright: " + senddatainsole2.toString());
-
-                    } else {
-                        Log.d("Firebase", "novaVariavel está vazia ou não existe.");
-                    }
-                } else {
-                    Log.e("Firebase", "Erro ao buscar dados: ", task.getException());
-                }
-            });
-
-
-
-
+            senddatainsole2 = sharedPreferences.getString("eventlist2", " ");
         }
 
         Listevents.add(senddatainsole1);
@@ -147,16 +74,7 @@ public class Pop extends AppCompatActivity{
         }
         atualiza.setText(builder.toString());
 
-
-
-        mCloseBtn =(FloatingActionButton) findViewById(R.id.buttonclose);
-        mCloseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mCloseBtn = findViewById(R.id.buttonclose);
+        mCloseBtn.setOnClickListener(v -> finish());
     }
-
-
 }

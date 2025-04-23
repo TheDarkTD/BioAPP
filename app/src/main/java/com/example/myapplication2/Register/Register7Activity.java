@@ -157,41 +157,39 @@ public class Register7Activity extends AppCompatActivity {
 
                 Boolean foot = false;
                 sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
-                String Sleft = sharedPreferences.getString("Sleft", "default");
                 String Sright = sharedPreferences.getString("Sright", "default");
                 if (Sright == "true") {
                     foot = false;
 
-                }
-                if (Sleft == "true") {
-                    foot = true;
-                }
-                sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-                String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-                short[][] sensorReadings = new short[9][];
+                    sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+                    String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+                    short[][] sensorReadings = new short[9][];
 
-                for (int i = 0; i < 9; i++) {
-                    sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-                    System.out.println("Sensor " + sensorKeys[i] + ": " + Arrays.toString(sensorReadings[i]));
+                    for (int i = 0; i < 9; i++) {
+                        sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
+                        System.out.println("Sensor " + sensorKeys[i] + ": " + Arrays.toString(sensorReadings[i]));
+                    }
+
+                    short[] limS = thresholdSensors_steady(sensorReadings, foot);
+
+                    byte cmd1 = 0x2A;
+                    insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+                    saveConfigData1ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+                    SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("Lim1I1", limS[0]);
+                    editor.putInt("Lim2I1", limS[1]);
+                    editor.putInt("Lim3I1", limS[2]);
+                    editor.putInt("Lim4I1", limS[3]);
+                    editor.putInt("Lim5I1", limS[4]);
+                    editor.putInt("Lim6I1", limS[5]);
+                    editor.putInt("Lim7I1", limS[6]);
+                    editor.putInt("Lim8I1", limS[7]);
+                    editor.putInt("Lim9I1", limS[8]);
+                    editor.apply();
                 }
 
-                short[] limS = thresholdSensors_steady(sensorReadings, foot);
 
-                byte cmd1 = 0x2A;
-                insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                saveConfigData1ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("Lim1I1", limS[0]);
-                editor.putInt("Lim2I1", limS[1]);
-                editor.putInt("Lim3I1", limS[2]);
-                editor.putInt("Lim4I1", limS[3]);
-                editor.putInt("Lim5I1", limS[4]);
-                editor.putInt("Lim6I1", limS[5]);
-                editor.putInt("Lim7I1", limS[6]);
-                editor.putInt("Lim8I1", limS[7]);
-                editor.putInt("Lim9I1", limS[8]);
-                editor.apply();
 
 
             }
@@ -201,40 +199,36 @@ public class Register7Activity extends AppCompatActivity {
                 Boolean foot = false;
                 sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
                 String Sleft = sharedPreferences.getString("Sleft", "default");
-                String Sright = sharedPreferences.getString("Sright", "default");
-                if (Sright == "true") {
-                    foot = false;
-
-                }
                 if (Sleft == "true") {
                     foot = true;
+
+                    sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+                    String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+                    short[][] sensorReadings = new short[9][];
+
+                    for (int i = 0; i < 9; i++) {
+                        sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
+                    }
+
+                    short[] limS = thresholdSensors_steady(sensorReadings, foot);
+
+                    byte cmd1 = 0x2A;
+                    insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+                    saveConfigData2ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+                    SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("Lim1I2", limS[0]);
+                    editor.putInt("Lim2I2", limS[1]);
+                    editor.putInt("Lim3I2", limS[2]);
+                    editor.putInt("Lim4I2", limS[3]);
+                    editor.putInt("Lim5I2", limS[4]);
+                    editor.putInt("Lim6I2", limS[5]);
+                    editor.putInt("Lim7I2", limS[6]);
+                    editor.putInt("Lim8I2", limS[7]);
+                    editor.putInt("Lim9I2", limS[8]);
+                    editor.apply();
                 }
 
-                sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-                String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-                short[][] sensorReadings = new short[9][];
-
-                for (int i = 0; i < 9; i++) {
-                    sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-                }
-
-                short[] limS = thresholdSensors_steady(sensorReadings, foot);
-
-                byte cmd1 = 0x2A;
-                insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                saveConfigData2ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("Lim1I2", limS[0]);
-                editor.putInt("Lim2I2", limS[1]);
-                editor.putInt("Lim3I2", limS[2]);
-                editor.putInt("Lim4I2", limS[3]);
-                editor.putInt("Lim5I2", limS[4]);
-                editor.putInt("Lim6I2", limS[5]);
-                editor.putInt("Lim7I2", limS[6]);
-                editor.putInt("Lim8I2", limS[7]);
-                editor.putInt("Lim9I2", limS[8]);
-                editor.apply();
             }
 
 

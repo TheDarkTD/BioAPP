@@ -1,5 +1,17 @@
 package com.example.myapplication2.Data;
 
+import android.content.Context;
+import android.util.Log;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -9,6 +21,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 import okhttp3.*;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import androidx.appcompat.app.AppCompatActivity;
@@ -99,16 +113,16 @@ public class DataActivity extends AppCompatActivity {
         mFim.setOnClickListener(v -> datePickerDialogFim.show());
 
         SharedPreferences sharedPreferences = getSharedPreferences("Data_periodI", MODE_PRIVATE);
-        String Iyear = sharedPreferences.getString("StartY", "0000");
-        String Imonth = sharedPreferences.getString("StartM", "00");
-        String Iday = sharedPreferences.getString("StartD", "00");
+        String Iyear = String.valueOf(sharedPreferences.getInt("StartY", 0000));
+        String Imonth = String.valueOf(sharedPreferences.getInt("StartM", 00));
+        String Iday = String.valueOf(sharedPreferences.getInt("StartD", 00));
 
         dataInicio = Iyear + "-" + Imonth + "-" + Iday;
 
         sharedPreferences = getSharedPreferences("Data_periodF", MODE_PRIVATE);
-        String Fyear = sharedPreferences.getString("EndY", "0000");
-        String Fmonth = sharedPreferences.getString("EndM", "00");
-        String Fday = sharedPreferences.getString("EndD", "00");
+        String Fyear = String.valueOf(sharedPreferences.getInt("EndY", 0000));
+        String Fmonth = String.valueOf(sharedPreferences.getInt("EndM", 00));
+        String Fday = String.valueOf(sharedPreferences.getInt("EndD", 00));
 
         dataFim = Fyear + "-" + Fmonth + "-" + Fday;
 
@@ -141,17 +155,18 @@ public class DataActivity extends AppCompatActivity {
 
                     // Chama a função correta com base na escolha
                     if (selected.equals("PDF")) {
-                        enviarDados("PDF", uid, inicio, fim, Left, Right);
+                        enviarDados(DataActivity.this,"PDF", uid, inicio, fim, Left, Right);
                     } else if (selected.equals("CSV")) {
-                        enviarDados("CSV", uid, inicio, fim, Left, Right);
+                        enviarDados(DataActivity.this,"CSV", uid, inicio, fim, Left, Right);
                     } else if (selected.equals("TXT")) {
-                        enviarDados("TXT", uid, inicio, fim, Left, Right);
+                        enviarDados(DataActivity.this,"TXT", uid, inicio, fim, Left, Right);
                     }
 
                     Toast.makeText(this, "Exportando como: " + selected, Toast.LENGTH_SHORT).show();
                 });
         builder.create().show();
     }
+
 
     private void showDocumentDialog(String Left, String Right, String inicio, String fim) {
         String[] reportTypes = {"Resumo", "Gráficos"};
@@ -164,10 +179,10 @@ public class DataActivity extends AppCompatActivity {
 
                     switch (selected) {
                         case "Resumo":
-                            enviarDados("resumo", uid, inicio, fim, Left, Right);
+                            enviarDados(DataActivity.this,"resumo", uid, inicio, fim, Left, Right);
                             break;
                         case "Gráficos":
-                            enviarDados("grafs", uid, inicio, fim, Left, Right);
+                            enviarDados(DataActivity.this,"grafs", uid, inicio, fim, Left, Right);
                             break;
                     }
                 });
@@ -246,7 +261,7 @@ public class DataActivity extends AppCompatActivity {
     }
 
 
-    public static void enviarDados(String typeReport,String login, String dataInicio, String dataFim, String Left, String Right) {
+    public static void enviarDados(Context context, String typeReport,String login, String dataInicio, String dataFim, String Left, String Right) {
 
         //envia para processar dados palmilha direita
         if (Right.equals("true") && Left.equals("false")) {
@@ -266,7 +281,7 @@ public class DataActivity extends AppCompatActivity {
                 );
 
                 // Endereço da API no Render
-                String url = "https://insoleapi.onrender.com";
+                String url = "https://insoleapi.onrender.com/processar";
 
                 // Requisição POST
                 Request request = new Request.Builder()
@@ -285,13 +300,41 @@ public class DataActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
-                            String responseBody = response.body().string();
-                            System.out.println("Resposta da API: " + responseBody);
-                            // Aqui você pode extrair o gráfico base64 do JSON
+                            ResponseBody body = response.body();
+                            if (body != null) {
+                                // Define a extensão com base no tipo de relatório
+                                String extension;
+                                switch (typeReport.toLowerCase()) {
+                                    case "pdf":
+                                        extension = ".pdf";
+                                        break;
+                                    case "csv":
+                                        extension = ".csv";
+                                        break;
+                                    case "txt":
+                                        extension = ".txt";
+                                        break;
+                                    default:
+                                        extension = ".bin"; // fallback genérico
+                                        break;
+                                }
+
+                                // Define o nome do arquivo
+                                File file = new File(context.getExternalFilesDir(null), "Palmilha_" + typeReport + extension);
+
+                                // Salva o conteúdo da resposta no arquivo
+                                FileOutputStream fos = new FileOutputStream(file);
+                                fos.write(body.bytes());
+                                fos.close();
+
+                                Log.i("Download", "Arquivo salvo em: " + file.getAbsolutePath());
+                            }
                         } else {
-                            System.err.println("Erro da API: " + response.code());
+                            Log.e("API", "Erro da API: " + response.code());
                         }
                     }
+
+
                 });
 
             } catch (Exception e) {
@@ -317,7 +360,7 @@ public class DataActivity extends AppCompatActivity {
                 );
 
                 // Endereço da API no Render
-                String url = "https://sua-api.onrender.com/processar_dados";
+                String url = "https://sua-api.onrender.com/processar";
 
                 // Requisição POST
                 Request request = new Request.Builder()
@@ -336,13 +379,41 @@ public class DataActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
-                            String responseBody = response.body().string();
-                            System.out.println("Resposta da API: " + responseBody);
-                            // Aqui você pode extrair o gráfico base64 do JSON
+                            ResponseBody body = response.body();
+                            if (body != null) {
+                                // Define a extensão com base no tipo de relatório
+                                String extension;
+                                switch (typeReport.toLowerCase()) {
+                                    case "pdf":
+                                        extension = ".pdf";
+                                        break;
+                                    case "csv":
+                                        extension = ".csv";
+                                        break;
+                                    case "txt":
+                                        extension = ".txt";
+                                        break;
+                                    default:
+                                        extension = ".bin"; // fallback genérico
+                                        break;
+                                }
+
+                                // Define o nome do arquivo
+                                File file = new File(context.getExternalFilesDir(null), "Palmilha_" + typeReport + extension);
+
+                                // Salva o conteúdo da resposta no arquivo
+                                FileOutputStream fos = new FileOutputStream(file);
+                                fos.write(body.bytes());
+                                fos.close();
+
+                                Log.i("Download", "Arquivo salvo em: " + file.getAbsolutePath());
+                            }
                         } else {
-                            System.err.println("Erro da API: " + response.code());
+                            Log.e("API", "Erro da API: " + response.code());
                         }
                     }
+
+
                 });
 
             } catch (Exception e) {
@@ -368,7 +439,7 @@ public class DataActivity extends AppCompatActivity {
                 );
 
                 // Endereço da API no Render
-                String url = "https://sua-api.onrender.com/processar_dados";
+                String url = "https://sua-api.onrender.com/processar";
 
                 // Requisição POST
                 Request request = new Request.Builder()
@@ -387,13 +458,41 @@ public class DataActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         if (response.isSuccessful()) {
-                            String responseBody = response.body().string();
-                            System.out.println("Resposta da API: " + responseBody);
-                            // Aqui você pode extrair o gráfico base64 do JSON
+                            ResponseBody body = response.body();
+                            if (body != null) {
+                                // Define a extensão com base no tipo de relatório
+                                String extension;
+                                switch (typeReport.toLowerCase()) {
+                                    case "pdf":
+                                        extension = ".pdf";
+                                        break;
+                                    case "csv":
+                                        extension = ".csv";
+                                        break;
+                                    case "txt":
+                                        extension = ".txt";
+                                        break;
+                                    default:
+                                        extension = ".bin"; // fallback genérico
+                                        break;
+                                }
+
+                                // Define o nome do arquivo
+                                File file = new File(context.getExternalFilesDir(null), "Palmilha_" + typeReport + extension);
+
+                                // Salva o conteúdo da resposta no arquivo
+                                FileOutputStream fos = new FileOutputStream(file);
+                                fos.write(body.bytes());
+                                fos.close();
+
+                                Log.i("Download", "Arquivo salvo em: " + file.getAbsolutePath());
+                            }
                         } else {
-                            System.err.println("Erro da API: " + response.code());
+                            Log.e("API", "Erro da API: " + response.code());
                         }
                     }
+
+
                 });
 
             } catch (Exception e) {
@@ -402,6 +501,40 @@ public class DataActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    public static void downloadFile(Context context, String url, String filename) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Download", "Erro ao baixar: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Log.e("Download", "Erro: " + response);
+                    return;
+                }
+
+                ResponseBody body = response.body();
+                if (body != null) {
+                    File file = new File(context.getExternalFilesDir(null), filename);
+
+                    FileOutputStream fos = new FileOutputStream(file);
+                    fos.write(body.bytes());
+                    fos.close();
+
+                    Log.i("Download", "Arquivo salvo em: " + file.getAbsolutePath());
+                }
+            }
+        });
     }
 
 }

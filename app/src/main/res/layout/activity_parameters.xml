@@ -22,6 +22,7 @@
         android:layout_width="150dp"
         android:layout_height="34dp"
         android:text="Limiar:"
+        android:textColor="@color/black"
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,6 +47,7 @@
         android:layout_width="150dp"
         android:layout_height="34dp"
         android:text="Limiar:"
+        android:textColor="@color/black"
         android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,6 +70,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:title="Parâmetros"
+        app:titleTextColor="@color/white"
         app:titleCentered="true" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -105,6 +108,7 @@
         android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:lineSpacingExtra="10dp"
+        android:textColor="@color/black"
         android:text="Com base nos dados da calibração, você pode aumentar o limiar (palmilha menos sensível) ou reduzir o limiar (palmilha mais sensível)."
         android:textSize="17dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -119,6 +123,7 @@
         android:layout_width="105dp"
         android:layout_height="43dp"
         android:text="Salvar"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.898"

@@ -128,8 +128,8 @@
             android:id="@+id/innerLay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:orientation="horizontal">
+
 
             <View
                 android:id="@+id/circle1"
@@ -278,14 +278,14 @@
                 tools:ignore="MissingConstraints" />
 
             <ImageView
-                android:id="@+id/PressureMap"
+                android:id="@+id/PressureMap2"
                 android:layout_width="268dp"
                 android:layout_height="471dp"
                 android:layout_marginStart="50dp"
                 app:srcCompat="@drawable/footcleanleft" />
 
             <ImageView
-                android:id="@+id/PressureMap2"
+                android:id="@+id/PressureMap"
                 android:layout_width="268dp"
                 android:layout_height="471dp"
                 android:layout_marginStart="400dp"
@@ -450,6 +450,7 @@
                 app:constraint_referenced_ids="circle4,circle2,circle8,circle7,circle1,circle5,circle6,circle9,circle3,PressureMap" />
 
         </FrameLayout>
+
     </HorizontalScrollView>
 
     <TextView

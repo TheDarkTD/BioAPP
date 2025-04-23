@@ -13,12 +13,14 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication2.AppForegroundService;
 import com.example.myapplication2.ConectInsole;
 import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.Connection.ConnectionActivity;
@@ -62,8 +64,10 @@ public class HomeActivity extends AppCompatActivity {
     short S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2;
     Intent serviceIntent, serviceIntent_notify;
     private TextView atualizacao;
+    private ImageView pressuremap, pressuremap2;
     DatabaseReference databaseReference;
     ArrayList<String> Listevents = new ArrayList<String>();
+    private View c8r, c1r,c2r,c3r,c4r,c5r,c6r,c7r,c9r,c1,c2,c3,c4,c5,c6,c7,c8,c9;
 
 
     @Override
@@ -77,8 +81,26 @@ public class HomeActivity extends AppCompatActivity {
         followInLeft = sharedPreferences.getString("Sleft", "default");
 
         atualizacao = findViewById(R.id.textView3);
-
-        serviceIntent = new Intent(this, DataCaptureService.class);
+        pressuremap = findViewById(R.id.PressureMap);
+        c1r = findViewById(R.id.circle1right);
+        c2r = findViewById(R.id.circle2right);
+        c3r = findViewById(R.id.circle3right);
+        c4r = findViewById(R.id.circle4right);
+        c5r = findViewById(R.id.circle5right);
+        c6r = findViewById(R.id.circle6right);
+        c7r = findViewById(R.id.circle7right);
+        c8r = findViewById(R.id.circle8right);
+        c9r = findViewById(R.id.circle9right);
+        pressuremap2 = findViewById(R.id.PressureMap2);
+        c1 = findViewById(R.id.circle1);
+        c2 = findViewById(R.id.circle2);
+        c3 = findViewById(R.id.circle3);
+        c4 = findViewById(R.id.circle4);
+        c5 = findViewById(R.id.circle5);
+        c6 = findViewById(R.id.circle6);
+        c7 = findViewById(R.id.circle7);
+        c8 = findViewById(R.id.circle8);
+        c9 = findViewById(R.id.circle9);
 
         // Referencie os círculos e o botão de atualização
         circlesleft = new View[] {
@@ -105,11 +127,39 @@ public class HomeActivity extends AppCompatActivity {
                 findViewById(R.id.circle9right)
         };
 
+        /*if (followInRight.equals("false")){
+            pressuremap.setVisibility(View.GONE);
+            c1r.setVisibility(View.GONE);
+            c2r.setVisibility(View.GONE);
+            c3r.setVisibility(View.GONE);
+            c4r.setVisibility(View.GONE);
+            c5r.setVisibility(View.GONE);
+            c6r.setVisibility(View.GONE);
+            c7r.setVisibility(View.GONE);
+            c8r.setVisibility(View.GONE);
+            c9r.setVisibility(View.GONE);
+        }
+
+        if (followInLeft.equals("false")){
+            pressuremap2.setVisibility(View.GONE);
+            c1.setVisibility(View.GONE);
+            c2.setVisibility(View.GONE);
+            c3.setVisibility(View.GONE);
+            c4.setVisibility(View.GONE);
+            c5.setVisibility(View.GONE);
+            c6.setVisibility(View.GONE);
+            c7.setVisibility(View.GONE);
+            c8.setVisibility(View.GONE);
+            c9.setVisibility(View.GONE);
+        }*/
+
     }
     public void onStart(){
         super.onStart();
-
-        startService(serviceIntent);
+        Intent serviceIntent1 = new Intent(this, AppForegroundService.class);
+        Intent serviceIntent2 = new Intent(this, DataCaptureService.class);
+        startService(serviceIntent1);
+        startService(serviceIntent2);
         byte freq = 1;
         byte cmd = 0x3A;
 
@@ -135,7 +185,16 @@ public class HomeActivity extends AppCompatActivity {
         }
         atualizacao.setText(builder.toString());
 
+        calendar = Calendar.getInstance();
+        int khour = calendar.get(Calendar.HOUR_OF_DAY);
+        int kminutes = calendar.get(Calendar.MINUTE);
+        int kseconds = calendar.get(Calendar.SECOND);
+        int kmiliseconds = calendar.get(Calendar.MILLISECOND);
 
+        byte hour = (byte) khour;
+        byte minutes = (byte) kminutes;
+        byte seconds = (byte) kseconds;
+        byte milliseconds = (byte) kmiliseconds;
 
         //Buscar valores de limiares já calculados para enviar com o comando 3C-leitura de dados (padronização do pacote de envio)
         sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
@@ -215,7 +274,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Envia solicitação de leitura a palmilha
-                stopService(serviceIntent);
                 byte cmd3c = 0X3C;
 
                 if (followInRight.equals("true")){
@@ -246,12 +304,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
                 }
-
-
-                //Reinicia o serviço de captura de dados quando há atualização destes
-                startService(serviceIntent);
-
-
 
             }
 

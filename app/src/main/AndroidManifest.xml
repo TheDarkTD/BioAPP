@@ -136,14 +136,15 @@
             <action android:name="android.intent.action.DEFAULT" />
         </intent-filter>
         </activity>
-        <activity android:name=".Home.Pop"></activity>
+        <activity android:name=".Home.Pop"
+            android:theme="@style/PopupTheme"/>
 
 
 
         <activity android:name=".Settings.AccountActivity"></activity>
         <activity android:name=".Settings.ParametersActivity"></activity>
         <activity android:name=".Settings.VibraActivity"></activity>
-        <activity android:name=".Settings.UpdateActivity"></activity>
+
 
 
     </application>

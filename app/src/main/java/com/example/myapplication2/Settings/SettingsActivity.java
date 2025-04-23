@@ -43,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        TextView mNamespace = findViewById(R.id.nomeusuario);
+        TextView mEmailspace = findViewById(R.id.emailusuario);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -67,12 +69,20 @@ public class SettingsActivity extends AppCompatActivity {
                     userName = dataSnapshot.child("name").getValue(String.class);
                     userEmail = dataSnapshot.child("email").getValue(String.class);
 
+                    SharedPreferences userdata = getSharedPreferences("userdata", MODE_PRIVATE);
+                    SharedPreferences.Editor userdataEditor = userdata.edit();
+                    userdataEditor.putString("name", userName);
+                    userdataEditor.putString("email", userEmail);
+
                 } else {
                     Toast.makeText(SettingsActivity.this, "Nenhum dado encontrado.", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(SettingsActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
             }
+
+            mNamespace.setText(userName);
+            mEmailspace.setText(userEmail);
         });
 
 
@@ -88,11 +98,6 @@ public class SettingsActivity extends AppCompatActivity {
         mVibraBtn = findViewById(R.id.Vibra);
         mUseInstructionsBtn = findViewById(R.id.Manual);
         fotoid = findViewById(R.id.fotoid);
-        TextView mNamespace = findViewById(R.id.nomeusuario);
-        TextView mEmailspace = findViewById(R.id.emailusuario);
-
-        mNamespace.setText(userName);
-        mEmailspace.setText(userEmail);
 
         mLogoutBtn = findViewById(R.id.btnLogout);
         fAuth = FirebaseAuth.getInstance();
@@ -161,21 +166,21 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        fotoid.setOnClickListener(new View.OnClickListener() {
+        /*fotoid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 startActivityForResult(Intent.createChooser(intent, "Escolha sua imagem"), 1);
             }
-        });
+        });*/
     }
 
-    protected void onActivityForResult(int RequestCode, int ResultCode, Intent dados) {
+    /*protected void onActivityForResult(int RequestCode, int ResultCode, Intent dados) {
         super.onActivityResult(RequestCode, ResultCode, dados);
         if (ResultCode == Activity.RESULT_OK) {
             if (RequestCode == 1) {
                 fotoid.setImageURI(dados.getData());
             }
-        }
-    }
+        }*/
+
 }
