@@ -112,20 +112,6 @@ public class DataActivity extends AppCompatActivity {
         mInicio.setOnClickListener(v -> datePickerDialogInicio.show());
         mFim.setOnClickListener(v -> datePickerDialogFim.show());
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Data_periodI", MODE_PRIVATE);
-        String Iyear = String.valueOf(sharedPreferences.getInt("StartY", 0000));
-        String Imonth = String.valueOf(sharedPreferences.getInt("StartM", 00));
-        String Iday = String.valueOf(sharedPreferences.getInt("StartD", 00));
-
-        dataInicio = Iyear + "-" + Imonth + "-" + Iday;
-
-        sharedPreferences = getSharedPreferences("Data_periodF", MODE_PRIVATE);
-        String Fyear = String.valueOf(sharedPreferences.getInt("EndY", 0000));
-        String Fmonth = String.valueOf(sharedPreferences.getInt("EndM", 00));
-        String Fday = String.valueOf(sharedPreferences.getInt("EndD", 00));
-
-        dataFim = Fyear + "-" + Fmonth + "-" + Fday;
-
         //buscar dados com base no periodo selecionado - de acordo com cada palmilha
 
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
@@ -135,11 +121,40 @@ public class DataActivity extends AppCompatActivity {
 
 
         //exportar dados de acordo com o tipo selecionado
-        mExportBtn.setOnClickListener(v -> showExportDialog(followInLeft, followInRight, dataInicio, dataFim));
+        mExportBtn.setOnClickListener(v -> {
+            SharedPreferences sharedPreferencesI = getSharedPreferences("Data_periodI", MODE_PRIVATE);
+            SharedPreferences sharedPreferencesF = getSharedPreferences("Data_periodF", MODE_PRIVATE);
+
+            String Iyear = String.valueOf(sharedPreferencesI.getInt("StartY", 0));
+            String Imonth = String.format("%02d", sharedPreferencesI.getInt("StartM", 1));
+            String Iday = String.format("%02d", sharedPreferencesI.getInt("StartD", 1));
+            String inicio = Iday + "-" + Imonth + "-" +Iyear ;
+
+            String Fyear = String.valueOf(sharedPreferencesF.getInt("EndY", 0));
+            String Fmonth = String.format("%02d", sharedPreferencesF.getInt("EndM", 1));
+            String Fday = String.format("%02d", sharedPreferencesF.getInt("EndD", 1));
+            String fim = Fday  + "-" + Fmonth + "-" + Fyear;
+
+            showExportDialog(followInLeft, followInRight, inicio, fim);
+        });
 
         //gerar documento de acordo com o tipo selecionado
-        mDocumentBtn.setOnClickListener( v -> showDocumentDialog(followInLeft, followInRight, dataFim, dataInicio));
+        mDocumentBtn.setOnClickListener(v -> {
+            SharedPreferences sharedPreferencesI = getSharedPreferences("Data_periodI", MODE_PRIVATE);
+            SharedPreferences sharedPreferencesF = getSharedPreferences("Data_periodF", MODE_PRIVATE);
 
+            String Iyear = String.valueOf(sharedPreferencesI.getInt("StartY", 0));
+            String Imonth = String.format("%02d", sharedPreferencesI.getInt("StartM", 1));
+            String Iday = String.format("%02d", sharedPreferencesI.getInt("StartD", 1));
+            String inicio = Iday + "-" + Imonth + "-" +Iyear ;
+
+            String Fyear = String.valueOf(sharedPreferencesF.getInt("EndY", 0));
+            String Fmonth = String.format("%02d", sharedPreferencesF.getInt("EndM", 1));
+            String Fday = String.format("%02d", sharedPreferencesF.getInt("EndD", 1));
+            String fim = Fday  + "-" + Fmonth + "-" + Fyear;
+
+            showDocumentDialog(followInLeft, followInRight, inicio, fim);
+        });
 
 
     }
@@ -203,9 +218,9 @@ public class DataActivity extends AppCompatActivity {
             mInicio.setText(date);
             SharedPreferences sharedPreferences = getSharedPreferences("Data_periodI", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("StartD", day);
-            editor.putInt("StartM", month);
-            editor.putInt("StartY", year);
+            editor.putInt("StartD", dayOfMonth);
+            editor.putInt("StartM", month1);
+            editor.putInt("StartY", year1);
             editor.apply();
         }, year, month, day);
 
@@ -217,9 +232,9 @@ public class DataActivity extends AppCompatActivity {
             mFim.setText(date);
             SharedPreferences sharedPreferences = getSharedPreferences("Data_periodF", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt("EndD", day);
-            editor.putInt("EndM", month);
-            editor.putInt("EndY", year);
+            editor.putInt("EndD", dayOfMonth);
+            editor.putInt("EndM", month1);
+            editor.putInt("EndY", year1);
             editor.apply();
         }, year, month, day);
     }
@@ -247,19 +262,6 @@ public class DataActivity extends AppCompatActivity {
             default: return "JAN";
         }
     }
-    private void saveToFile(String content, String filename) {
-        try {
-            File file = new File(getExternalFilesDir(null), filename);
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(content.getBytes());
-            fos.close();
-            Toast.makeText(this, "Arquivo salvo em: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Erro ao salvar arquivo", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     public static void enviarDados(Context context, String typeReport,String login, String dataInicio, String dataFim, String Left, String Right) {
 
@@ -360,7 +362,8 @@ public class DataActivity extends AppCompatActivity {
                 );
 
                 // Endereço da API no Render
-                String url = "https://sua-api.onrender.com/processar";
+                String url = "https://insoleapi.onrender.com/processar";
+
 
                 // Requisição POST
                 Request request = new Request.Builder()
@@ -439,7 +442,7 @@ public class DataActivity extends AppCompatActivity {
                 );
 
                 // Endereço da API no Render
-                String url = "https://sua-api.onrender.com/processar";
+                String url = "https://insoleapi.onrender.com/processar";
 
                 // Requisição POST
                 Request request = new Request.Builder()
