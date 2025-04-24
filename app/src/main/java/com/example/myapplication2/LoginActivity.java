@@ -200,24 +200,24 @@ public class LoginActivity extends AppCompatActivity {
                     // --- Recuperando os dados de vibração ---
                     DataSnapshot vibraSnapshot = dataSnapshot.child("vibra");
                     if (vibraSnapshot.exists()) {
-                        Integer vibraTime = vibraSnapshot.child("time").getValue(Integer.class);
-                        Integer vibraThreshold = vibraSnapshot.child("threshold").getValue(Integer.class);
-                        Integer vibraInterval = vibraSnapshot.child("interval").getValue(Integer.class);
-                        Integer vibraPulse = vibraSnapshot.child("pulse").getValue(Integer.class);
+                        String vibraTime = vibraSnapshot.child("time").getValue(String.class);
+                        String vibraint = vibraSnapshot.child("int").getValue(String.class);
+                        String vibraInterval = vibraSnapshot.child("interval").getValue(String.class);
+                        String vibraPulse = vibraSnapshot.child("pulse").getValue(String.class);
 
                         SharedPreferences vibraPref = getSharedPreferences("vibra", MODE_PRIVATE);
                         SharedPreferences.Editor vibraEditor = vibraPref.edit();
                         if (vibraTime != null) {
-                            vibraEditor.putInt("time", vibraTime);
+                            vibraEditor.putString("time", vibraTime);
                         }
-                        if (vibraThreshold != null) {
-                            vibraEditor.putInt("threshold", vibraThreshold);
+                        if (vibraint != null) {
+                            vibraEditor.putString("int", vibraint);
                         }
                         if (vibraInterval != null) {
-                            vibraEditor.putInt("interval", vibraInterval);
+                            vibraEditor.putString("interval", vibraInterval);
                         }
                         if (vibraPulse != null) {
-                            vibraEditor.putInt("pulse", vibraPulse);
+                            vibraEditor.putString("pulse", vibraPulse);
                         }
                         vibraEditor.apply();
                         Log.d("LoadUserData", "Dados de vibração salvos em SharedPreferences 'vibra'.");

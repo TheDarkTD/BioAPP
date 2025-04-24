@@ -50,20 +50,20 @@ public class FirebaseHelper {
             if (NetworkUtils.isNetworkAvailable(context)) {
                 // Se há conexão com a internet, salva diretamente no Firebase com um ID único
                 String id = mDatabase.child("DATA").push().getKey();
-                mDatabase.child("DATA").child(currentDate).child(id).setValue(sendData.toString()) // Envia a String diretamente
+                mDatabase.child("DATA").child(currentDate).child(id).setValue(sendData) // Envia a String diretamente
                         .addOnSuccessListener(aVoid -> {
                             System.out.println("SendData salvo no Firebase com sucesso!");
                         })
                         .addOnFailureListener(e -> {
                             System.err.println("Erro ao salvar SendData: " + e.getMessage());
                         });
-                mDatabase.child("DATA").child(currentDate).child(id).setValue(eventlist.toString()) // Envia a String diretamente
+                /*mDatabase.child("DATA").child(currentDate).child(id).setValue(eventlist.toString()) // Envia a String diretamente
                         .addOnSuccessListener(aVoid -> {
                             System.out.println("SendData salvo no Firebase com sucesso!");
                         })
                         .addOnFailureListener(e -> {
                             System.err.println("Erro ao salvar SendData: " + e.getMessage());
-                        });
+                        });*/
             } else {
                 // Se não há conexão com a internet, salva localmente com um ID único
                 saveSendDataLocally(sendData, currentDate);
@@ -77,7 +77,7 @@ public class FirebaseHelper {
             if (NetworkUtils.isNetworkAvailable(context)) {
                 // Se há conexão com a internet, salva diretamente no Firebase com um ID único
                 String id = mDatabase.child("DATA2").push().getKey();
-                mDatabase.child("DATA2").child(currentDate).child(id).setValue(sendData.toString()) // Envia a String diretamente
+                mDatabase.child("DATA2").child(currentDate).child(id).setValue(sendData) // Envia a String diretamente
                         .addOnSuccessListener(aVoid -> {
                             System.out.println("SendData2 salvo no Firebase com sucesso!");
                         })
