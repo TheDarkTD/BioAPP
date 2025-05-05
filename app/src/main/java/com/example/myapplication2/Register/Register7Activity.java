@@ -36,6 +36,7 @@ public class Register7Activity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Boolean verificar;
     private TextView instruct;
+    Boolean foot = false;
     private GifImageView gifimagewait;
     @Override
 
@@ -155,7 +156,6 @@ public class Register7Activity extends AppCompatActivity {
 
     private void processReceivedData(@NonNull ConectInsole insole) {
 
-                Boolean foot = false;
                 sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
                 String Sright = sharedPreferences.getString("Sright", "default");
                 if (Sright == "true") {
@@ -196,7 +196,7 @@ public class Register7Activity extends AppCompatActivity {
 
     private void processReceivedData2(@NonNull ConectInsole2 insole) {
 
-                Boolean foot = false;
+
                 sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
                 String Sleft = sharedPreferences.getString("Sleft", "default");
                 if (Sleft == "true") {
@@ -284,6 +284,7 @@ public class Register7Activity extends AppCompatActivity {
 
 
                 }
+                System.err.println(limS);
                 return limS;
             }
 

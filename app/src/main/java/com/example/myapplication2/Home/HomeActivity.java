@@ -281,8 +281,8 @@ public class HomeActivity extends AppCompatActivity {
                         conectar.createAndSendConfigData(cmd3c, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
                     }, 1000);
 
-                    //new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    //    conectar.receiveData(HomeActivity.this);}, 1500);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    conectar.receiveData(HomeActivity.this);}, 1500);
 
                     //Atualiza os valores de pressão plotados na tela
                     checkforcolors_right();
@@ -296,8 +296,8 @@ public class HomeActivity extends AppCompatActivity {
                         conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                     }, 1000);
 
-                    //new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    //   conectar2.receiveData(HomeActivity.this);}, 1500);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        conectar2.receiveData(HomeActivity.this);}, 1500);
 
                     //Atualiza os valores de pressão plotados na tela
                     checkforcolors_left();
@@ -330,42 +330,60 @@ public class HomeActivity extends AppCompatActivity {
 
 
         //checar limiares
-        sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
-        int S1_t = (short) sharedPreferences.getInt("Lim1I1", 8191);
-        int S2_t = (short) sharedPreferences.getInt("Lim2I1", 8191);
-        int S3_t = (short) sharedPreferences.getInt("Lim3I1", 8191);
-        int S4_t = (short) sharedPreferences.getInt("Lim4I1", 8191);
-        int S5_t = (short) sharedPreferences.getInt("Lim5I1", 8191);
-        int S6_t = (short) sharedPreferences.getInt("Lim6I1", 8191);
-        int S7_t = (short) sharedPreferences.getInt("Lim7I1", 8191);
-        int S8_t = (short) sharedPreferences.getInt("Lim8I1", 8191);
-        int S9_t = (short) sharedPreferences.getInt("Lim9I1", 8191);
+        sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
+        int S1_t = (short) sharedPreferences.getInt("S1", 8191);
+        int S2_t = (short) sharedPreferences.getInt("S2", 8191);
+        int S3_t = (short) sharedPreferences.getInt("S3", 8191);
+        int S4_t = (short) sharedPreferences.getInt("S4", 8191);
+        int S5_t = (short) sharedPreferences.getInt("S5", 8191);
+        int S6_t = (short) sharedPreferences.getInt("S6", 8191);
+        int S7_t = (short) sharedPreferences.getInt("S7", 8191);
+        int S8_t = (short) sharedPreferences.getInt("S8", 8191);
+        int S9_t = (short) sharedPreferences.getInt("S9", 8191);
 
 
         //calcular valores para cada círculo
         //definir menor valor de todas as leituras e maior valor de todas as leituras
         sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
         String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+        String sensorReadings_S;
         short[][] sensorReadings = new short[9][];
 
+
         for (int i = 0; i < 9; i++) {
-            sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
+            sensorReadings_S = sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]");
+            if (!sensorReadings_S.isEmpty()){
+                sensorReadings[i] = stringToShortArray(sensorReadings_S);
+            }
+            else{
+                sensorReadings[i] = new short[]{0, 0, 0, 0, 0};
+            }
+
         }
 
+        System.out.println("sensorReadings");
+        System.out.println(sensorReadings);
         short[] minMax = findMinMax(sensorReadings);
         int dimension = minMax[1] - minMax[0];
         int plength = sensorReadings[1].length;
+        short p1,p2,p3,p4,p5,p6,p7,p8,p9;
 
-        //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
-        short p1 = (short) ((sensorReadings[0][plength-1])- minMax[0]/dimension);
-        short p2 = (short) ((sensorReadings[1][plength-1]- minMax[0])/dimension);
-        short p3 = (short) ((sensorReadings[2][plength-1]- minMax[0])/dimension);
-        short p4 = (short) ((sensorReadings[3][plength-1]- minMax[0])/dimension);
-        short p5 = (short) ((sensorReadings[4][plength-1]- minMax[0])/dimension);
-        short p6 = (short) ((sensorReadings[5][plength-1]- minMax[0])/dimension);
-        short p7 = (short) ((sensorReadings[6][plength-1]- minMax[0])/dimension);
-        short p8 = (short) ((sensorReadings[7][plength-1]- minMax[0])/dimension);
-        short p9 = (short) ((sensorReadings[8][plength-1]- minMax[0])/dimension);
+        if(dimension != 0 && plength > 0){
+            //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
+            p1 = (short) ((sensorReadings[0][plength - 1]) - minMax[0] / dimension);
+            p2 = (short) ((sensorReadings[1][plength - 1] - minMax[0]) / dimension);
+            p3 = (short) ((sensorReadings[2][plength - 1] - minMax[0]) / dimension);
+            p4 = (short) ((sensorReadings[3][plength - 1] - minMax[0]) / dimension);
+            p5 = (short) ((sensorReadings[4][plength - 1] - minMax[0]) / dimension);
+            p6 = (short) ((sensorReadings[5][plength - 1] - minMax[0]) / dimension);
+            p7 = (short) ((sensorReadings[6][plength - 1] - minMax[0]) / dimension);
+            p8 = (short) ((sensorReadings[7][plength - 1] - minMax[0]) / dimension);
+            p9 = (short) ((sensorReadings[8][plength - 1] - minMax[0]) / dimension);
+        }
+        else{
+            System.out.println("Não foi possível calcular as cores");
+            p1=p2=p3=p4=p5=p6=p7=p8=p9=1;
+        }
         int[] ratioValues = {p1, p2, p3, p4, p5, p6, p7, p8, p9};
 
         //definir cor com base na porcentagem
@@ -411,43 +429,59 @@ public class HomeActivity extends AppCompatActivity {
 
 
         //checar limiares
-        sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-        int S1_t = (short) sharedPreferences.getInt("Lim1I2", 8191);
-        int S2_t = (short) sharedPreferences.getInt("Lim2I2", 8191);
-        int S3_t = (short) sharedPreferences.getInt("Lim3I2", 8191);
-        int S4_t = (short) sharedPreferences.getInt("Lim4I2", 8191);
-        int S5_t = (short) sharedPreferences.getInt("Lim5I2", 8191);
-        int S6_t = (short) sharedPreferences.getInt("Lim6I2", 8191);
-        int S7_t = (short) sharedPreferences.getInt("Lim7I2", 8191);
-        int S8_t = (short) sharedPreferences.getInt("Lim8I2", 8191);
-        int S9_t = (short) sharedPreferences.getInt("Lim9I2", 8191);
+        sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
+        int S1_t = (short) sharedPreferences.getInt("S1", 8191);
+        int S2_t = (short) sharedPreferences.getInt("S2", 8191);
+        int S3_t = (short) sharedPreferences.getInt("S3", 8191);
+        int S4_t = (short) sharedPreferences.getInt("S4", 8191);
+        int S5_t = (short) sharedPreferences.getInt("S5", 8191);
+        int S6_t = (short) sharedPreferences.getInt("S6", 8191);
+        int S7_t = (short) sharedPreferences.getInt("S7", 8191);
+        int S8_t = (short) sharedPreferences.getInt("S8", 8191);
+        int S9_t = (short) sharedPreferences.getInt("S9", 8191);
 
 
         //calcular valores para cada círculo
         //definir menor valor de todas as leituras e maior valor de todas as leituras
-        sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-        String[] sensorKeys = {"S1_2", "S2_2", "S3_2", "S4_2", "S5_2", "S6_2", "S7_2", "S8_2", "S9_2"};
+        sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+        String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+        String sensorReadings_S;
         short[][] sensorReadings = new short[9][];
+        System.out.println("Não foi possível calcular as cores");
 
         for (int i = 0; i < 9; i++) {
-            sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-        }
+            sensorReadings_S = sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]");
+            if(sensorReadings_S != ""){
+                sensorReadings[i] = stringToShortArray(sensorReadings_S);
+            }
+            else{
+                sensorReadings[i] = new short[]{0, 0, 0, 0, 0};
+            }
 
+        }
         short[] minMax = findMinMax(sensorReadings);
         int dimension = minMax[2];
         System.out.println(dimension);
         int plength = sensorReadings[1].length;
 
-        //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
-        short p1 = (short) ((sensorReadings[0][plength-1])- minMax[0]/dimension);
-        short p2 = (short) ((sensorReadings[1][plength-1]- minMax[0])/dimension);
-        short p3 = (short) ((sensorReadings[2][plength-1]- minMax[0])/dimension);
-        short p4 = (short) ((sensorReadings[3][plength-1]- minMax[0])/dimension);
-        short p5 = (short) ((sensorReadings[4][plength-1]- minMax[0])/dimension);
-        short p6 = (short) ((sensorReadings[5][plength-1]- minMax[0])/dimension);
-        short p7 = (short) ((sensorReadings[6][plength-1]- minMax[0])/dimension);
-        short p8 = (short) ((sensorReadings[7][plength-1]- minMax[0])/dimension);
-        short p9 = (short) ((sensorReadings[8][plength-1]- minMax[0])/dimension);
+        short p1,p2,p3,p4,p5,p6,p7,p8,p9;
+
+        if(dimension != 0){
+            //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
+            p1 = (short) ((sensorReadings[0][plength - 1]) - minMax[0] / dimension);
+            p2 = (short) ((sensorReadings[1][plength - 1] - minMax[0]) / dimension);
+            p3 = (short) ((sensorReadings[2][plength - 1] - minMax[0]) / dimension);
+            p4 = (short) ((sensorReadings[3][plength - 1] - minMax[0]) / dimension);
+            p5 = (short) ((sensorReadings[4][plength - 1] - minMax[0]) / dimension);
+            p6 = (short) ((sensorReadings[5][plength - 1] - minMax[0]) / dimension);
+            p7 = (short) ((sensorReadings[6][plength - 1] - minMax[0]) / dimension);
+            p8 = (short) ((sensorReadings[7][plength - 1] - minMax[0]) / dimension);
+            p9 = (short) ((sensorReadings[8][plength - 1] - minMax[0]) / dimension);
+        }
+        else{
+            System.out.println("Não foi possível calcular as cores");
+            p1=p2=p3=p4=p5=p6=p7=p8=p9=1;
+        }
         int[] ratioValues = {p1, p2, p3, p4, p5, p6, p7, p8, p9};
 
         //definir cor com base na porcentagem
@@ -549,17 +583,30 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    public short[] stringToShortArray(String str) {
-        str = str.replaceAll("[\\[\\]\\s]", ""); // Remove colchetes e espaços
-        String[] stringArray = str.split(",");
-        short[] shortArray = new short[stringArray.length];
+    private short[] stringToShortArray(String input) {
+        // Remove colchetes e espaços extras
+        input = input.replace("[", "").replace("]", "").trim();
 
-        for (int i = 0; i < stringArray.length; i++) {
-            shortArray[i] = Short.parseShort(stringArray[i]);
+        // Se for string vazia, retorna array vazio
+        if (input.isEmpty()) {
+            return new short[0];
         }
 
-        return shortArray;
+        // Divide pelos separadores de vírgula
+        String[] parts = input.split(",");
+
+        // Cria o array de shorts
+        short[] result = new short[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            try {
+                result[i] = (short) Integer.parseInt(parts[i].trim());
+            } catch (NumberFormatException e) {
+                result[i] = 0; // Em caso de erro, seta como 0
+            }
+        }
+        return result;
     }
+
 
     public void Insole_RightIP() {
         final int udpPortr = 20000; // Porta do ESP
@@ -602,11 +649,11 @@ public class HomeActivity extends AppCompatActivity {
                     while (true) {
                         socket.receive(packet);
                         String IPL = new String(packet.getData(), 0, packet.getLength());
-                        Log.e("UDP", "Received IP: " + IPL + " on port: " + udpPortl);
+                        Log.e("UDP", "Received IP left: " + IPL + " on port: " + udpPortl);
                         // Armazene o IP conforme necessário
                         SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("IP", IPL);
+                        editor.putString("IP2", IPL);
                         editor.apply();
                     }
                 } catch (Exception e) {

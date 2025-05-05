@@ -12,9 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.ConectInsole;
 import com.example.myapplication2.ConectInsole2;
+import com.example.myapplication2.Home.HomeActivity;
 import com.example.myapplication2.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class ParametersActivity extends AppCompatActivity{
@@ -29,6 +33,7 @@ public class ParametersActivity extends AppCompatActivity{
     ConectInsole2 conectInsole2;
     private Calendar calendar;
     private SharedPreferences sharedPreferences;
+    List<Short> resultList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -40,6 +45,8 @@ public class ParametersActivity extends AppCompatActivity{
     public void onStart() {
         super.onStart();
 
+        conectInsole = new ConectInsole(ParametersActivity.this);
+        conectInsole2 = new ConectInsole2(ParametersActivity.this);
         limupText = findViewById(R.id.limupText);
         limdownText = findViewById(R.id.limdownText);
         mBackBtn = findViewById(R.id.buttonback2);
@@ -125,7 +132,7 @@ public class ParametersActivity extends AppCompatActivity{
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     limupText.setText("Limiar palmilha direita:" + String.valueOf(progress));
-                    percentageAdjustRight = (float) (progress/100);
+                    percentageAdjustRight = (float) progress;
 
                 }
 
@@ -150,7 +157,7 @@ public class ParametersActivity extends AppCompatActivity{
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     limdownText.setText("Limiar palmilha esquerda:" + String.valueOf(progress));
-                    percentageAdjustLeft = (float) (progress/100);
+                    percentageAdjustLeft = (float) progress;
 
                 }
 
@@ -197,69 +204,91 @@ public class ParametersActivity extends AppCompatActivity{
 
     private void loadTreshData(Float treshold) {
 
-        calendar = Calendar.getInstance();
-        byte hora = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-        byte min = (byte) calendar.get(Calendar.MINUTE);
-        byte seg = (byte) calendar.get(Calendar.SECOND);
-        byte mSeg = (byte) calendar.get(Calendar.MILLISECOND);
         byte cmd = 0x2A;
         byte freq = 1;
 
-        short tnumbers[] = new short[9];
-        sharedPreferences = getSharedPreferences("ConfigPrefsR", MODE_PRIVATE);
+        List<Short> tnumbers = new ArrayList<>();
+        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("percentageR", String.valueOf(treshold));
 
-        tnumbers[0] = (short) sharedPreferences.getInt("S1", 0);
-        tnumbers[1] = (short) sharedPreferences.getInt("S2", 0);
-        tnumbers[2] = (short) sharedPreferences.getInt("S3", 0);
-        tnumbers[3] = (short) sharedPreferences.getInt("S4", 0);
-        tnumbers[4] = (short) sharedPreferences.getInt("S5", 0);
-        tnumbers[5] = (short) sharedPreferences.getInt("S6", 0);
-        tnumbers[6] = (short) sharedPreferences.getInt("S7", 0);
-        tnumbers[7] = (short) sharedPreferences.getInt("S8", 0);
-        tnumbers[8] = (short) sharedPreferences.getInt("S9", 0);
+        tnumbers.add( (short) sharedPreferences.getInt("S1", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S2", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S3", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S4", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S5", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S6", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S7", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S8", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S9", 0));
 
-
-        for (int i = 0; i < tnumbers.length; i++) {
-            tnumbers[i] = (short) (tnumbers[i]*treshold);
-        }
-        conectInsole.createAndSendConfigData(cmd, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
+        resultList = processList(tnumbers, treshold);
+        System.out.println("Resultados de limiar" + resultList);
+        System.out.println(resultList.get(0));
+        System.out.println(resultList.get(1));
+        System.out.println(resultList.get(8));
+        conectInsole.createAndSendConfigData(cmd, freq, resultList.get(0), resultList.get(1), resultList.get(2), resultList.get(3), resultList.get(4),  resultList.get(5), resultList.get(6), resultList.get(7), resultList.get(8));
     }
 
     private void loadTreshData2(Float treshold) {
 
-        calendar = Calendar.getInstance();
-        byte hora = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-        byte min = (byte) calendar.get(Calendar.MINUTE);
-        byte seg = (byte) calendar.get(Calendar.SECOND);
-        byte mSeg = (byte) calendar.get(Calendar.MILLISECOND);
         byte cmd = 0x2A;
         byte freq = 1;
 
-        short tnumbers[] = new short[9];
-        sharedPreferences = getSharedPreferences("ConfigPrefsL", MODE_PRIVATE);
+        List<Short> tnumbers = new ArrayList<>();
+        sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("percentageL", String.valueOf(treshold));
 
-        tnumbers[0] = (short) sharedPreferences.getInt("S1", 0);
-        tnumbers[1] = (short) sharedPreferences.getInt("S2", 0);
-        tnumbers[2] = (short) sharedPreferences.getInt("S3", 0);
-        tnumbers[3] = (short) sharedPreferences.getInt("S4", 0);
-        tnumbers[4] = (short) sharedPreferences.getInt("S5", 0);
-        tnumbers[5] = (short) sharedPreferences.getInt("S6", 0);
-        tnumbers[6] = (short) sharedPreferences.getInt("S7", 0);
-        tnumbers[7] = (short) sharedPreferences.getInt("S8", 0);
-        tnumbers[8] = (short) sharedPreferences.getInt("S9", 0);
+        tnumbers.add( (short) sharedPreferences.getInt("S1", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S2", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S3", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S4", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S5", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S6", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S7", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S8", 0));
+        tnumbers.add( (short) sharedPreferences.getInt("S9", 0));
 
-
-        for (int i = 0; i < tnumbers.length; i++) {
-            tnumbers[i] = (short) (tnumbers[i]*treshold);
-        }
-        conectInsole2.createAndSendConfigData(cmd, freq, tnumbers[0], tnumbers[1], tnumbers[2], tnumbers[3], tnumbers[4],  tnumbers[5], tnumbers[6], tnumbers[7], tnumbers[8]);
+        resultList = processList(tnumbers, treshold);
+        conectInsole2.createAndSendConfigData(cmd, freq, resultList.get(0), resultList.get(1), resultList.get(2), resultList.get(3), resultList.get(4),  resultList.get(5), resultList.get(6), resultList.get(7), resultList.get(8));
     }
 
 
+    public static List<Short> processList(List<Short> inputList, Float treshold) {
+            List<Short> resultList = new ArrayList<>();
+
+            // Iterar sobre a lista original
+            for (short number : inputList) {
+                // Converter o número para hexadecimal
+                String hex = Integer.toHexString(Short.toUnsignedInt(number)); // Converte short para int e depois para hex
+
+                // Verificar se o número em hexadecimal começa com "3"
+                if (hex.startsWith("3")) {
+                    // Remover o prefixo "3" (remover o "3" inicial)
+                    String hexWithoutPrefix = hex.substring(1);  // Remove o "3"
+
+                    // Converter o valor restante de volta para int
+                    int newValue = Integer.parseInt(hexWithoutPrefix, 16);
+
+                    // Soma 1 ao valor
+                    newValue = (int) (newValue*treshold);
+
+                    // Reconstruir o valor com o prefixo "3" de volta
+                    String newHex = "3" + Integer.toHexString(newValue);
+
+                    // Converter o valor de volta para short e adicionar à lista resultante
+                    resultList.add((short) Integer.parseInt(newHex, 16));
+                } else {
+                    // Se o número não começar com "3", apenas adicioná-lo à lista sem modificações
+                    resultList.add(number);
+                }
+            }
+
+
+        return resultList;
+    }
 
 
 }
+

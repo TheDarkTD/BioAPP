@@ -45,7 +45,7 @@ dependencies {
     val fragmentversion = "1.6.2"
 
 
-
+    implementation ("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
     implementation("androidx.fragment:fragment-ktx:$fragmentversion")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -84,8 +84,4 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
 
-    implementation("com.itextpdf:itext7-core:7.1.15@pom")
-    implementation ("com.itextpdf:kernel:7.1.15")
-    implementation ("com.itextpdf:layout:7.1.15")
-    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

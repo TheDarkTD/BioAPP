@@ -162,6 +162,19 @@ public class LoginActivity extends AppCompatActivity {
                             Log.e("LoadUserData", "ConfigData1 retornou null!");
                         }
                         conectInsole.setConfigData(configData1);
+                        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        // Salvando os valores de S1 a S9
+                        editor.putInt("S1", configData1.S1);
+                        editor.putInt("S2", configData1.S2);
+                        editor.putInt("S3", configData1.S3);
+                        editor.putInt("S4", configData1.S4);
+                        editor.putInt("S5", configData1.S5);
+                        editor.putInt("S6", configData1.S6);
+                        editor.putInt("S7", configData1.S7);
+                        editor.putInt("S8", configData1.S8);
+                        editor.putInt("S9", configData1.S9);
                     } else {
                         Log.d("LoadUserData", "FlagInsoleR não está 'true'. Não carregou ConfigData1.");
                     }
@@ -185,6 +198,19 @@ public class LoginActivity extends AppCompatActivity {
                             Log.e("LoadUserData", "ConfigData2 retornou null!");
                         }
                         conectInsole2.setConfigData(configData2);
+                        SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        // Salvando os valores de S1 a S9
+                        editor.putInt("S1", configData2.S1);
+                        editor.putInt("S2", configData2.S2);
+                        editor.putInt("S3", configData2.S3);
+                        editor.putInt("S4", configData2.S4);
+                        editor.putInt("S5", configData2.S5);
+                        editor.putInt("S6", configData2.S6);
+                        editor.putInt("S7", configData2.S7);
+                        editor.putInt("S8", configData2.S8);
+                        editor.putInt("S9", configData2.S9);
                     } else {
                         Log.d("LoadUserData", "FlagInsoleL não está 'true'. Não carregou ConfigData2.");
                     }
@@ -200,24 +226,24 @@ public class LoginActivity extends AppCompatActivity {
                     // --- Recuperando os dados de vibração ---
                     DataSnapshot vibraSnapshot = dataSnapshot.child("vibra");
                     if (vibraSnapshot.exists()) {
-                        Integer vibraTime = vibraSnapshot.child("time").getValue(Integer.class);
-                        Integer vibraThreshold = vibraSnapshot.child("threshold").getValue(Integer.class);
-                        Integer vibraInterval = vibraSnapshot.child("interval").getValue(Integer.class);
-                        Integer vibraPulse = vibraSnapshot.child("pulse").getValue(Integer.class);
+                        String vibraTime = vibraSnapshot.child("time").getValue(String.class);
+                        String vibraint = vibraSnapshot.child("int").getValue(String.class);
+                        String vibraInterval = vibraSnapshot.child("interval").getValue(String.class);
+                        String vibraPulse = vibraSnapshot.child("pulse").getValue(String.class);
 
                         SharedPreferences vibraPref = getSharedPreferences("vibra", MODE_PRIVATE);
                         SharedPreferences.Editor vibraEditor = vibraPref.edit();
                         if (vibraTime != null) {
-                            vibraEditor.putInt("time", vibraTime);
+                            vibraEditor.putString("time", vibraTime);
                         }
-                        if (vibraThreshold != null) {
-                            vibraEditor.putInt("threshold", vibraThreshold);
+                        if (vibraint != null) {
+                            vibraEditor.putString("int", vibraint);
                         }
                         if (vibraInterval != null) {
-                            vibraEditor.putInt("interval", vibraInterval);
+                            vibraEditor.putString("interval", vibraInterval);
                         }
                         if (vibraPulse != null) {
-                            vibraEditor.putInt("pulse", vibraPulse);
+                            vibraEditor.putString("pulse", vibraPulse);
                         }
                         vibraEditor.apply();
                         Log.d("LoadUserData", "Dados de vibração salvos em SharedPreferences 'vibra'.");

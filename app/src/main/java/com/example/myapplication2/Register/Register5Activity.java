@@ -67,11 +67,11 @@ public class Register5Activity extends AppCompatActivity {
                     while (true) {
                         socket.receive(packet);
                         String IPL = new String(packet.getData(), 0, packet.getLength());
-                        Log.e("UDP", "Received IP: " + IPL + " on port: " + udpPortl);
+                        Log.e("UDP", "Received IP left: " + IPL + " on port: " + udpPortl);
                         // Armazene o IP conforme necessário
                         SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("IP", IPL);
+                        editor.putString("IP2", IPL);
                         editor.apply();
                     }
                 } catch (Exception e) {

@@ -57,7 +57,7 @@ public class ConectInsole2 { //tratamento palmilha esquerda
     private Calendar calendar;
     Boolean connectedinsole2 = false;
     private static final String CHANNEL_ID = "notify_pressure"; // ID do canal
-    List<String> eventlist2;
+    List<String> eventlist2 = new ArrayList<>();;
 
     public static class ConfigData {
         public int cmd;
@@ -86,7 +86,6 @@ public class ConectInsole2 { //tratamento palmilha esquerda
         public int second;
         public int millisecond;
         public int battery;
-        public int sensor_trigger;
         public ArrayList<Integer> SR1 = new ArrayList<>();
         public ArrayList<Integer> SR2 = new ArrayList<>();
         public ArrayList<Integer> SR3 = new ArrayList<>();
@@ -123,7 +122,7 @@ public class ConectInsole2 { //tratamento palmilha esquerda
         firebasehelper = new FirebaseHelper(context);
         sharedPreferences = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
         ipAddressp2s = sharedPreferences.getString("IP2", "default");
-        System.out.println(ipAddressp2s);
+        System.err.println(ipAddressp2s);
 
 
     }
@@ -219,7 +218,6 @@ public class ConectInsole2 { //tratamento palmilha esquerda
                         receivedData.second =  calendar.get(Calendar.SECOND);
                         receivedData.millisecond =  calendar.get(Calendar.MILLISECOND);
                         receivedData.battery = jsonObject.getInt("battery");
-                        receivedData.sensor_trigger =  jsonObject.getInt("sensor_trigger");
                         JSONArray sensorsReads = jsonObject.getJSONArray("sensors_reads");
 
                         // Clear previous data
@@ -246,10 +244,6 @@ public class ConectInsole2 { //tratamento palmilha esquerda
                             receivedData.SR9.add( sensorRead.getInt("S9"));
 
                         }
-
-
-                        firebasehelper.saveSendData2(receivedData, eventlist2);
-                        System.out.println("Dados recebidos enviados ao Firebase com sucesso.");
 
                         //Armazenar dados recebidos sensores nas sharedPreferences
                         String receivedS1 = receivedData.SR1.toString();

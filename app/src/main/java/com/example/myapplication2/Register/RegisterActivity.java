@@ -217,10 +217,10 @@ public class RegisterActivity extends AppCompatActivity
         // --- Adicionando os dados de vibração ---
         SharedPreferences vibraPrefs = getSharedPreferences("My_Appvibra", MODE_PRIVATE);
 
-        String vibraTime = vibraPrefs.getString("s_time", "");
-        String vibraThreshold = vibraPrefs.getString("s_threshold", "");
-        String vibraInterval = vibraPrefs.getString("s_interval", "");
-        String vibraPulse = vibraPrefs.getString("s_pulse", "");
+        String vibraTime = vibraPrefs.getString("time", "");
+        String vibraThreshold = vibraPrefs.getString("int", "");
+        String vibraInterval = vibraPrefs.getString("interval", "");
+        String vibraPulse = vibraPrefs.getString("pulse", "");
 
         HashMap<String, Object> vibraMap = new HashMap<>();
         vibraMap.put("time", vibraTime);

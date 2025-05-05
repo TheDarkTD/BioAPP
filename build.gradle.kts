@@ -1,4 +1,8 @@
 buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
     dependencies {
 
         classpath("com.google.firebase:firebase-auth:16.0.4")

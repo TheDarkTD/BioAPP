@@ -3,6 +3,8 @@ package com.example.myapplication2.Connection;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -63,17 +65,17 @@ public class ConnectionActivity extends AppCompatActivity {
         calendar = Calendar.getInstance();
         byte cmd = 0X3E;
         byte freq = 1;
-        byte hour = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-        byte minutes = (byte) calendar.get(Calendar.MINUTE);
-        byte seconds = (byte) calendar.get(Calendar.SECOND);
-        byte milliseconds = (byte) calendar.get(Calendar.MILLISECOND);
         S1 = S2 = S3 = S4 = S5 = S6 = S7 = S8 = S9 = 0x1FFF;
 
         if (InRight.equals("true")) {
             conectar.createAndSendConfigData(cmd, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                conectar.receiveData(ConnectionActivity.this);}, 1500);
         }
         if (InLeft.equals("true")) {
             conectar2.createAndSendConfigData(cmd, freq, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                conectar2.receiveData(ConnectionActivity.this);}, 1500);
         }
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomnavview3);

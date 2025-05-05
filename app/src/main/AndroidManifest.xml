@@ -144,6 +144,7 @@
         <activity android:name=".Settings.AccountActivity"></activity>
         <activity android:name=".Settings.ParametersActivity"></activity>
         <activity android:name=".Settings.VibraActivity"></activity>
+        <activity android:name=".Settings.UseInstructionsActivity"></activity>
 
 
 

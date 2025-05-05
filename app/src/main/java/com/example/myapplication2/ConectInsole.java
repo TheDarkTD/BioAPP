@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -64,7 +66,8 @@ public class ConectInsole { //tratamento palmilha direita
     private Calendar calendar;
     Boolean connectedinsole1 = false;
     private static final String CHANNEL_ID = "notify_pressure"; // ID do canal
-    List<String> eventlist;
+    List<String> eventlist = new ArrayList<>();
+    ;
 
     public static class ConfigData {
         public int cmd;
@@ -94,7 +97,6 @@ public class ConectInsole { //tratamento palmilha direita
         public int second;
         public int millisecond;
         public int battery;
-        public int sensor_trigger;
         public ArrayList<Integer> SR1 = new ArrayList<>();
         public ArrayList<Integer> SR2 = new ArrayList<>();
         public ArrayList<Integer> SR3 = new ArrayList<>();
@@ -133,6 +135,7 @@ public class ConectInsole { //tratamento palmilha direita
         ipAddressp1s = sharedPreferences.getString("IP", "default");
         System.out.println(ipAddressp1s);
         firebasehelper = new FirebaseHelper(context);
+
 
         // Obter SharedPreferences usando o contexto
         //sharedPreferences = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
@@ -186,6 +189,9 @@ public class ConectInsole { //tratamento palmilha direita
                 e.printStackTrace();
                 // Melhorar tratamento de falha
                 System.err.println("Falha ao enviar dados de configuração: " + e.getMessage());
+
+
+
             }
 
             @Override
@@ -230,7 +236,6 @@ public class ConectInsole { //tratamento palmilha direita
                         receivedData.second =  calendar.get(Calendar.SECOND);
                         receivedData.millisecond =  calendar.get(Calendar.MILLISECOND);
                         receivedData.battery =  jsonObject.getInt("battery");
-                        receivedData.sensor_trigger =  jsonObject.getInt("sensor_trigger");
                         JSONArray sensorsReads = jsonObject.getJSONArray("sensors_reads");
 
                         // Clear previous data
