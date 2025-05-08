@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             Log.e("LoadUserData", "ConfigData2 retornou null!");
                         }
-                        conectInsole2.setConfigData(configData2);
+                       /* conectInsole2.setConfigData(configData2);
                         SharedPreferences sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -210,7 +210,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putInt("S6", configData2.S6);
                         editor.putInt("S7", configData2.S7);
                         editor.putInt("S8", configData2.S8);
-                        editor.putInt("S9", configData2.S9);
+                        editor.putInt("S9", configData2.S9);*/
                     } else {
                         Log.d("LoadUserData", "FlagInsoleL não está 'true'. Não carregou ConfigData2.");
                     }

@@ -1,11 +1,14 @@
 package com.example.myapplication2.Register;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -148,7 +151,6 @@ public class Register7Activity extends AppCompatActivity {
                     conectar2.receiveData(this);
                 }, 450); // Delay para permitir a recepção dos dados*/
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    stopService(serviceIntent);
                     processReceivedData2(conectar2);
                 }, 1050); // Delay para permitir o calculo dos dados*/
             }
@@ -156,80 +158,82 @@ public class Register7Activity extends AppCompatActivity {
 
     private void processReceivedData(@NonNull ConectInsole insole) {
 
-                sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
-                String Sright = sharedPreferences.getString("Sright", "default");
-                if (Sright == "true") {
-                    foot = false;
+        sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        String Sright = sharedPreferences.getString("Sright", "default");
+        if (Sright == "true") {
+            foot = false;
 
-                    sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-                    String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-                    short[][] sensorReadings = new short[9][];
+            sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+            String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+            short[][] sensorReadings = new short[9][];
 
-                    for (int i = 0; i < 9; i++) {
-                        sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-                        System.out.println("Sensor " + sensorKeys[i] + ": " + Arrays.toString(sensorReadings[i]));
-                    }
-
-                    short[] limS = thresholdSensors_steady(sensorReadings, foot);
-
-                    byte cmd1 = 0x2A;
-                    insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                    saveConfigData1ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                    SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putInt("Lim1I1", limS[0]);
-                    editor.putInt("Lim2I1", limS[1]);
-                    editor.putInt("Lim3I1", limS[2]);
-                    editor.putInt("Lim4I1", limS[3]);
-                    editor.putInt("Lim5I1", limS[4]);
-                    editor.putInt("Lim6I1", limS[5]);
-                    editor.putInt("Lim7I1", limS[6]);
-                    editor.putInt("Lim8I1", limS[7]);
-                    editor.putInt("Lim9I1", limS[8]);
-                    editor.apply();
-                }
-
-
-
-
+            for (int i = 0; i < 9; i++) {
+                sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
+                System.out.println("Sensor " + sensorKeys[i] + ": " + Arrays.toString(sensorReadings[i]));
             }
+
+            short[] limS = thresholdSensors_steady(sensorReadings, foot);
+
+            byte cmd1 = 0x2A;
+            insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+            saveConfigData1ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+            SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("Lim1I1", limS[0]);
+            editor.putInt("Lim2I1", limS[1]);
+            editor.putInt("Lim3I1", limS[2]);
+            editor.putInt("Lim4I1", limS[3]);
+            editor.putInt("Lim5I1", limS[4]);
+            editor.putInt("Lim6I1", limS[5]);
+            editor.putInt("Lim7I1", limS[6]);
+            editor.putInt("Lim8I1", limS[7]);
+            editor.putInt("Lim9I1", limS[8]);
+            editor.apply();
+        }
+
+
+
+
+    }
 
     private void processReceivedData2(@NonNull ConectInsole2 insole) {
+        Log.e(TAG, "Processando DADOS RECEBIDOS!");
+        sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        String Sleft = sharedPreferences.getString("Sleft", "default");
+        if (Sleft.equals("true")) {
+            foot = true;
 
+            sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+            String[] sensorKeys = {"S1_2", "S2_2", "S3_2", "S4_2", "S5_2", "S6_2", "S7_2", "S8_2", "S9_2"};
+            short[][] sensorReadings = new short[9][];
 
-                sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
-                String Sleft = sharedPreferences.getString("Sleft", "default");
-                if (Sleft == "true") {
-                    foot = true;
-
-                    sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-                    String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-                    short[][] sensorReadings = new short[9][];
-
-                    for (int i = 0; i < 9; i++) {
-                        sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
-                    }
-
-                    short[] limS = thresholdSensors_steady(sensorReadings, foot);
-
-                    byte cmd1 = 0x2A;
-                    insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                    saveConfigData2ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
-                    SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putInt("Lim1I2", limS[0]);
-                    editor.putInt("Lim2I2", limS[1]);
-                    editor.putInt("Lim3I2", limS[2]);
-                    editor.putInt("Lim4I2", limS[3]);
-                    editor.putInt("Lim5I2", limS[4]);
-                    editor.putInt("Lim6I2", limS[5]);
-                    editor.putInt("Lim7I2", limS[6]);
-                    editor.putInt("Lim8I2", limS[7]);
-                    editor.putInt("Lim9I2", limS[8]);
-                    editor.apply();
-                }
-
+            for (int i = 0; i < 9; i++) {
+                sensorReadings[i] = stringToShortArray(sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]"));
             }
+
+            Log.e(TAG, "leiturasssss" + Arrays.toString(sensorReadings));
+
+            short[] limS = thresholdSensors_steady(sensorReadings, foot);
+            Log.e(TAG, Arrays.toString(limS));
+
+            byte cmd1 = 0x2A;
+            insole.createAndSendConfigData(cmd1, freq, limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+            saveConfigData2ToPrefs(limS[0], limS[1], limS[2], limS[3], limS[4], limS[5], limS[6], limS[7], limS[8]);
+            SharedPreferences sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("Lim1I2", limS[0]);
+            editor.putInt("Lim2I2", limS[1]);
+            editor.putInt("Lim3I2", limS[2]);
+            editor.putInt("Lim4I2", limS[3]);
+            editor.putInt("Lim5I2", limS[4]);
+            editor.putInt("Lim6I2", limS[5]);
+            editor.putInt("Lim7I2", limS[6]);
+            editor.putInt("Lim8I2", limS[7]);
+            editor.putInt("Lim9I2", limS[8]);
+            editor.apply();
+        }
+
+    }
 
 
             @NonNull
@@ -251,12 +255,19 @@ public class Register7Activity extends AppCompatActivity {
 
                     for (int i = 0; i < 10; i++) {
                         regions[i] = sharedPreferences.getBoolean(regionKeys[i], false);
-                        System.out.println("regionsS2" + regions[i]);
+                        System.out.println("regionsS2: " + regions[i]);
                     }
+
 
                     for (int i = 0; i < 9; i++) {
                         short hexS = (short) Integer.parseInt(hex[i], 16);
-                        limS[i] = regions[i].equals("true") ? (short) ((0x3 << 12) | (hexS & 0xFFF)) : (short) ((0x1 << 12) | (hexS & 0xFFF));
+                        if (regions[i]) {
+                            // If regions[i] is true, use 0x3
+                            limS[i] = (short) ((0x3 << 12) | (hexS & 0xFFF));
+                        } else {
+                            // If regions[i] is false, use 0x1
+                            limS[i] = (short) ((0x1 << 12) | (hexS & 0xFFF));
+                        }
                     }
 
 
