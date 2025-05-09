@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -22,6 +23,7 @@ import okhttp3.Response;
 import okhttp3.Call;
 import okhttp3.Callback;
 import java.io.IOException;
+import static android.content.ContentValues.TAG;
 
 public class ConectVibra {
     private OkHttpClient client;
@@ -81,6 +83,7 @@ public class ConectVibra {
                 .build();
 
         String linkV = "http://" + ipAddressVs + "/config";
+        Log.e(TAG, linkV);
         Request request = new Request.Builder()
                 .url(linkV)
                 .post(body)

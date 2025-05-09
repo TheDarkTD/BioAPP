@@ -149,10 +149,10 @@ public class Register7Activity extends AppCompatActivity {
                 sendCommand(cmd, freq);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     conectar2.receiveData(this);
-                }, 450); // Delay para permitir a recepção dos dados*/
+                }, 750); // Delay para permitir a recepção dos dados*/
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     processReceivedData2(conectar2);
-                }, 1050); // Delay para permitir o calculo dos dados*/
+                }, 1350); // Delay para permitir o calculo dos dados*/
             }
 
 

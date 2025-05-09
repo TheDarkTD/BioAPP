@@ -231,7 +231,14 @@ public class LoginActivity extends AppCompatActivity {
                         String vibraInterval = vibraSnapshot.child("interval").getValue(String.class);
                         String vibraPulse = vibraSnapshot.child("pulse").getValue(String.class);
 
-                        SharedPreferences vibraPref = getSharedPreferences("vibra", MODE_PRIVATE);
+                        Log.e(TAG, "-----------------------------------------------");
+                        Log.e(TAG, vibraint);
+                        Log.e(TAG, vibraTime);
+                        Log.e(TAG, vibraPulse);
+                        Log.e(TAG, vibraInterval);
+                        Log.e(TAG, "-----------------------------------------------");
+
+                        SharedPreferences vibraPref = getSharedPreferences("My_Appvibra", MODE_PRIVATE);
                         SharedPreferences.Editor vibraEditor = vibraPref.edit();
                         if (vibraTime != null) {
                             vibraEditor.putString("time", vibraTime);

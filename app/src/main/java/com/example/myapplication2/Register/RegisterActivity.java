@@ -218,13 +218,13 @@ public class RegisterActivity extends AppCompatActivity
         SharedPreferences vibraPrefs = getSharedPreferences("My_Appvibra", MODE_PRIVATE);
 
         String vibraTime = vibraPrefs.getString("time", "");
-        String vibraThreshold = vibraPrefs.getString("int", "");
+        String vibraInt = vibraPrefs.getString("int", "");
         String vibraInterval = vibraPrefs.getString("interval", "");
         String vibraPulse = vibraPrefs.getString("pulse", "");
 
         HashMap<String, Object> vibraMap = new HashMap<>();
         vibraMap.put("time", vibraTime);
-        vibraMap.put("threshold", vibraThreshold);
+        vibraMap.put("int", vibraInt);
         vibraMap.put("interval", vibraInterval);
         vibraMap.put("pulse", vibraPulse);
         // Adiciona o vibraMap ao HashMap principal

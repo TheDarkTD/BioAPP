@@ -54,6 +54,7 @@ public class ConectInsole2 {
     private final FirebaseHelper firebaseHelper;
     private final SharedPreferences prefsConfig;
     private final String baseUrl;
+    ConectVibra conectarVibra;
 
     private Calendar calendar;
     private SendData receivedData = new SendData();
@@ -94,6 +95,8 @@ public class ConectInsole2 {
         prefsConfig = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
         baseUrl = "http://" + prefsConfig.getString("IP2", "");
         Log.d(TAG, "Base URL: " + baseUrl);
+
+        conectarVibra = new ConectVibra(context);
     }
 
     public void createAndSendConfigData(byte cmd, byte freq, short... sensors) {
@@ -197,9 +200,36 @@ public class ConectInsole2 {
                         Log.d(TAG, "User not authenticated: skip save");
                     }
 
+
                     storeReadings(ctx);
                     Log.d(TAG, "Readings stored");
-                    if (receivedData.cmd == 0x3D) handlePressureEvent(ctx);
+                    if (receivedData.cmd == 0X3D) {
+                        byte cmdv = 0x1A;
+                        SharedPreferences vib = ctx.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
+                        Log.d(TAG, "conectarVibraSend: sending vibra config");
+
+
+
+                        String INT_string = vib.getString("int", "default");
+                        Byte INT = Byte.valueOf(INT_string);
+                        String PEST_string = vib.getString("pulse", "default");
+                        Byte PEST = Byte.valueOf(PEST_string);
+                        String INEST_string = vib.getString("interval", "default");
+                        Short INEST = Short.valueOf(INEST_string);
+                        String TMEST_string = vib.getString("time", "default");
+                        Short TMEST = Short.valueOf(TMEST_string);
+
+                        Log.e(TAG, INT_string +  PEST_string +  INEST_string +  TMEST_string);
+                        conectarVibra.SendConfigData(cmdv, PEST, INT, TMEST, INEST);
+
+                        createNotificationChannel(ctx);
+                        NotificationManagerCompat nm = NotificationManagerCompat.from(ctx);
+                        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                            return;
+                        nm.notify(2, buildNotification(ctx));
+                        Log.d(TAG, "Notification dispatched");
+                    }
+
                 } catch (JSONException e) {
                     Log.e(TAG, "receiveData JSON error", e);
                 }
@@ -289,25 +319,15 @@ public class ConectInsole2 {
         return java.util.Collections.emptyList();
     }
 
-    private void handlePressureEvent(Context ctx) {
-        Log.d(TAG, "handlePressureEvent: event detected");
-        SharedPreferences vib = ctx.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
-        conectarVibraSend((byte) 0x1A, vib);
-        createNotificationChannel(ctx);
-        NotificationManagerCompat nm = NotificationManagerCompat.from(ctx);
-        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
-            return;
-        nm.notify(2, buildNotification(ctx));
-        Log.d(TAG, "Notification dispatched");
-    }
 
-    private void conectarVibraSend(byte cmd, SharedPreferences vib) {
+    private void conectarVibraSend(byte cmd, Context ctx) {
+        SharedPreferences vib = ctx.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
         Log.d(TAG, "conectarVibraSend: sending vibra config");
         byte pulse = Byte.parseByte(vib.getString("pulse", "0"));
         short interval = Short.parseShort(vib.getString("interval", "0"));
         short time = Short.parseShort(vib.getString("time", "0"));
         byte freq = Byte.parseByte(vib.getString("int", "0"));
-        new ConectVibra(null).SendConfigData(cmd, pulse, freq, time, interval);
+        conectarVibra.SendConfigData(cmd, pulse, freq, time, interval);
     }
 
     private Notification buildNotification(Context ctx) {
