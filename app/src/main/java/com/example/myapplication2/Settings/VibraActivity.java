@@ -1,5 +1,6 @@
 package com.example.myapplication2.Settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -66,7 +67,7 @@ public class VibraActivity extends AppCompatActivity {
             }
         });
 
-        String[] arrayTime = new String[]{"5 segundos", "10 segundos", "15 segundos", "30 segundos"};
+        String[] arrayTime = new String[]{"2 segundos", "5 segundos", "10 segundos", "15 segundos"};
         mtime.setMinValue(0);
         mtime.setMaxValue(arrayTime.length - 1);
         selectedTime = arrayTime[mtime.getValue()];  // Initialize selectedTime
@@ -132,6 +133,9 @@ public class VibraActivity extends AppCompatActivity {
                         break;
                 }
                 switch (selectedTime){
+                    case "2 segundos":
+                        TMEST = 2000;
+                        break;
                     case "5 segundos":
                         TMEST = 5000;
                         break;
@@ -140,9 +144,6 @@ public class VibraActivity extends AppCompatActivity {
                         break;
                     case "15 segundos":
                         TMEST = 15000;
-                        break;
-                    case "30 segundos":
-                        TMEST = 30000;
                         break;
                 }
                 switch (selectedPulse){
@@ -166,6 +167,13 @@ public class VibraActivity extends AppCompatActivity {
                 ConectVibra conectar = new ConectVibra(VibraActivity.this);
                 conectar.SendConfigData(cmd, PEST, INT, TMEST, INEST);
                 System.out.println(cmd + ","+ PEST+ ","+INT+ ","+TMEST+ ","+INEST);
+                SharedPreferences sharedPreferences = getSharedPreferences("My_Appvibra", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("int", String.valueOf(INT));
+                editor.putString("time", String.valueOf(TMEST));
+                editor.putString("pulse", String.valueOf(PEST));
+                editor.putString("interval", String.valueOf(INEST));
+                editor.apply();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     conectar.receiveData(VibraActivity.this);
                 }, 1000);

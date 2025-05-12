@@ -71,7 +71,7 @@ public class Register8Activity extends AppCompatActivity {
             }
         });
 
-        String[] arrayTime = new String[]{"5 segundos", "10 segundos", "15 segundos", "30 segundos"};
+        String[] arrayTime = new String[]{"2 segundos", "5 segundos", "10 segundos", "15 segundos"};
         mtime.setMinValue(0);
         mtime.setMaxValue(arrayTime.length - 1);
         selectedTime = arrayTime[mtime.getValue()];  // Initialize selectedTime
@@ -134,6 +134,9 @@ public class Register8Activity extends AppCompatActivity {
                         break;
                 }
                 switch (selectedTime){
+                    case "2 segundos":
+                        TMEST = 2000;
+                        break;
                     case "5 segundos":
                         TMEST = 5000;
                         break;
@@ -142,9 +145,6 @@ public class Register8Activity extends AppCompatActivity {
                         break;
                     case "15 segundos":
                         TMEST = 15000;
-                        break;
-                    case "30 segundos":
-                        TMEST = 30000;
                         break;
                 }
                 switch (selectedPulse){
