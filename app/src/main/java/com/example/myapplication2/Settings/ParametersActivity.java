@@ -62,17 +62,23 @@ public class ParametersActivity extends AppCompatActivity{
         if (InRight.equals("false") && InLeft.equals("true")) {
             limdown.setVisibility(View.GONE);
             limdownText.setVisibility(View.GONE);
-            limupText.setText("Limiar: 0%");
+            limupText.setText("Limiar: 0x");
 
             limup.setProgress(0);
-            limup.incrementProgressBy(50);
-            limup.setMax(200);
+            limup.incrementProgressBy(1);
+            limup.setMin(-10);
+            limup.setMax(10);
 
             limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    limupText.setText("Limiar em:" + String.valueOf(progress));
-                    percentageAdjustLeft = (float) (progress/100);
+                    limupText.setText("Limiar em: " + String.valueOf(progress));
+                    if(progress>0){
+                        percentageAdjustLeft = (float) progress;
+                    }
+                    else{
+                        percentageAdjustLeft = (11+progress)/10f;
+                    }
 
                 }
 
@@ -91,18 +97,23 @@ public class ParametersActivity extends AppCompatActivity{
         if (InLeft.equals("false") && InRight.equals("true")) {
             limdown.setVisibility(View.GONE);
             limdownText.setVisibility(View.GONE);
-            limupText.setText("Limiar: 0%");
+            limupText.setText("Limiar: 0x");
 
             limup.setProgress(0);
-            limup.incrementProgressBy(50);
-            limup.setMax(200);
+            limup.incrementProgressBy(1);
+            limup.setMin(-10);
+            limup.setMax(10);
 
             limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    limupText.setText("Limiar em:" + String.valueOf(progress));
-                    percentageAdjustRight = (float) (progress/100);
-
+                    limupText.setText("Limiar em: " + String.valueOf(progress));
+                    if(progress>0){
+                        percentageAdjustRight = (float) progress;
+                    }
+                    else{
+                        percentageAdjustRight = (11+progress)/10f;
+                    }
                 }
 
                 @Override
@@ -122,17 +133,23 @@ public class ParametersActivity extends AppCompatActivity{
         else {
 
             //configura palmilha direita
-            limupText.setText("Limiar palmilha direita: 0%");
+            limupText.setText("Limiar palmilha direita: 0x");
 
             limup.setProgress(0);
-            limup.incrementProgressBy(50);
-            limup.setMax(200);
+            limup.incrementProgressBy(1);
+            limup.setMin(-10);
+            limup.setMax(10);
 
             limup.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    limupText.setText("Limiar palmilha direita:" + String.valueOf(progress));
-                    percentageAdjustRight = (float) progress;
+                    limupText.setText("Limiar palmilha direita: " + String.valueOf(progress));
+                    if(progress>0){
+                        percentageAdjustRight = (float) progress;
+                    }
+                    else{
+                        percentageAdjustRight = (11+progress)/10f;
+                    }
 
                 }
 
@@ -147,17 +164,23 @@ public class ParametersActivity extends AppCompatActivity{
                 }
             });
             //configura palmilha esquerda
-            limdownText.setText("Limiar palmilha esquerda: 0%");
+            limdownText.setText("Limiar palmilha esquerda: 0x");
 
             limdown.setProgress(0);
-            limdown.incrementProgressBy(50);
-            limdown.setMax(200);
+            limdown.incrementProgressBy(1);
+            limdown.setMin(-10);
+            limdown.setMax(10);
 
             limdown.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    limdownText.setText("Limiar palmilha esquerda:" + String.valueOf(progress));
-                    percentageAdjustLeft = (float) progress;
+                    limdownText.setText("Limiar palmilha esquerda: " + String.valueOf(progress));
+                    if(progress>0){
+                        percentageAdjustLeft = (float) progress;
+                    }
+                    else{
+                        percentageAdjustLeft = (11+progress)/10f;
+                    }
 
                 }
 

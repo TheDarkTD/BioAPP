@@ -239,14 +239,13 @@ public class Register7Activity extends AppCompatActivity {
             @NonNull
     public short[] thresholdSensors_steady(short[][] sensorReadings, boolean whichfoot) {
                 short[] limS = new short[9];
-                ArrayList<Short>[] meanPeaks = new ArrayList[9];
                 int[] lim = new int[9];
                 String[] hex = new String[9];
 
+
                 for (int i = 0; i < 9; i++) {
-                    meanPeaks[i] = getMeanPeaks(sensorReadings[i]);
-                    lim[i] = getMean(meanPeaks[i]);
-                    hex[i] = Integer.toHexString(lim[i]);
+                    limS[i] = (short) getMean(sensorReadings[i]);
+                    hex[i] = Integer.toHexString(limS[i]);
                 }
                 if (whichfoot == true) {
                     sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
@@ -298,75 +297,16 @@ public class Register7Activity extends AppCompatActivity {
                 System.err.println(limS);
                 return limS;
             }
+    private int getMean(@NonNull short[] values) {
+        int sum = 0;
+        short lim = 0;
 
-            @NonNull
-    private ArrayList<Short> getMeanPeaks(short[] readings) {
-                ArrayList<Short> meanPeaks = new ArrayList<>();
-                ArrayList<Integer> positionPeak = new ArrayList<>();
-                short max = findMax(readings);
-                short min = findMin(readings);
-                int difference = max - min;
-
-                // Encontra os picos nos dados dos sensores
-                for (int i = 1; i < readings.length - 1; i++) {
-                    if (readings[i] > readings[i - 1] && readings[i] > readings[i + 1]) {
-                        positionPeak.add(i);
-                    }
-                }
-
-                // Calcula a média dos picos
-                for (int j = 0; j < positionPeak.size(); j++) {
-                    int sumP = readings[positionPeak.get(j)];
-                    int divD = 1;
-                    for (int k = 1; k < 20; k++) {
-                        if (positionPeak.get(j) - k >= 0 &&
-                                (j + 1 < positionPeak.size() && positionPeak.get(j) - k < positionPeak.get(j + 1)) &&
-                                (readings[positionPeak.get(j)] - readings[positionPeak.get(j) - k]) < (0.2 * difference)) {
-                            sumP += readings[positionPeak.get(j) - k];
-                            divD++;
-                        }
-                        if (positionPeak.get(j) + k < readings.length &&
-                                (j + 1 < positionPeak.size() && positionPeak.get(j) + k < positionPeak.get(j + 1)) &&
-                                (readings[positionPeak.get(j)] - readings[positionPeak.get(j) + k]) < (0.2 * difference)) {
-                            sumP += readings[positionPeak.get(j) + k];
-                            divD++;
-                        }
-                    }
-                    meanPeaks.add((short) (sumP / divD));
-                }
-                return meanPeaks;
-            }
-
-    private int getMean(@NonNull ArrayList<Short> values) {
-                if (values.isEmpty()) {
-                    return 0;
-                }
-                int sum = 0;
-                for (short value : values) {
-                    sum += value;
-                }
-                return sum / values.size();
-            }
-
-    public short findMax(@NonNull short[] readings) {
-                short max = readings[0];
-                for (short reading : readings) {
-                    if (reading > max) {
-                        max = reading;
-                    }
-                }
-                return max;
-            }
-
-    public short findMin(@NonNull short[] readings) {
-                short min = readings[0];
-                for (short reading : readings) {
-                    if (reading < min) {
-                        min = reading;
-                    }
-                }
-                return min;
-            }
+        for (int i = 0; i < values.length; i++) {
+            sum = sum + values[i];
+        }
+        lim = (short) (sum/values.length);
+        return lim;
+    }
 
     public short[] stringToShortArray(String str) {
                 str = str.replaceAll("[\\[\\]\\s]", ""); // Remove colchetes e espaços

@@ -47,7 +47,7 @@ public class Pop extends AppCompatActivity {
         int height = dm.heightPixels;
         getWindow().setLayout((int) (width * .8), (int) (height * .8));
 
-        atualiza = findViewById(R.id.textView5); // Substitua pelo ID real do TextView
+        atualiza = findViewById(R.id.textView5);
 
         ConectInsole conectar = new ConectInsole(this);
         ConectInsole2 conectar2 = new ConectInsole2(this);
@@ -57,12 +57,12 @@ public class Pop extends AppCompatActivity {
         followInLeft = sharedPreferences.getString("followInLeft", "false");
 
         Listevents = new java.util.ArrayList<>();
-
+        SharedPreferences event = getSharedPreferences("eventos", MODE_PRIVATE);
         if (followInRight.equals("true")) {
-            senddatainsole1 = sharedPreferences.getString("eventlist", " ");
+           senddatainsole1 = event.getString("eventlist", "");
         }
         if (followInLeft.equals("true")) {
-            senddatainsole2 = sharedPreferences.getString("eventlist2", " ");
+            senddatainsole2 = event.getString("eventlist2", "");
         }
 
         Listevents.add(senddatainsole1);

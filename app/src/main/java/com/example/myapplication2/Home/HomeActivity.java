@@ -42,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -80,7 +81,6 @@ public class HomeActivity extends AppCompatActivity {
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
 
-        atualizacao = findViewById(R.id.textView3);
         pressuremap = findViewById(R.id.PressureMap);
         c1r = findViewById(R.id.circle1right);
         c2r = findViewById(R.id.circle2right);
@@ -166,35 +166,6 @@ public class HomeActivity extends AppCompatActivity {
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
-        if (followInRight.equals("true")){
-            sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
-            listeventsright = sharedPreferences.getString("eventlist", "Não há leituras.");
-
-        }
-        if (followInLeft.equals("true")) {
-            sharedPreferences = getSharedPreferences("eventos", MODE_PRIVATE);
-            listeventsleft = sharedPreferences.getString("eventlist2", "Não há leituras.");
-        }
-
-        Listevents.add(listeventsleft);
-        Listevents.add(listeventsright);
-
-        StringBuilder builder = new StringBuilder();
-        for (String item : Listevents) {
-            builder.append(item).append("\n");
-        }
-        atualizacao.setText(builder.toString());
-
-        calendar = Calendar.getInstance();
-        int khour = calendar.get(Calendar.HOUR_OF_DAY);
-        int kminutes = calendar.get(Calendar.MINUTE);
-        int kseconds = calendar.get(Calendar.SECOND);
-        int kmiliseconds = calendar.get(Calendar.MILLISECOND);
-
-        byte hour = (byte) khour;
-        byte minutes = (byte) kminutes;
-        byte seconds = (byte) kseconds;
-        byte milliseconds = (byte) kmiliseconds;
 
         //Buscar valores de limiares já calculados para enviar com o comando 3C-leitura de dados (padronização do pacote de envio)
         sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
@@ -314,296 +285,148 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void checkforcolors_right() {
-
-        //checar regiões de interesse
-        SharedPreferences sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Boolean S1 = sharedPreferences.getBoolean("S1r", false);
-        Boolean S2 =sharedPreferences.getBoolean("S2r", false);
-        Boolean S3 =sharedPreferences.getBoolean("S3r", false);
-        Boolean S4 =sharedPreferences.getBoolean("S4r", false);
-        Boolean S5 =sharedPreferences.getBoolean("S5r", false);
-        Boolean S6 =sharedPreferences.getBoolean("S6r", false);
-        Boolean S7 =sharedPreferences.getBoolean("S7r", false);
-        Boolean S8 =sharedPreferences.getBoolean("S8r", false);
-        Boolean S9 =sharedPreferences.getBoolean("S9r", false);
-
-
-        //checar limiares
         sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
-        int S1_t = (short) sharedPreferences.getInt("S1", 8191);
-        int S2_t = (short) sharedPreferences.getInt("S2", 8191);
-        int S3_t = (short) sharedPreferences.getInt("S3", 8191);
-        int S4_t = (short) sharedPreferences.getInt("S4", 8191);
-        int S5_t = (short) sharedPreferences.getInt("S5", 8191);
-        int S6_t = (short) sharedPreferences.getInt("S6", 8191);
-        int S7_t = (short) sharedPreferences.getInt("S7", 8191);
-        int S8_t = (short) sharedPreferences.getInt("S8", 8191);
-        int S9_t = (short) sharedPreferences.getInt("S9", 8191);
+        int[] thresholds = loadThresholds(sharedPreferences);
 
-
-        //calcular valores para cada círculo
-        //definir menor valor de todas as leituras e maior valor de todas as leituras
         sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-        String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-        String sensorReadings_S;
-        short[][] sensorReadings = new short[9][];
+        short[][] sensorReadings = loadSensorReadings(sharedPreferences);
 
-
-        for (int i = 0; i < 9; i++) {
-            sensorReadings_S = sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]");
-            if (!sensorReadings_S.isEmpty()){
-                sensorReadings[i] = stringToShortArray(sensorReadings_S);
-            }
-            else{
-                sensorReadings[i] = new short[]{0, 0, 0, 0, 0};
-            }
-
-        }
-
-        System.out.println("sensorReadings");
-        System.out.println(sensorReadings);
         short[] minMax = findMinMax(sensorReadings);
         int dimension = minMax[1] - minMax[0];
-        int plength = sensorReadings[1].length;
-        short p1,p2,p3,p4,p5,p6,p7,p8,p9;
 
-        if(dimension != 0 && plength > 0){
-            //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
-            p1 = (short) ((sensorReadings[0][plength - 1]) - minMax[0] / dimension);
-            p2 = (short) ((sensorReadings[1][plength - 1] - minMax[0]) / dimension);
-            p3 = (short) ((sensorReadings[2][plength - 1] - minMax[0]) / dimension);
-            p4 = (short) ((sensorReadings[3][plength - 1] - minMax[0]) / dimension);
-            p5 = (short) ((sensorReadings[4][plength - 1] - minMax[0]) / dimension);
-            p6 = (short) ((sensorReadings[5][plength - 1] - minMax[0]) / dimension);
-            p7 = (short) ((sensorReadings[6][plength - 1] - minMax[0]) / dimension);
-            p8 = (short) ((sensorReadings[7][plength - 1] - minMax[0]) / dimension);
-            p9 = (short) ((sensorReadings[8][plength - 1] - minMax[0]) / dimension);
-        }
-        else{
-            System.out.println("Não foi possível calcular as cores");
-            p1=p2=p3=p4=p5=p6=p7=p8=p9=1;
-        }
-        int[] ratioValues = {p1, p2, p3, p4, p5, p6, p7, p8, p9};
+        int[] ratioValues = calculateRatios(sensorReadings, minMax[0], dimension);
+        applyColorsToCircles(circlesright, ratioValues);
 
-        //definir cor com base na porcentagem
-
-        for (int i = 0; i < circlesright.length; i++) {
-            int pressure = ratioValues[i];
-            int color = calculateColor(pressure);
-            circlesright[i].setBackgroundTintList(ColorStateList.valueOf(color));
-        }
-
-        //comparar valores recebidos com limiar salvo para identificar local do evento
-        // Array de flags (regiões ativas)
-        boolean[] sensoresAtivos = {S1, S2, S3, S4, S5, S6, S7, S8, S9};
-
-        // Array de limiares
-        int[] thresholds = {S1_t, S2_t, S3_t, S4_t, S5_t, S6_t, S7_t, S8_t, S9_t};
-
-        // Loop para comparar valores e colorir os círculos
         for (int i = 0; i < 9; i++) {
-            if (sensoresAtivos[i] && comparevalues(sensorReadings[i], thresholds[i])) {
+            if (comparevalues(sensorReadings[i], thresholds[i])) {
                 circlesright[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
             }
         }
-
-
     }
 
-
     private void checkforcolors_left() {
-
-        //checar regiões de interesse
-        SharedPreferences sharedPreferences = getSharedPreferences("My_Appregions", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Boolean S1 = sharedPreferences.getBoolean("S1", false);
-        Boolean S2 =sharedPreferences.getBoolean("S2", false);
-        Boolean S3 =sharedPreferences.getBoolean("S3", false);
-        Boolean S4 =sharedPreferences.getBoolean("S4", false);
-        Boolean S5 =sharedPreferences.getBoolean("S5", false);
-        Boolean S6 =sharedPreferences.getBoolean("S6", false);
-        Boolean S7 =sharedPreferences.getBoolean("S7", false);
-        Boolean S8 =sharedPreferences.getBoolean("S8", false);
-        Boolean S9 =sharedPreferences.getBoolean("S9", false);
-
-
-        //checar limiares
         sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
-        int S1_t = (short) sharedPreferences.getInt("S1", 8191);
-        int S2_t = (short) sharedPreferences.getInt("S2", 8191);
-        int S3_t = (short) sharedPreferences.getInt("S3", 8191);
-        int S4_t = (short) sharedPreferences.getInt("S4", 8191);
-        int S5_t = (short) sharedPreferences.getInt("S5", 8191);
-        int S6_t = (short) sharedPreferences.getInt("S6", 8191);
-        int S7_t = (short) sharedPreferences.getInt("S7", 8191);
-        int S8_t = (short) sharedPreferences.getInt("S8", 8191);
-        int S9_t = (short) sharedPreferences.getInt("S9", 8191);
+        int[] thresholds = loadThresholds(sharedPreferences);
 
-
-        //calcular valores para cada círculo
-        //definir menor valor de todas as leituras e maior valor de todas as leituras
         sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-        String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
-        String sensorReadings_S;
-        short[][] sensorReadings = new short[9][];
-        System.out.println("Não foi possível calcular as cores");
+        short[][] sensorReadings = loadSensorReadings(sharedPreferences);
+
+        short[] minMax = findMinMax(sensorReadings);
+        int dimension = minMax[1] - minMax[0];
+
+        int[] ratioValues = calculateRatios(sensorReadings, minMax[0], dimension);
+        applyColorsToCircles(circlesleft, ratioValues);
 
         for (int i = 0; i < 9; i++) {
-            sensorReadings_S = sharedPreferences.getString(sensorKeys[i], "[0,0,0,0,0]");
-            if(sensorReadings_S != ""){
-                sensorReadings[i] = stringToShortArray(sensorReadings_S);
+            if (comparevalues(sensorReadings[i], thresholds[i])) {
+                circlesleft[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
             }
-            else{
-                sensorReadings[i] = new short[]{0, 0, 0, 0, 0};
+        }
+    }
+
+    private int[] loadThresholds(SharedPreferences prefs) {
+        int[] thresholds = new int[9];
+        for (int i = 0; i < 9; i++) {
+            thresholds[i] = (short) prefs.getInt("S" + (i + 1), 8191);
+        }
+        return thresholds;
+    }
+
+    private short[][] loadSensorReadings(SharedPreferences prefs) {
+        String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+        short[][] readings = new short[9][];
+
+        for (int i = 0; i < 9; i++) {
+            String data = prefs.getString(sensorKeys[i], "[0,0,0,0,0]");
+            if (data != null && !data.equals("")) {
+                readings[i] = stringToShortArray(data);
+            } else {
+                readings[i] = new short[]{0, 0, 0, 0, 0};
             }
-
         }
-        short[] minMax = findMinMax(sensorReadings);
-        int dimension = minMax[2];
-        System.out.println(dimension);
-        int plength = sensorReadings[1].length;
+        return readings;
+    }
 
-        short p1,p2,p3,p4,p5,p6,p7,p8,p9;
+    private int[] calculateRatios(short[][] sensorReadings, short min, int dimension) {
+        int[] ratios = new int[9];
 
-        if(dimension != 0){
-            //avaliar ultimo valor lido por cada sensor e calcular porcentagem com base no maximo e minimo
-            p1 = (short) ((sensorReadings[0][plength - 1]) - minMax[0] / dimension);
-            p2 = (short) ((sensorReadings[1][plength - 1] - minMax[0]) / dimension);
-            p3 = (short) ((sensorReadings[2][plength - 1] - minMax[0]) / dimension);
-            p4 = (short) ((sensorReadings[3][plength - 1] - minMax[0]) / dimension);
-            p5 = (short) ((sensorReadings[4][plength - 1] - minMax[0]) / dimension);
-            p6 = (short) ((sensorReadings[5][plength - 1] - minMax[0]) / dimension);
-            p7 = (short) ((sensorReadings[6][plength - 1] - minMax[0]) / dimension);
-            p8 = (short) ((sensorReadings[7][plength - 1] - minMax[0]) / dimension);
-            p9 = (short) ((sensorReadings[8][plength - 1] - minMax[0]) / dimension);
+        if (dimension == 0) {
+            Arrays.fill(ratios, 1);
+            return ratios;
         }
-        else{
-            System.out.println("Não foi possível calcular as cores");
-            p1=p2=p3=p4=p5=p6=p7=p8=p9=1;
+
+        for (int i = 0; i < 9; i++) {
+            short[] values = sensorReadings[i];
+            if (values.length > 0) {
+                int lastValue = values[values.length - 1];
+                ratios[i] = (lastValue - min) / dimension;
+            } else {
+                ratios[i] = 0;
+            }
         }
-        int[] ratioValues = {p1, p2, p3, p4, p5, p6, p7, p8, p9};
 
-        //definir cor com base na porcentagem
+        return ratios;
+    }
 
-        for (int i = 0; i < circlesleft.length; i++) {
+    private void applyColorsToCircles(View[] circles, int[] ratioValues) {
+        for (int i = 0; i < circles.length; i++) {
             int pressure = ratioValues[i];
             int color = calculateColor(pressure);
-            circlesleft[i].setBackgroundTintList(ColorStateList.valueOf(color));
+            circles[i].setBackgroundTintList(ColorStateList.valueOf(color));
         }
-
-        //comparar valores recebidos com limiar salvo para identificar local do evento
-        // Array de flags (regiões ativas)
-        boolean[] sensoresAtivos = {S1, S2, S3, S4, S5, S6, S7, S8, S9};
-
-        // Array de limiares
-        int[] thresholds = {S1_t, S2_t, S3_t, S4_t, S5_t, S6_t, S7_t, S8_t, S9_t};
-
-        // Loop para comparar valores e colorir os círculos
-        for (int i = 0; i < 9; i++) {
-            if (sensoresAtivos[i] && comparevalues(sensorReadings[i], thresholds[i])) {
-                circlesright[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            }
-        }
-
-
     }
 
     private Boolean comparevalues(short[] array, int threshold) {
-        boolean event = false;
-        int num = array.length;
-
-        // Verifica se o array não está vazio antes de acessar o último elemento
-        if (num > 0 && array[num - 1] > threshold) {
-            event = true;
-        }
-
-        return event;
+        return array.length > 0 && array[array.length - 1] > threshold;
     }
 
-
-    // Método para calcular a cor com base no valor de pressão
     private int calculateColor(int pressure) {
-
-        // Defina as cores de referência (azul e vermelho)
-        int startColor = Color.BLUE; // Cor inicial (azul)
-        int endColor = Color.RED;    // Cor final (vermelho)
-
-        // Interpole entre as cores inicial e final com base na proporção
-        int interpolatedColor = interpolateColor(startColor, endColor, pressure);
-
-        return interpolatedColor;
+        int startColor = Color.BLUE;
+        int endColor = Color.RED;
+        float clampedRatio = Math.min(1f, Math.max(0f, pressure));
+        return interpolateColor(startColor, endColor, clampedRatio);
     }
 
-    // Método para interpolar entre duas cores com base em uma proporção
     private int interpolateColor(int colorStart, int colorEnd, float ratio) {
-        // Extraia os componentes ARGB das cores inicial e final
-        int alphaStart = Color.alpha(colorStart);
-        int redStart = Color.red(colorStart);
-        int greenStart = Color.green(colorStart);
-        int blueStart = Color.blue(colorStart);
-
-        int alphaEnd = Color.alpha(colorEnd);
-        int redEnd = Color.red(colorEnd);
-        int greenEnd = Color.green(colorEnd);
-        int blueEnd = Color.blue(colorEnd);
-
-        // Interpolação dos componentes ARGB com base na proporção
-        int interpolatedAlpha = (int) (alphaStart + (alphaEnd - alphaStart) * ratio);
-        int interpolatedRed = (int) (redStart + (redEnd - redStart) * ratio);
-        int interpolatedGreen = (int) (greenStart + (greenEnd - greenStart) * ratio);
-        int interpolatedBlue = (int) (blueStart + (blueEnd - blueStart) * ratio);
-
-        // Componha a cor interpolada
-        int interpolatedColor = Color.argb(interpolatedAlpha, interpolatedRed, interpolatedGreen, interpolatedBlue);
-
-        return interpolatedColor;
+        int alpha = (int) (Color.alpha(colorStart) + (Color.alpha(colorEnd) - Color.alpha(colorStart)) * ratio);
+        int red = (int) (Color.red(colorStart) + (Color.red(colorEnd) - Color.red(colorStart)) * ratio);
+        int green = (int) (Color.green(colorStart) + (Color.green(colorEnd) - Color.green(colorStart)) * ratio);
+        int blue = (int) (Color.blue(colorStart) + (Color.blue(colorEnd) - Color.blue(colorStart)) * ratio);
+        return Color.argb(alpha, red, green, blue);
     }
 
     public static short[] findMinMax(short[][] array) {
-        if (array == null || array.length == 0) {
-            throw new IllegalArgumentException("O array não pode estar vazio!");
-        }
-
         short min = Short.MAX_VALUE;
         short max = Short.MIN_VALUE;
 
-        // Percorre cada subarray
         for (short[] subArray : array) {
-            if (subArray != null) { // Evita NullPointerException
+            if (subArray != null) {
                 for (short value : subArray) {
                     if (value < min) min = value;
                     if (value > max) max = value;
                 }
             }
         }
-        short dimension = (short) (max - min);
 
-        return new short[]{min, max, dimension}; // Retorna um array contendo o menor e maior valores
+        return new short[]{min, max, (short) (max - min)};
     }
 
-
     private short[] stringToShortArray(String input) {
-        // Remove colchetes e espaços extras
         input = input.replace("[", "").replace("]", "").trim();
 
-        // Se for string vazia, retorna array vazio
-        if (input.isEmpty()) {
-            return new short[0];
-        }
+        if (input.isEmpty()) return new short[0];
 
-        // Divide pelos separadores de vírgula
         String[] parts = input.split(",");
-
-        // Cria o array de shorts
         short[] result = new short[parts.length];
+
         for (int i = 0; i < parts.length; i++) {
             try {
                 result[i] = (short) Integer.parseInt(parts[i].trim());
             } catch (NumberFormatException e) {
-                result[i] = 0; // Em caso de erro, seta como 0
+                result[i] = 0;
             }
         }
+
         return result;
     }
 
