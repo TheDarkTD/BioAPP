@@ -25,17 +25,18 @@ public class DataCaptureService extends Service {
     private ExecutorService executorService;
     private boolean isRunning = false;
     private ConectInsole conect;
-    private Register7Activity register7;
     private ConectInsole2 conect2;
     private SharedPreferences sharedPreferences;
     private String followInRight, followInLeft;
-    byte cmd1, cmd2;
 
     @Override
     public void onCreate() {
         super.onCreate();
         executorService = Executors.newSingleThreadExecutor();
         isRunning = true;
+        sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+        followInRight = sharedPreferences.getString("Sright", "default");
+        followInLeft = sharedPreferences.getString("Sleft", "default");
         startReceivingData();
 
 
@@ -77,22 +78,11 @@ public class DataCaptureService extends Service {
                 while (isRunning) {
 
                     conect = new ConectInsole(DataCaptureService.this);
+                    conect.checkForNewData(DataCaptureService.this);
                     conect2 = new ConectInsole2(DataCaptureService.this);
-                    if (followInRight.equals("true")){
-
-                        conect.checkForNewData(DataCaptureService.this);
-
-                        }
-
-
-                    if (followInLeft.equals("true")){
-
-                        conect2.checkForNewData(DataCaptureService.this);
-
-                    }
-
+                    conect2.checkForNewData(DataCaptureService.this);
                     try {
-                        Thread.sleep(700);
+                        Thread.sleep(650);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -100,4 +90,5 @@ public class DataCaptureService extends Service {
             }
         });
     }
+
 }

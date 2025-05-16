@@ -1,8 +1,8 @@
 package com.example.myapplication2;
 
-import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -48,30 +48,50 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ConectInsole2 {
+    private static final String TAG = "ConectInsole2";
     private static final String CHANNEL_ID = "notify_pressure";
 
     private final OkHttpClient client = new OkHttpClient();
     private final FirebaseHelper firebaseHelper;
     private final SharedPreferences prefsConfig;
     private final String baseUrl;
-    ConectVibra conectarVibra;
+    private final ConectVibra conectar;
+    private boolean spikeOnCooldown = false;
+    private boolean pendingSpike    = false;
+    private final Handler cooldownHandler = new Handler(Looper.getMainLooper());
 
     private Calendar calendar;
     private SendData receivedData = new SendData();
 
+    public ConectInsole2(@NonNull Context context) {
+        Log.d(TAG, "Constructor: initializing ConectInsole2");
+        firebaseHelper = new FirebaseHelper(context);
+        prefsConfig = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
+        baseUrl = "http://" + prefsConfig.getString("IP2", "");
+        Log.d(TAG, "Base URL loaded: " + baseUrl);
+
+        conectar = new ConectVibra(context);
+    }
+
     public static class ConfigData {
         public int cmd, freq;
-        public int[] thresholds = new int[9];
+        public int S1, S2, S3, S4, S5, S6, S7, S8, S9;
 
         @Override
         public String toString() {
-            StringBuilder sb = new StringBuilder("ConfigData{");
-            for (int i = 0; i < thresholds.length; i++) {
-                sb.append("S").append(i + 1).append("=").append(thresholds[i]);
-                if (i < thresholds.length - 1) sb.append(", ");
-            }
-            sb.append('}');
-            return sb.toString();
+            return "ConfigData{" +
+                    "cmd=" + cmd +
+                    ", freq=" + freq +
+                    ", S1=" + S1 +
+                    ", S2=" + S2 +
+                    ", S3=" + S3 +
+                    ", S4=" + S4 +
+                    ", S5=" + S5 +
+                    ", S6=" + S6 +
+                    ", S7=" + S7 +
+                    ", S8=" + S8 +
+                    ", S9=" + S9 +
+                    '}';
         }
     }
 
@@ -89,38 +109,45 @@ public class ConectInsole2 {
         public ArrayList<Integer> SR9 = new ArrayList<>();
     }
 
-    public ConectInsole2(@NonNull Context context) {
-        Log.d(TAG, "ConectInsole2: initializing");
-        firebaseHelper = new FirebaseHelper(context);
-        prefsConfig = context.getSharedPreferences("My_Appips", MODE_PRIVATE);
-        baseUrl = "http://" + prefsConfig.getString("IP2", "");
-        Log.d(TAG, "Base URL: " + baseUrl);
-
-        conectarVibra = new ConectVibra(context);
-    }
-
-    public void createAndSendConfigData(byte cmd, byte freq, short... sensors) {
-        Log.d(TAG, "createAndSendConfigData: cmd=" + cmd + ", freq=" + freq);
-        ConfigData cfg = new ConfigData();
-        cfg.cmd = cmd;
-        cfg.freq = freq;
-        for (int i = 0; i < cfg.thresholds.length && i < sensors.length; i++) {
-            cfg.thresholds[i] = sensors[i];
-        }
-        Log.d(TAG, "ConfigData: " + cfg);
-        sendConfigData(cfg);
+    public void createAndSendConfigData(byte kcmd, byte kfreq,
+                                        short kS1, short kS2, short kS3,
+                                        short kS4, short kS5, short kS6,
+                                        short kS7, short kS8, short kS9) {
+        Log.d(TAG, "createAndSendConfigData called with cmd=" + kcmd + " freq=" + kfreq);
+        ConfigData configData = new ConfigData();
+        configData.cmd = kcmd;
+        configData.freq = kfreq;
+        configData.S1 = kS1;
+        configData.S2 = kS2;
+        configData.S3 = kS3;
+        configData.S4 = kS4;
+        configData.S5 = kS5;
+        configData.S6 = kS6;
+        configData.S7 = kS7;
+        configData.S8 = kS8;
+        configData.S9 = kS9;
+        Log.d(TAG, "ConfigData to send: " + configData.toString());
+        sendConfigData(configData);
     }
 
     private void sendConfigData(ConfigData cfg) {
         Log.d(TAG, "sendConfigData: building payload");
-        StringBuilder payload = new StringBuilder()
-                .append(cfg.cmd).append(',')
-                .append(cfg.freq);
-        for (int val : cfg.thresholds) payload.append(',').append(val);
-        Log.d(TAG, "Payload: " + payload);
+        StringBuilder data = new StringBuilder();
+        data.append(cfg.cmd).append(",")
+                .append(cfg.freq).append(",")
+                .append(cfg.S1).append(",")
+                .append(cfg.S2).append(",")
+                .append(cfg.S3).append(",")
+                .append(cfg.S4).append(",")
+                .append(cfg.S5).append(",")
+                .append(cfg.S6).append(",")
+                .append(cfg.S7).append(",")
+                .append(cfg.S8).append(",")
+                .append(cfg.S9);
+        Log.d(TAG, "Payload: " + data);
 
         RequestBody body = new FormBody.Builder()
-                .add("config_data", payload.toString())
+                .add("config_data", data.toString())
                 .build();
 
         Request request = new Request.Builder()
@@ -130,41 +157,48 @@ public class ConectInsole2 {
         client.newCall(request).enqueue(new LoggingCallback("sendConfigData"));
     }
 
-    public void checkForNewData(Context ctx) {
-        Log.d(TAG, "checkForNewData: " + baseUrl + "/check");
+    public void checkForNewData(Context context) {
+        String checkUrl = baseUrl + "/check";
+        Log.d(TAG, "checkForNewData: URL=" + checkUrl);
         Request request = new Request.Builder()
-                .url(baseUrl + "/check")
+                .url(checkUrl)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "checkForNewData error", e);
+                Log.e(TAG, "checkForNewData failed", e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "checkForNewData response: " + response.code());
+                Log.d(TAG, "checkForNewData response code=" + response.code());
                 if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    Log.d(TAG, "checkForNewData raw: " + responseData);
                     try {
-                        boolean hasNew = new JSONObject(response.body().string())
-                                .getBoolean("newData");
-                        Log.d(TAG, "New data: " + hasNew);
-                        if (hasNew) receiveData(ctx);
+                        JSONObject jsonObject = new JSONObject(responseData);
+                        boolean newData = jsonObject.getBoolean("newData");
+                        Log.d(TAG, "newData flag=" + newData);
+                        if (newData) {
+                            receiveData(context);
+                            Log.d(TAG, "Data capture triggered");
+                        }
                     } catch (JSONException e) {
-                        Log.e(TAG, "checkForNewData JSON error", e);
+                        Log.e(TAG, "JSON parse error in checkForNewData", e);
                     }
                 } else {
-                    Log.e(TAG, "checkForNewData failed: " + response.message());
+                    Log.e(TAG, "checkForNewData non-success: " + response.message());
                 }
             }
         });
     }
 
     public void receiveData(Context ctx) {
-        Log.d(TAG, "receiveData: " + baseUrl + "/data");
+        String dataUrl = baseUrl + "/data";
+        Log.d(TAG, "receiveData: URL=" + dataUrl);
         Request request = new Request.Builder()
-                .url(baseUrl + "/data")
+                .url(dataUrl)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -175,70 +209,101 @@ public class ConectInsole2 {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "receiveData response: " + response.code());
+                Log.d(TAG, "receiveData response code=" + response.code());
                 if (!response.isSuccessful()) {
                     Log.e(TAG, "receiveData failed: " + response.message());
                     return;
                 }
                 try {
                     String json = response.body().string();
-                    Log.d(TAG, "Raw JSON: " + json);
+                    Log.d(TAG, "receiveData raw JSON: " + json);
                     parseJson(json);
 
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    Log.d(TAG, "User authenticated? " + (user != null));
                     if (user != null) {
                         if (isNetworkAvailable(ctx)) {
+                            Log.d(TAG, "Network available: saving to Firebase");
                             firebaseHelper.saveSendData2(receivedData, getEventList(ctx));
-                            Log.d(TAG, "Saved to Firebase");
                         } else {
                             String today = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                            Log.d(TAG, "Network unavailable: saving locally with date=" + today);
                             firebaseHelper.saveSendData2Locally(receivedData, today);
                             runToast(ctx, "Sem conexão. Dados salvos localmente.");
-                            Log.d(TAG, "Saved locally due to no network");
                         }
-                    } else {
-                        Log.d(TAG, "User not authenticated: skip save");
                     }
-
 
                     storeReadings(ctx);
-                    Log.d(TAG, "Readings stored");
+                    Log.d(TAG, "Readings stored locally");
+
                     if (receivedData.cmd == 0X3D) {
-                        byte cmdv = 0x1A;
-                        SharedPreferences vib = ctx.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
-                        Log.d(TAG, "conectarVibraSend: sending vibra config");
+                        Log.d(TAG, "Evento: pico de pressão (cmd=0x3D)");
 
+                        // lê parâmetros
+                        SharedPreferences prefs = ctx.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
+                        byte INT    = Byte.parseByte(prefs.getString("int",      "0"));
+                        byte PEST   = Byte.parseByte(prefs.getString("pulse",    "0"));
+                        short INEST = Short.parseShort(prefs.getString("interval","0"));
+                        short TMEST = Short.parseShort(prefs.getString("time",    "0"));
 
+                        // função para enviar o comando
+                        Runnable sendSpike = () -> {
+                            Log.d(TAG, "Enviando comando de pico (1A) — PEST=" + PEST + ", INT=" + INT
+                                    + ", TMEST=" + TMEST + ", INEST=" + INEST);
+                            conectar.SendConfigData((byte)0x1A, PEST, INT, TMEST, INEST);
+                        };
 
-                        String INT_string = vib.getString("int", "default");
-                        Byte INT = Byte.valueOf(INT_string);
-                        String PEST_string = vib.getString("pulse", "default");
-                        Byte PEST = Byte.valueOf(PEST_string);
-                        String INEST_string = vib.getString("interval", "default");
-                        Short INEST = Short.valueOf(INEST_string);
-                        String TMEST_string = vib.getString("time", "default");
-                        Short TMEST = Short.valueOf(TMEST_string);
+                        if (!spikeOnCooldown) {
+                            // 1º envio imediato e entra em cooldown
+                            sendSpike.run();
+                            spikeOnCooldown = true;
 
-                        Log.e(TAG, INT_string +  PEST_string +  INEST_string +  TMEST_string);
-                        conectarVibra.SendConfigData(cmdv, PEST, INT, TMEST, INEST);
-
+                            // agenda término do cooldown
+                            cooldownHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (pendingSpike) {
+                                        // havia spike durante cooldown: limpa flag e envia de novo
+                                        pendingSpike = false;
+                                        Log.d(TAG, "Spike pendente detectada — reenviando após TMEST");
+                                        sendSpike.run();
+                                        // re-agenda novo término de cooldown
+                                        cooldownHandler.postDelayed(this, TMEST);
+                                    } else {
+                                        // nenhum spike pendente: sai do cooldown
+                                        spikeOnCooldown = false;
+                                        Log.d(TAG, "Cooldown finalizado sem spikes pendentes");
+                                    }
+                                }
+                            }, TMEST);
+                        } else {
+                            // já estamos em cooldown: marca que chegou mais um spike
+                            pendingSpike = true;
+                            Log.d(TAG, "Spike recebido durante cooldown — marcado como pendente");
+                        }
                         createNotificationChannel(ctx);
-                        NotificationManagerCompat nm = NotificationManagerCompat.from(ctx);
-                        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
                             return;
-                        nm.notify(2, buildNotification(ctx));
+                        }
+                        NotificationManagerCompat.from(ctx).notify(2, buildNotification(ctx));
                         Log.d(TAG, "Notification dispatched");
                     }
-
                 } catch (JSONException e) {
-                    Log.e(TAG, "receiveData JSON error", e);
+                    Log.e(TAG, "JSON parse error in receiveData", e);
                 }
             }
         });
     }
 
     private void parseJson(String json) throws JSONException {
-        Log.d(TAG, "parseJson: start");
+        Log.d(TAG, "parseJson: starting parse");
         JSONObject j = new JSONObject(json);
         receivedData.cmd = j.getInt("cmd");
         calendar = Calendar.getInstance();
@@ -247,93 +312,87 @@ public class ConectInsole2 {
         receivedData.second = calendar.get(Calendar.SECOND);
         receivedData.millisecond = calendar.get(Calendar.MILLISECOND);
         receivedData.battery = j.getInt("battery");
-        Log.d(TAG, "Metadata - cmd:" + receivedData.cmd + ", bat:" + receivedData.battery);
+        Log.d(TAG, String.format("Parsed metadata cmd=%d battery=%d", receivedData.cmd, receivedData.battery));
+
         JSONArray sensorsReads = j.getJSONArray("sensors_reads");
-
-        // Clear previous data
-        receivedData.SR1.clear();
-        receivedData.SR2.clear();
-        receivedData.SR3.clear();
-        receivedData.SR4.clear();
-        receivedData.SR5.clear();
-        receivedData.SR6.clear();
-        receivedData.SR7.clear();
-        receivedData.SR8.clear();
-        receivedData.SR9.clear();
-
-        for (int i = 0; i < sensorsReads.length(); i++) {
+        receivedData.SR1.clear(); receivedData.SR2.clear(); receivedData.SR3.clear();
+        receivedData.SR4.clear(); receivedData.SR5.clear(); receivedData.SR6.clear();
+        receivedData.SR7.clear(); receivedData.SR8.clear(); receivedData.SR9.clear();
+        for (int i=0; i<sensorsReads.length(); i++) {
             JSONObject sensorRead = sensorsReads.getJSONObject(i);
-            receivedData.SR1.add( sensorRead.getInt("S1"));
-            receivedData.SR2.add( sensorRead.getInt("S2"));
-            receivedData.SR3.add( sensorRead.getInt("S3"));
-            receivedData.SR4.add( sensorRead.getInt("S4"));
-            receivedData.SR5.add( sensorRead.getInt("S5"));
-            receivedData.SR6.add( sensorRead.getInt("S6"));
-            receivedData.SR7.add( sensorRead.getInt("S7"));
-            receivedData.SR8.add( sensorRead.getInt("S8"));
-            receivedData.SR9.add( sensorRead.getInt("S9"));
+            receivedData.SR1.add(sensorRead.getInt("S1"));
+            receivedData.SR2.add(sensorRead.getInt("S2"));
+            receivedData.SR3.add(sensorRead.getInt("S3"));
+            receivedData.SR4.add(sensorRead.getInt("S4"));
+            receivedData.SR5.add(sensorRead.getInt("S5"));
+            receivedData.SR6.add(sensorRead.getInt("S6"));
+            receivedData.SR7.add(sensorRead.getInt("S7"));
+            receivedData.SR8.add(sensorRead.getInt("S8"));
+            receivedData.SR9.add(sensorRead.getInt("S9"));
         }
-        Log.d(TAG, "Sensor count:" + receivedData.SR1+","+ receivedData.SR2+","+ receivedData.SR3+","+ receivedData.SR4+","+ receivedData.SR5+","+ receivedData.SR6+","+ receivedData.SR7+","+ receivedData.SR8+","+ receivedData.SR9);
+        Log.d(TAG, String.format("parseJson: SR lengths %d,%d,%d,%d,%d,%d,%d,%d,%d",
+                receivedData.SR1.size(), receivedData.SR2.size(), receivedData.SR3.size(),
+                receivedData.SR4.size(), receivedData.SR5.size(), receivedData.SR6.size(),
+                receivedData.SR7.size(), receivedData.SR8.size(), receivedData.SR9.size()));
     }
 
     private void storeReadings(Context ctx) {
-        String receivedS1 = receivedData.SR1.toString();
-        String receivedS2 = receivedData.SR2.toString();
-        String receivedS3 = receivedData.SR3.toString();
-        String receivedS4 = receivedData.SR4.toString();
-        String receivedS5 = receivedData.SR5.toString();
-        String receivedS6 = receivedData.SR6.toString();
-        String receivedS7 = receivedData.SR7.toString();
-        String receivedS8 = receivedData.SR8.toString();
-        String receivedS9 = receivedData.SR9.toString();
-        SharedPreferences sharedPreferences = ctx.getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("S1_2", receivedS1);
-        editor.putString("S2_2", receivedS2);
-        editor.putString("S3_2", receivedS3);
-        editor.putString("S4_2", receivedS4);
-        editor.putString("S5_2", receivedS5);
-        editor.putString("S6_2", receivedS6);
-        editor.putString("S7_2", receivedS7);
-        editor.putString("S8_2", receivedS8);
-        editor.putString("S9_2", receivedS9);
+        Log.d(TAG, "storeReadings: saving to SharedPreferences");
+        SharedPreferences sp = ctx.getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("S1_2", receivedData.SR1.toString());
+        editor.putString("S2_2", receivedData.SR2.toString());
+        editor.putString("S3_2", receivedData.SR3.toString());
+        editor.putString("S4_2", receivedData.SR4.toString());
+        editor.putString("S5_2", receivedData.SR5.toString());
+        editor.putString("S6_2", receivedData.SR6.toString());
+        editor.putString("S7_2", receivedData.SR7.toString());
+        editor.putString("S8_2", receivedData.SR8.toString());
+        editor.putString("S9_2", receivedData.SR9.toString());
         editor.apply();
     }
-
-
-    private List<String> getEventList(Context ctx) {
-        Log.d(TAG, "getEventList: checking thresholds");
-        /*SharedPreferences reg = ctx.getSharedPreferences("My_Appregions", MODE_PRIVATE);
-        SharedPreferences thr = ctx.getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-        List<String> events = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            boolean on = reg.getBoolean("S" + (i + 1), false);
-            int lim = thr.getInt("Lim" + (i + 1) + "I2", 8191);
-            int val = getLastReading(i);
-            if (on && val > lim) {
-                events.add(String.valueOf(i + 1));
-                Log.d(TAG, "Event sensor" + (i + 1) + ":" + val);
+    private ConfigData configData;
+    // Método para substituir os valores da ConfigData
+    public void setConfigData2(ConfigData configData) {
+        if (configData != null) {
+            // Loga o estado atual do objeto interno
+            if (this.configData == null) {
+                Log.d(TAG, "this.configData is null, creating new instance.");
+                this.configData = new ConfigData();
+            } else {
+                Log.d(TAG, "this.configData exists before substitution: " + this.configData.toString());
             }
+
+            // Loga os novos valores que serão aplicados
+            Log.d(TAG, "Substituting new ConfigData: " + configData.toString());
+
+            // Copia os valores do objeto recebido para a instância interna
+            this.configData.S1 = configData.S1;
+            this.configData.S2 = configData.S2;
+            this.configData.S3 = configData.S3;
+            this.configData.S4 = configData.S4;
+            this.configData.S5 = configData.S5;
+            this.configData.S6 = configData.S6;
+            this.configData.S7 = configData.S7;
+            this.configData.S8 = configData.S8;
+            this.configData.S9 = configData.S9;
+
+            // Loga o estado final após a substituição
+            Log.d("ConectInsole2", "After substitution, this.configData: " + this.configData.toString());
+        } else {
+            Log.d("ConectInsole2", "Received null ConfigData, skipping substitution.");
         }
-        return events;*/
-        return java.util.Collections.emptyList();
     }
-
-
-    private void conectarVibraSend(byte cmd, Context ctx) {
-        SharedPreferences vib = ctx.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
-        Log.d(TAG, "conectarVibraSend: sending vibra config");
-        byte pulse = Byte.parseByte(vib.getString("pulse", "0"));
-        short interval = Short.parseShort(vib.getString("interval", "0"));
-        short time = Short.parseShort(vib.getString("time", "0"));
-        byte freq = Byte.parseByte(vib.getString("int", "0"));
-        conectarVibra.SendConfigData(cmd, pulse, freq, time, interval);
+    private List<String> getEventList(Context ctx) {
+        Log.d(TAG, "getEventList: evaluating thresholds");
+        return new ArrayList<>();
     }
 
     private Notification buildNotification(Context ctx) {
-        Log.d(TAG, "buildNotification: creating notif");
+        Log.d(TAG, "buildNotification: constructing notification");
         Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.leftfoot2);
         String txt = "Sensor(es): " + String.join(", ", getEventList(ctx));
+        Log.d(TAG, "Notification text: " + txt);
         return new NotificationCompat.Builder(ctx, CHANNEL_ID)
                 .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)
                 .setContentTitle("Pico de Pressão Plantar detectado!")
@@ -345,7 +404,7 @@ public class ConectInsole2 {
     }
 
     private void createNotificationChannel(Context ctx) {
-        Log.d(TAG, "createNotificationChannel: init");
+        Log.d(TAG, "createNotificationChannel: initializing channel");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel chan = new NotificationChannel(CHANNEL_ID, "Alertas de Pressão", NotificationManager.IMPORTANCE_HIGH);
             chan.setDescription("Notificações de pressão plantar");
@@ -355,15 +414,19 @@ public class ConectInsole2 {
     }
 
     private boolean isNetworkAvailable(Context ctx) {
+        Log.d(TAG, "isNetworkAvailable: checking connectivity");
         ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
             NetworkInfo ni = cm.getActiveNetworkInfo();
-            return ni != null && ni.isConnected();
+            boolean available = (ni != null && ni.isConnected());
+            Log.d(TAG, "Network available=" + available);
+            return available;
         }
         return false;
     }
 
     private void runToast(Context ctx, String msg) {
+        Log.d(TAG, "runToast: message='" + msg + "'");
         Handler h = new Handler(Looper.getMainLooper());
         h.post(() -> Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show());
     }

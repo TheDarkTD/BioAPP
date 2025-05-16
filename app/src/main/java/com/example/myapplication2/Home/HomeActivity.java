@@ -169,35 +169,33 @@ public class HomeActivity extends AppCompatActivity {
 
         //Buscar valores de limiares já calculados para enviar com o comando 3C-leitura de dados (padronização do pacote de envio)
         sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
-        S1_1 = (short) sharedPreferences.getInt("Lim1I1", 8191);
-        S2_1 = (short) sharedPreferences.getInt("Lim2I1", 8191);
-        S3_1 = (short) sharedPreferences.getInt("Lim3I1", 8191);
-        S4_1 = (short) sharedPreferences.getInt("Lim4I1", 8191);
-        S5_1 = (short) sharedPreferences.getInt("Lim5I1", 8191);
-        S6_1 = (short) sharedPreferences.getInt("Lim6I1", 8191);
-        S7_1 = (short) sharedPreferences.getInt("Lim7I1", 8191);
-        S8_1 = (short) sharedPreferences.getInt("Lim8I1", 8191);
-        S9_1 = (short) sharedPreferences.getInt("Lim9I1", 8191);
+        S1_1 = (short) sharedPreferences.getInt("Lim1I1", 0xffff);
+        S2_1 = (short) sharedPreferences.getInt("Lim2I1", 0xffff);
+        S3_1 = (short) sharedPreferences.getInt("Lim3I1", 0xffff);
+        S4_1 = (short) sharedPreferences.getInt("Lim4I1", 0xffff);
+        S5_1 = (short) sharedPreferences.getInt("Lim5I1", 0xffff);
+        S6_1 = (short) sharedPreferences.getInt("Lim6I1", 0xffff);
+        S7_1 = (short) sharedPreferences.getInt("Lim7I1", 0xffff);
+        S8_1 = (short) sharedPreferences.getInt("Lim8I1", 0xffff);
+        S9_1 = (short) sharedPreferences.getInt("Lim9I1", 0xffff);
 
         //Limiares da palmilha esquerda
         sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-        S1_2 = (short) sharedPreferences.getInt("Lim1I2", 8191);
-        S2_2 = (short) sharedPreferences.getInt("Lim2I2", 8191);
-        S3_2 = (short) sharedPreferences.getInt("Lim3I2", 8191);
-        S4_2 = (short) sharedPreferences.getInt("Lim4I2", 8191);
-        S5_2 = (short) sharedPreferences.getInt("Lim5I2", 8191);
-        S6_2 = (short) sharedPreferences.getInt("Lim6I2", 8191);
-        S7_2 = (short) sharedPreferences.getInt("Lim7I2", 8191);
-        S8_2 = (short) sharedPreferences.getInt("Lim8I2", 8191);
-        S9_2 = (short) sharedPreferences.getInt("Lim9I2", 8191);
+        S1_2 = (short) sharedPreferences.getInt("Lim1I2", 0xffff);
+        S2_2 = (short) sharedPreferences.getInt("Lim2I2", 0xffff);
+        S3_2 = (short) sharedPreferences.getInt("Lim3I2", 0xffff);
+        S4_2 = (short) sharedPreferences.getInt("Lim4I2", 0xffff);
+        S5_2 = (short) sharedPreferences.getInt("Lim5I2", 0xffff);
+        S6_2 = (short) sharedPreferences.getInt("Lim6I2", 0xffff);
+        S7_2 = (short) sharedPreferences.getInt("Lim7I2", 0xffff);
+        S8_2 = (short) sharedPreferences.getInt("Lim8I2", 0xffff);
+        S9_2 = (short) sharedPreferences.getInt("Lim9I2", 0xffff);
 
 
         if (followInRight.equals("true")){
             conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
 
         }
-
-
         if (followInLeft.equals("true")){
             conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
 
