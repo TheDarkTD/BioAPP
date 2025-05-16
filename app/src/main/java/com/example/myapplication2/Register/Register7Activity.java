@@ -98,7 +98,7 @@ public class Register7Activity extends AppCompatActivity {
     private void execute_nextlayout() {
         Log.d(TAG, "execute_nextlayout: start");
         Button mNext7Btn   = findViewById(R.id.btnNext7);
-        gifimagewait        = findViewById(R.id.gifimage);
+        gifimagewait = findViewById(R.id.gifimage);
         instruct.setText("Pronto! Podemos prosseguir.");
         mNext7Btn.setVisibility(View.VISIBLE);
         gifimagewait.setVisibility(View.GONE);
