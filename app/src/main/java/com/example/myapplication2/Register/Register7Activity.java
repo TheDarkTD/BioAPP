@@ -145,11 +145,11 @@ public class Register7Activity extends AppCompatActivity {
         handler.postDelayed(() -> {
             Log.d(TAG, "handleStopCommand2: invoking conectar2.receiveData");
             conectar2.receiveData(this);
-        }, 750);
+        }, 450);
         handler.postDelayed(() -> {
             Log.d(TAG, "handleStopCommand2: processing data2");
             processReceivedData2(conectar2);
-        }, 1350);
+        }, 1500);
     }
 
     private void processReceivedData(@NonNull ConectInsole insole) {
@@ -197,8 +197,7 @@ public class Register7Activity extends AppCompatActivity {
             short[] limS = thresholdSensors_steady(sensorReadings, foot);
             Log.d(TAG, "processReceivedData2: thresholds=" + Arrays.toString(limS));
             byte cmd1 = 0x2A;
-            insole.createAndSendConfigData(cmd1, freq,
-                    limS[0],limS[1],limS[2],limS[3],limS[4],limS[5],limS[6],limS[7],limS[8]);
+            insole.createAndSendConfigData(cmd1, freq, limS[0],limS[1],limS[2],limS[3],limS[4],limS[5],limS[6],limS[7],limS[8]);
             saveConfigData2ToPrefs(limS[0],limS[1],limS[2],limS[3],limS[4],limS[5],limS[6],limS[7],limS[8]);
             SharedPreferences.Editor editor = getSharedPreferences("Treshold_insole2",MODE_PRIVATE).edit();
             for (int i=0; i<9; i++) editor.putInt("Lim"+(i+1)+"I2", limS[i]);

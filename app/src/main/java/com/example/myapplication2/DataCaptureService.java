@@ -76,13 +76,16 @@ public class DataCaptureService extends Service {
             @Override
             public void run() {
                 while (isRunning) {
-
                     conect = new ConectInsole(DataCaptureService.this);
-                    conect.checkForNewData(DataCaptureService.this);
                     conect2 = new ConectInsole2(DataCaptureService.this);
-                    conect2.checkForNewData(DataCaptureService.this);
+                    if ("true".equals(followInRight)) {
+                        conect.checkForNewData(DataCaptureService.this);
+                    }
+                    if ("true".equals(followInLeft)) {
+                        conect2.checkForNewData(DataCaptureService.this);
+                    }
                     try {
-                        Thread.sleep(650);
+                        Thread.sleep(450);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
