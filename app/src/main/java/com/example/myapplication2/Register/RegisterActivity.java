@@ -119,7 +119,7 @@ public class RegisterActivity extends AppCompatActivity
                             {
                                 String uid = user.getUid();
                                 saveUserData(uid);
-                                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                                startActivity(new Intent(getApplicationContext(), Register9Activity.class));
                             }
                         }
                         else

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue1"
+    android:background="@color/blue3"
     tools:context=".Register.Register4Activity">
 
 
@@ -28,19 +28,128 @@
         app:layout_constraintVertical_bias="0.96"
         tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/textView15"
+    <View
+        android:id="@+id/step1"
         android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:lineSpacingExtra="10dp"
-        android:text="@string/onmodules3"
-        android:textColor="@color/white"
+        android:layout_height="100dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.442"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.622" />
+        app:layout_constraintVertical_bias="0.266" />
+
+    <View
+        android:id="@+id/step3"
+        android:layout_width="350dp"
+        android:layout_height="150dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.693" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="7dp"
+        android:text="@string/onmodules"
+        android:textColor="@color/blue1"
+        android:textSize="21dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.692"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.282" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="7dp"
+        android:text="@string/onmodules3"
+        android:textColor="@color/blue1"
+        android:textSize="21dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.679"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.691" />
+
+    <View
+        android:id="@+id/step2"
+        android:layout_width="350dp"
+        android:layout_height="100dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.54"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.453" />
+
+    <View
+        android:id="@+id/step5"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/blue1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.113"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.26" />
+
+    <View
+        android:id="@+id/step"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/blue1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.436" />
+
+    <View
+        android:id="@+id/step4"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/blue1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.113"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.593" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="7dp"
+        android:text="@string/onmodules2"
+        android:textColor="@color/blue1"
+        android:textSize="21dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.679"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.46" />
 
     <TextView
         android:id="@+id/inst_connection"
@@ -48,43 +157,62 @@
         android:layout_height="56dp"
         android:text="@string/conect1"
         android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textColor="@color/blue1"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.207" />
+        app:layout_constraintVertical_bias="0.128" />
 
     <TextView
-        android:id="@+id/textView14"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:justificationMode="inter_word"
-        android:lineSpacingExtra="10dp"
-        android:text="@string/onmodules2"
-        android:textColor="@color/white"
+        android:id="@+id/inst_connection2"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="1"
+        android:textAlignment="center"
+        android:textColor="@color/blue3"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.442"
+        app:layout_constraintHorizontal_bias="0.113"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.449" />
+        app:layout_constraintVertical_bias="0.273" />
 
     <TextView
-        android:id="@+id/textView13"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:lineSpacingExtra="10dp"
-        android:text="@string/onmodules"
-        android:textColor="@color/white"
+        android:id="@+id/inst_connection3"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="2"
+        android:textAlignment="center"
+        android:textColor="@color/blue3"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintHorizontal_bias="0.113"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.329" />
+        app:layout_constraintVertical_bias="0.447" />
+
+    <TextView
+        android:id="@+id/inst_connection4"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="3"
+        android:textAlignment="center"
+        android:textColor="@color/blue3"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.113"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.609" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

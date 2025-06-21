@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/textView23"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="@string/first1"
         android:textAlignment="center"
@@ -20,71 +20,85 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.117" />
+        app:layout_constraintVertical_bias="0.116" />
 
-    <TextView
-        android:id="@+id/textView24"
+    <View
+        android:id="@+id/pickinsole"
         android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:justificationMode="inter_word"
-        android:lineSpacingExtra="10dp"
-        android:text="@string/first2"
-        android:textColor="@color/white"
+        android:layout_height="270dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.62" />
+        app:layout_constraintVertical_bias="0.773" />
 
-    <CheckBox
-        android:id="@+id/justright"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/textView24"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:buttonTint="@color/white"
-        android:text="Apenas a pamilha direita"
-        android:textColor="@color/white"
+        android:justificationMode="inter_word"
+        android:lineSpacingExtra="10dp"
+        android:text="@string/first2"
+        android:textColor="@color/blue1"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.73" />
+        app:layout_constraintVertical_bias="0.641" />
 
     <CheckBox
         android:id="@+id/justleft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@color/white"
+        android:buttonTint="@color/blue1"
         android:text="Apenas a palmilha esquerda"
-        android:textColor="@color/white"
+        android:textColor="@color/blue1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.158"
+        app:layout_constraintHorizontal_bias="0.323"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.78" />
+        app:layout_constraintVertical_bias="0.789" />
+
+    <CheckBox
+        android:id="@+id/justright"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/blue1"
+        android:text="Apenas a pamilha direita"
+        android:textColor="@color/blue1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.287"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.739" />
 
     <CheckBox
         android:id="@+id/both"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@color/white"
+        android:buttonTint="@color/blue1"
         android:text="Ambas"
-        android:textColor="@color/white"
+        android:textColor="@color/blue1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintHorizontal_bias="0.188"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.831" />
+        app:layout_constraintVertical_bias="0.84" />
 
     <Button
         android:id="@+id/btnNext1"
         android:layout_width="211dp"
         android:layout_height="wrap_content"
         android:background="@drawable/roundstyle"
-        android:backgroundTint="@color/blue1"
+        android:backgroundTint="@color/blue3"
         android:text="Próximo"
         android:textColor="@color/white"
         android:textColorHighlight="#4D6A96"
@@ -106,7 +120,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.119"
+        app:layout_constraintVertical_bias="0.148"
         app:srcCompat="@drawable/register1image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

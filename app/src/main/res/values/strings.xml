@@ -5,7 +5,7 @@
     <string name="home">  Home</string>
     <string name="settings">Configuração</string>
 
-    <string name="first1">Seja bem vindo ao app!</string>
+    <string name="first1">Seja bem vindo ao NeuroSense!</string>
     <string name="first2">Para começar, precisamos coletar alguns dados importantes para funcionamento do sistema. Comece nos dizendo quantas palmilhas possui?</string>
 
     <string name="Nome">mName</string>
@@ -47,31 +47,33 @@
     <string name="n10">10</string>
     <string name="none">Não há.</string>
 
-    <string name="onmodules">1 - Ligue a palmilha. (Em caso de dúvidas, consulte o manual)</string>
-    <string name="onmodules2">2 - Acesse as configurações de conexão wifi do seu dispositivo. Clique na rede Insole_Right para estabelecer a conexão com a Palmilha direita.</string>
-    <string name="onmodules3">3 - Na aba de configuração que irá surgir, clique na opção Configure o wifi. Acione o roteador wifi de seu dispositivo. Escolha a rede que irá conectar (a rede fornecida pelo celular).</string>
-    <string name="onmodules4">1- Ligue a palmilha, vá até às configurações de conexão wifi, clique na rede Insole_Left para estabelecer a conexão com a Palmilha Esquerda. </string>
-    <string name="onmodules5">2 - Na aba de configuração que irá surgir, clique na opção Configure o wifi. Acione o roteador wifi de seu dispositivo. Escolha a rede que irá conectar (a rede fornecida pelo celular).</string>
-    <string name="onmodules6">1 - Para o vibra, garanta que o módulo está ligado e, nas configurações de wifi, clique na rede Stimulator para estabelecer a conexão com o sinalizador vibratório. </string>
-   <string name="onmodules7">2 - Novamente, na aba de configuração, clique na opção Configure o wifi. Acione o roteador wifi de seu dispositivo. Escolha a rede que irá conectar (a rede fornecida pelo celular).</string>
-    <string name="onmod">Por fim, vamos conectar o sinalizador de vibração:</string>
+    <string name="onmodules">Ligue a palmilha e o roteador wifi de seu dispositivo.</string>
+    <string name="onmodules2">Nas configurações de wifi, clique em Palmilha_Direita.</string>
+    <string name="onmodules3">Uma tela nova deve surgir, clique na opção Configure o wifi. Escolha a rede que seu celular fornece.</string>
+
+    <string name="onmodules4">       Ligue a palmilha e o roteador wifi de seu dispositivo. </string>
+    <string name="onmodules5">     Nas configurações de wifi, clique em Palmilha_Esquerda.</string>
+    <string name="onmodules5.1">       Uma tela nova deve surgir, clique na opção Configure o wifi. Escolha a rede seu celular fornece.</string>
+    <string name="onmodules6">1 - Ligue a unidade de alerta. Garanta que o roteador wifi de seu dispositivo está acionado. </string>
+   <string name="onmodules7">2 - Novamente, nas configurações de wifi, clique na rede Unidade_Alerta e na aba de configuração, escolha a rede fornecida pelo celular.</string>
+    <string name="onmod">Por fim, conectamos a Unidade de Alerta:</string>
 
 
-    <string name="conect1">Siga as seguintes instruções para conectar os módulos do aparelho:</string>
+    <string name="conect1">Siga o passo a passo:</string>
     <string name="conect2">Agora, precisamos coletar alguns dados da palmilha. Por favor, siga as instruções:</string>
     <string name="conectinsole">Posicione a palmilha dentro do calçado, conforme e imagem, e calçe-o. Por fim, clique no botão Iniciar.</string>
-    <string name="conectinsole4">Durante o processo de coleta, por favor, permaneça de pé de forma que proteja a região ferida.</string>
+    <string name="conectinsole4">Durante o processo de coleta, por favor, permaneça de pé de forma que proteja a região ferida, se houver.</string>
     <string name="conectinsole1">Aguarde enquanto coletamos alguns dados importantes.</string>
     <string name="conectinsole2">Estamos quase lá!</string>
     <string name="conectinsole3">Pronto! Podemos prosseguir.</string>
 
-    <string name="instruvibra">Primeiro, posicione o estimulador na região escolhida, em seguida, selecione os parâmetros de estimulação e clique no botão INICIAR. Caso a vibração ainda não esteja no modo desejado, altere os valores solicitados.  </string>
+    <string name="instruvibra">Primeiro, posicione a Unidade de Alerta em local adequado.  </string>
     <string name="conectvibra">Por fim, vamos configurar o alerta vibratório:</string>
     <string name="conectvibra1">Selecione o tempo de alerta:</string>
     <string name="conectvibra2">Selecione o pulso:</string>
     <string name="conectvibra3">Selecione as repetições:</string>
     <string name="conectvibra4">Selecione a intensidade:</string>
-    <string name="conectvibra5">(Atenção: Siga orientações médicas para escolher o estímulo.)</string>
+    <string name="conectvibra5">Em seguida, selecione os parâmetros de estimulação e clique no botão INICIAR.</string>
 
     <string name="vibraposition">O primeiro passo é escolher o local onde será posicionado o vibra. A imagem abaixo indica algumas opções.</string>
 

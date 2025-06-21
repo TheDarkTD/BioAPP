@@ -21,9 +21,9 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView2"
-        android:layout_width="400dp"
+        android:layout_width="380dp"
         android:layout_height="200dp"
-        android:background="@color/gray_700"
+        android:background="@drawable/roundstyle2"
         android:backgroundTint="@color/gray_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,9 +34,9 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView3"
-        android:layout_width="400dp"
+        android:layout_width="380dp"
         android:layout_height="200dp"
-        android:background="@color/gray_700"
+        android:background="@drawable/roundstyle2"
         android:backgroundTint="@color/gray_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,6 +90,7 @@
         android:layout_height="wrap_content"
         android:text="Status Vibra"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,6 +103,7 @@
         android:layout_width="150dp"
         android:layout_height="26dp"
         android:text="Status Palmilha"
+        android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -148,12 +150,41 @@
         android:layout_height="wrap_content"
         android:text="Nível de bateria palmilha:"
         android:textColor="@color/black"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.118"
+        app:layout_constraintHorizontal_bias="0.162"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.293" />
+        app:layout_constraintVertical_bias="0.296" />
+
+    <TextView
+        android:id="@+id/_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Direita"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.078"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.194" />
+
+    <TextView
+        android:id="@+id/_connection2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Esquerda"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.603"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.194" />
 
     <TextView
         android:id="@+id/textView8"
@@ -161,6 +192,7 @@
         android:layout_height="wrap_content"
         android:text="Nível de bateria vibra:"
         android:textColor="@color/black"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.114"

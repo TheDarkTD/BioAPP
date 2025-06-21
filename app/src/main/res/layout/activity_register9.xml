@@ -68,7 +68,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.193"
-        app:srcCompat="@drawable/logoprov" />
+        app:srcCompat="@drawable/NeuroSenselogo" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

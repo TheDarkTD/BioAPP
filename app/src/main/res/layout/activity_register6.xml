@@ -4,24 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue1"
+    android:background="@color/blue3"
     tools:context=".Register.Register4Activity">
 
+
+    <View
+        android:id="@+id/step1"
+        android:layout_width="350dp"
+        android:layout_height="120dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.334" />
+
+    <View
+        android:id="@+id/step3"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        android:background="@drawable/roundstyle2"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.636" />
 
     <TextView
         android:id="@+id/inst_connection"
         android:layout_width="327dp"
-        android:layout_height="56dp"
+        android:layout_height="80dp"
         android:text="@string/onmod"
         android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textColor="@color/blue1"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.111" />
+        app:layout_constraintVertical_bias="0.128" />
 
     <Button
         android:id="@+id/btnNext7"
@@ -45,32 +71,35 @@
 
     <TextView
         android:id="@+id/textView13"
-        android:layout_width="350dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:lineSpacingExtra="10dp"
-        android:text="@string/onmodules6"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:justificationMode="inter_word"
+        android:lineSpacingExtra="7dp"
+        android:text="@string/onmodules6"
+        android:textColor="@color/blue1"
+        android:textSize="21sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.251" />
+        app:layout_constraintVertical_bias="0.332" />
 
     <TextView
         android:id="@+id/textView18"
-        android:layout_width="350dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:justificationMode="inter_word"
         android:lineSpacingExtra="10dp"
         android:text="@string/onmodules7"
-        android:textColor="@color/white"
+        android:textColor="@color/blue1"
+        android:textSize="21sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.417" />
+        app:layout_constraintVertical_bias="0.623" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

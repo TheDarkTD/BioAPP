@@ -8,6 +8,22 @@
     tools:context=".Register.Register8Activity">
 
 
+    <TextView
+        android:id="@+id/vib_connection2"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:justificationMode="inter_word"
+        android:lineSpacingExtra="7dp"
+        android:text="@string/conectvibra5"
+        android:textColor="@color/gray_letter"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragmentContainerView"
+        app:layout_constraintVertical_bias="0.293" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:layout_width="412dp"
@@ -42,17 +58,17 @@
         android:id="@+id/vib_connection"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
+        android:justificationMode="inter_word"
         android:lineSpacingExtra="7dp"
         android:text="@string/instruvibra"
-        android:textSize="15dp"
         android:textColor="@color/gray_letter"
-        android:justificationMode="inter_word"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragmentContainerView"
-        app:layout_constraintVertical_bias="0.183" />
+        app:layout_constraintVertical_bias="0.177" />
 
     <Button
         android:id="@+id/btnNext8"
@@ -81,6 +97,7 @@
         android:layout_height="wrap_content"
         android:text="@string/conectvibra2"
         android:textColor="@color/gray_letter"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.101"
@@ -90,16 +107,16 @@
 
     <TextView
         android:id="@+id/textView17"
-        android:layout_width="wrap_content"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:text="@string/conectvibra1"
         android:textColor="@color/gray_letter"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.128"
+        app:layout_constraintHorizontal_bias="0.124"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.487" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <NumberPicker
         android:id="@+id/intensidade1"
@@ -157,26 +174,12 @@
         app:layout_constraintVertical_bias="0.872" />
 
     <TextView
-        android:id="@+id/textView10"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:text="@string/conectvibra5"
-        android:textColor="@color/gray_letter"
-        android:textSize="10dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.382" />
-
-    <TextView
         android:id="@+id/nomeusuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/conectvibra4"
         android:textColor="@color/gray_letter"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.115"

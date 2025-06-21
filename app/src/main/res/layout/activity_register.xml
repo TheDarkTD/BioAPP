@@ -22,12 +22,12 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="394dp"
+        android:layout_width="360dp"
         android:layout_height="62dp"
         android:text="@string/Register1"
         android:textAlignment="center"
         android:textColor="@color/blue2"
-        android:textSize="19sp"
+        android:textSize="21sp"
         app:layout_constraintBottom_toTopOf="@+id/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
