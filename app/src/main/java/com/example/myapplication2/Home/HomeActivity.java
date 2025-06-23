@@ -1,12 +1,10 @@
 package com.example.myapplication2.Home;
 
-import static android.service.autofill.Validators.and;
+import static androidx.fragment.app.FragmentManager.TAG;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,9 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.AppForegroundService;
@@ -26,7 +22,10 @@ import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.Connection.ConnectionActivity;
 import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.DataCaptureService;
-import com.example.myapplication2.LoginActivity;
+
+import com.example.myapplication2.HeatMapViewL;
+import com.example.myapplication2.HeatMapViewR;
+
 import com.example.myapplication2.R;
 import com.example.myapplication2.Register.Register4Activity;
 import com.example.myapplication2.Register.Register5Activity;
@@ -34,10 +33,7 @@ import com.example.myapplication2.Settings.SettingsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -65,10 +61,15 @@ public class HomeActivity extends AppCompatActivity {
     short S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2;
     Intent serviceIntent, serviceIntent_notify;
     private TextView atualizacao;
-    private ImageView pressuremap, pressuremap2;
     DatabaseReference databaseReference;
     ArrayList<String> Listevents = new ArrayList<String>();
-    private View c8r, c1r,c2r,c3r,c4r,c5r,c6r,c7r,c9r,c1,c2,c3,c4,c5,c6,c7,c8,c9;
+
+
+    HeatMapViewL heatmapViewL;
+    HeatMapViewR heatmapViewR;
+    List<HeatMapViewL.SensorRegionL> sensoresL = new ArrayList<>();
+    List<HeatMapViewR.SensorRegionR> sensoresR = new ArrayList<>();
+    float raioRelativo = 0.05f; // proporcional ao tamanho da imagem
 
 
     @Override
@@ -81,77 +82,9 @@ public class HomeActivity extends AppCompatActivity {
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
 
-        pressuremap = findViewById(R.id.PressureMap);
-        c1r = findViewById(R.id.circle1right);
-        c2r = findViewById(R.id.circle2right);
-        c3r = findViewById(R.id.circle3right);
-        c4r = findViewById(R.id.circle4right);
-        c5r = findViewById(R.id.circle5right);
-        c6r = findViewById(R.id.circle6right);
-        c7r = findViewById(R.id.circle7right);
-        c8r = findViewById(R.id.circle8right);
-        c9r = findViewById(R.id.circle9right);
-        pressuremap2 = findViewById(R.id.PressureMap2);
-        c1 = findViewById(R.id.circle1);
-        c2 = findViewById(R.id.circle2);
-        c3 = findViewById(R.id.circle3);
-        c4 = findViewById(R.id.circle4);
-        c5 = findViewById(R.id.circle5);
-        c6 = findViewById(R.id.circle6);
-        c7 = findViewById(R.id.circle7);
-        c8 = findViewById(R.id.circle8);
-        c9 = findViewById(R.id.circle9);
+        heatmapViewL = findViewById(R.id.heatmapViewL);
+        heatmapViewR = findViewById(R.id.heatmapViewR);
 
-        // Referencie os círculos e o botão de atualização
-        circlesleft = new View[] {
-                findViewById(R.id.circle1),
-                findViewById(R.id.circle2),
-                findViewById(R.id.circle3),
-                findViewById(R.id.circle4),
-                findViewById(R.id.circle5),
-                findViewById(R.id.circle6),
-                findViewById(R.id.circle7),
-                findViewById(R.id.circle8),
-                findViewById(R.id.circle9)
-        };
-
-        circlesright = new View[] {
-                findViewById(R.id.circle1right),
-                findViewById(R.id.circle2right),
-                findViewById(R.id.circle3right),
-                findViewById(R.id.circle4right),
-                findViewById(R.id.circle5right),
-                findViewById(R.id.circle6right),
-                findViewById(R.id.circle7right),
-                findViewById(R.id.circle8right),
-                findViewById(R.id.circle9right)
-        };
-
-        /*if (followInRight.equals("false")){
-            pressuremap.setVisibility(View.GONE);
-            c1r.setVisibility(View.GONE);
-            c2r.setVisibility(View.GONE);
-            c3r.setVisibility(View.GONE);
-            c4r.setVisibility(View.GONE);
-            c5r.setVisibility(View.GONE);
-            c6r.setVisibility(View.GONE);
-            c7r.setVisibility(View.GONE);
-            c8r.setVisibility(View.GONE);
-            c9r.setVisibility(View.GONE);
-        }
-
-        if (followInLeft.equals("false")){
-            pressuremap2.setVisibility(View.GONE);
-            c1.setVisibility(View.GONE);
-            c2.setVisibility(View.GONE);
-            c3.setVisibility(View.GONE);
-            c4.setVisibility(View.GONE);
-            c5.setVisibility(View.GONE);
-            c6.setVisibility(View.GONE);
-            c7.setVisibility(View.GONE);
-            c8.setVisibility(View.GONE);
-            c9.setVisibility(View.GONE);
-        }*/
 
     }
     public void onStart(){
@@ -200,6 +133,10 @@ public class HomeActivity extends AppCompatActivity {
             conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
 
         }
+
+        //plotagem heatmap inicial
+        loadColorsL();
+        loadColorsR();
 
 
         //Barra inferior de navegação
@@ -253,8 +190,8 @@ public class HomeActivity extends AppCompatActivity {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     conectar.receiveData(HomeActivity.this);}, 1500);
 
-                    //Atualiza os valores de pressão plotados na tela
-                    checkforcolors_right();
+                    //atualiza plotagem heatmap
+                    loadColorsR();
 
 
                 }
@@ -268,10 +205,8 @@ public class HomeActivity extends AppCompatActivity {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         conectar2.receiveData(HomeActivity.this);}, 1500);
 
-                    //Atualiza os valores de pressão plotados na tela
-                    checkforcolors_left();
-
-
+                    //atualiza plotagem heatmap
+                    loadColorsL();
                 }
 
             }
@@ -282,53 +217,105 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void checkforcolors_right() {
-        sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
-        int[] thresholds = loadThresholds(sharedPreferences);
 
+
+    private void loadColorsR(){
         sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
         short[][] sensorReadings = loadSensorReadings(sharedPreferences);
 
-        short[] minMax = findMinMax(sensorReadings);
-        int dimension = minMax[1] - minMax[0];
+        if (sensorReadings == null || sensorReadings.length < 9) {
+            Log.e("HeatMap", "Dados insuficientes: sensorReadings está nulo ou incompleto.");
+            return;
+        }
 
-        int[] ratioValues = calculateRatios(sensorReadings, minMax[0], dimension);
-        applyColorsToCircles(circlesright, ratioValues);
+        int numSensores = sensorReadings.length;
+        int numLeituras = sensorReadings[0].length;
 
-        for (int i = 0; i < 9; i++) {
-            if (comparevalues(sensorReadings[i], thresholds[i])) {
-                circlesright[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+        if (numLeituras == 0) {
+            Log.e("HeatMap", "Nenhuma leitura encontrada nos sensores.");
+            return;
+        }
+
+        int ultimo = numLeituras - 1;
+
+        // Certifique-se que todos os vetores têm o mesmo tamanho
+        for (int i = 0; i < numSensores; i++) {
+            if (sensorReadings[i] == null || sensorReadings[i].length <= ultimo) {
+                Log.e("HeatMap", "Sensor " + i + " não tem leitura no índice " + ultimo);
+                return;
             }
         }
+
+        float[] leituraAtual = new float[9];
+        for (int i = 0; i < 9; i++) {
+            leituraAtual[i] = sensorReadings[i][ultimo];
+        }
+
+        sensoresR.clear();
+        float raioRelativo = 0.1f;
+
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.74f, 0.12f, leituraAtual[0], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.37f, 0.13f, leituraAtual[1], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.26f, leituraAtual[2], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.66f, 0.36f, leituraAtual[3], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.33f, 0.41f, leituraAtual[4], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.38f, 0.54f, leituraAtual[5], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.39f, 0.66f, leituraAtual[6], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.75f, leituraAtual[7], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.61f, 0.75f, leituraAtual[8], raioRelativo));
+
+        heatmapViewR.setRegions(sensoresR);
     }
 
-    private void checkforcolors_left() {
-        sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
-        int[] thresholds = loadThresholds(sharedPreferences);
 
-        sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-        short[][] sensorReadings = loadSensorReadings(sharedPreferences);
+    private void loadColorsL() {
+        sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+        short[][] sensorReadings = loadSensorReadings2(sharedPreferences);
 
-        short[] minMax = findMinMax(sensorReadings);
-        int dimension = minMax[1] - minMax[0];
+        if (sensorReadings == null || sensorReadings.length < 9) {
+            Log.e("HeatMap", "Dados insuficientes: sensorReadings está nulo ou incompleto.");
+            return;
+        }
 
-        int[] ratioValues = calculateRatios(sensorReadings, minMax[0], dimension);
-        applyColorsToCircles(circlesleft, ratioValues);
+        int numSensores = sensorReadings.length;
+        int numLeituras = sensorReadings[0].length;
 
-        for (int i = 0; i < 9; i++) {
-            if (comparevalues(sensorReadings[i], thresholds[i])) {
-                circlesleft[i].setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+        if (numLeituras == 0) {
+            Log.e("HeatMap", "Nenhuma leitura encontrada nos sensores.");
+            return;
+        }
+
+        int ultimo = numLeituras - 1;
+
+        // Certifique-se que todos os vetores têm o mesmo tamanho
+        for (int i = 0; i < numSensores; i++) {
+            if (sensorReadings[i] == null || sensorReadings[i].length <= ultimo) {
+                Log.e("HeatMap", "Sensor " + i + " não tem leitura no índice " + ultimo);
+                return;
             }
         }
+
+        float[] leituraAtual = new float[9];
+        for (int i = 0; i < 9; i++) {
+            leituraAtual[i] = sensorReadings[i][ultimo];
+        }
+
+        sensoresL.clear();
+        float raioRelativo = 0.05f;
+
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.74f, 0.12f, leituraAtual[0], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.37f, 0.13f, leituraAtual[1], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.26f, leituraAtual[2], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.66f, 0.36f, leituraAtual[3], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.33f, 0.41f, leituraAtual[4], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.38f, 0.54f, leituraAtual[5], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.39f, 0.66f, leituraAtual[6], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.75f, leituraAtual[7], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.61f, 0.75f, leituraAtual[8], raioRelativo));
+
+        heatmapViewL.setRegions(sensoresL);
     }
 
-    private int[] loadThresholds(SharedPreferences prefs) {
-        int[] thresholds = new int[9];
-        for (int i = 0; i < 9; i++) {
-            thresholds[i] = (short) prefs.getInt("S" + (i + 1), 8191);
-        }
-        return thresholds;
-    }
 
     private short[][] loadSensorReadings(SharedPreferences prefs) {
         String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
@@ -345,53 +332,38 @@ public class HomeActivity extends AppCompatActivity {
         return readings;
     }
 
-    private int[] calculateRatios(short[][] sensorReadings, short min, int dimension) {
-        int[] ratios = new int[9];
-
-        if (dimension == 0) {
-            Arrays.fill(ratios, 1);
-            return ratios;
-        }
+    private short[][] loadSensorReadings2(SharedPreferences prefs) {
+        String[] sensorKeys = {"S1_2", "S2_2", "S3_2", "S4_2", "S5_2", "S6_2", "S7_2", "S8_2", "S9_2"};
+        short[][] readings = new short[9][];
 
         for (int i = 0; i < 9; i++) {
-            short[] values = sensorReadings[i];
-            if (values.length > 0) {
-                int lastValue = values[values.length - 1];
-                ratios[i] = (lastValue - min) / dimension;
+            String data = prefs.getString(sensorKeys[i], "[0,0,0,0,0]");
+            if (data != null && !data.equals("")) {
+                readings[i] = stringToShortArray(data);
             } else {
-                ratios[i] = 0;
+                readings[i] = new short[]{0, 0, 0, 0, 0};
             }
         }
-
-        return ratios;
+        return readings;
     }
 
-    private void applyColorsToCircles(View[] circles, int[] ratioValues) {
-        for (int i = 0; i < circles.length; i++) {
-            int pressure = ratioValues[i];
-            int color = calculateColor(pressure);
-            circles[i].setBackgroundTintList(ColorStateList.valueOf(color));
+
+    /*
+    private int[] loadThresholds(SharedPreferences prefs) {
+        int[] thresholds = new int[9];
+        for (int i = 0; i < 9; i++) {
+            thresholds[i] = (short) prefs.getInt("S" + (i + 1), 8191);
         }
+        return thresholds;
     }
+     */
 
     private Boolean comparevalues(short[] array, int threshold) {
         return array.length > 0 && array[array.length - 1] > threshold;
     }
 
-    private int calculateColor(int pressure) {
-        int startColor = Color.BLUE;
-        int endColor = Color.RED;
-        float clampedRatio = Math.min(1f, Math.max(0f, pressure));
-        return interpolateColor(startColor, endColor, clampedRatio);
-    }
 
-    private int interpolateColor(int colorStart, int colorEnd, float ratio) {
-        int alpha = (int) (Color.alpha(colorStart) + (Color.alpha(colorEnd) - Color.alpha(colorStart)) * ratio);
-        int red = (int) (Color.red(colorStart) + (Color.red(colorEnd) - Color.red(colorStart)) * ratio);
-        int green = (int) (Color.green(colorStart) + (Color.green(colorEnd) - Color.green(colorStart)) * ratio);
-        int blue = (int) (Color.blue(colorStart) + (Color.blue(colorEnd) - Color.blue(colorStart)) * ratio);
-        return Color.argb(alpha, red, green, blue);
-    }
+
 
     public static short[] findMinMax(short[][] array) {
         short min = Short.MAX_VALUE;

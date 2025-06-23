@@ -225,7 +225,26 @@ public class ConectInsole { // tratamento palmilha direita
                         receivedData.SR7.add(s.getInt("S7"));
                         receivedData.SR8.add(s.getInt("S8"));
                         receivedData.SR9.add(s.getInt("S9"));
+
+                        /*
+
+                        SharedPreferences keep_readingsR = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+                        SharedPreferences.Editor eventEditor = keep_readingsR.edit();
+                        eventEditor.putString("S1_1", String.valueOf(receivedData.SR1));
+                        eventEditor.putString("S2_1", String.valueOf(receivedData.SR2));
+                        eventEditor.putString("S3_1", String.valueOf(receivedData.SR3));
+                        eventEditor.putString("S4_1", String.valueOf(receivedData.SR4));
+                        eventEditor.putString("S5_1", String.valueOf(receivedData.SR5));
+                        eventEditor.putString("S6_1", String.valueOf(receivedData.SR6));
+                        eventEditor.putString("S7_1", String.valueOf(receivedData.SR7));
+                        eventEditor.putString("S8_1", String.valueOf(receivedData.SR8));
+                        eventEditor.putString("S9_1", String.valueOf(receivedData.SR9));
+
+                        */
+
+
                     }
+
                     Log.d(TAG, "Parsed SendData: " + getSendDataAsString());
 
                     if (receivedData.cmd == 0x3F) Log.d(TAG, "Memory full event");

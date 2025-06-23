@@ -31,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SettingsActivity extends AppCompatActivity {
     Button mLogoutBtn;
+    public static final String SHARED_PREFS = "sharedprefs_login";
     TextView mAccountBtn, mParametersBtn, mVibraBtn, mNotificationsBtn, mUpdatesBtn, mUseInstructionsBtn;
     FirebaseAuth fAuth;
     ImageView fotoid;
@@ -131,8 +132,13 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (fAuth.getCurrentUser() != null)
                     fAuth.signOut();
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                SharedPreferences.Editor editor_login = sharedPreferences.edit();
+                editor_login.putString("name", "");
+                editor_login.apply();
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
+
             }
         });
 

@@ -2,6 +2,7 @@ package com.example.myapplication2;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
+    public static final String SHARED_PREFS = "sharedprefs_login";
     EditText mEmail, mPassword;
     Button mLoginBtn;
     TextView mCreateBtn;
@@ -66,6 +68,17 @@ public class LoginActivity extends AppCompatActivity {
         // Definindo o idioma explicitamente para português do Brasil
         fAuth.setLanguageCode("pt-BR");
 
+        //checar login automático
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        String check = sharedPreferences.getString("name", "");
+        if(check.equals("true")){
+            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+
+
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +106,38 @@ public class LoginActivity extends AppCompatActivity {
                             if (user != null) {
                                 uid = user.getUid();  // Pega o UID do usuário autenticado
                                 loadUserData(uid, v);
+
+                                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                                SharedPreferences.Editor editor_login = sharedPreferences.edit();
+                                editor_login.putString("name", "true");
+                                editor_login.apply();
+
+
+                                SharedPreferences sp = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putString("S1_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S2_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S3_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S4_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S5_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S6_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S7_2", "9,9,9,9,9,9,9,9,9");
+                                editor.putString("S8_2", "1,1,1,1,1,1,1,1,1");
+                                editor.putString("S9_2", "1,1,1,1,1,1,1,1,1");
+                                editor.apply();
+
+                                SharedPreferences sp1 = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+                                SharedPreferences.Editor editor1 = sp1.edit();
+                                editor1.putString("S1_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S2_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S3_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S4_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S5_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S6_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S7_1", "9,9,9,9,9,9,9,9,9");
+                                editor1.putString("S8_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.putString("S9_1", "1,1,1,1,1,1,1,1,1");
+                                editor1.apply();
 
                             }
                         } else {
@@ -273,6 +318,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Falha ao carregar os dados.", Toast.LENGTH_SHORT).show();
             }
         });
-    }
 
+
+    }
 }

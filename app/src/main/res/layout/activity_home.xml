@@ -16,13 +16,13 @@
         android:layout_marginStart="256dp"
         android:backgroundTint="@color/white"
         android:clickable="true"
-        android:src="@drawable/baseline_unfold_more_double_24"
+        android:src="@drawable/pluscom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintHorizontal_bias="0.707"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.811" />
+        app:layout_constraintVertical_bias="0.851" />
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
@@ -61,7 +61,7 @@
 
     <Button
         android:id="@+id/buttonread"
-        android:layout_width="131dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginBottom="100dp"
         android:backgroundTint="@color/blue3"
@@ -69,352 +69,39 @@
         android:textColor="@color/blue2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.08"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.943" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <HorizontalScrollView
         android:id="@+id/horiscroll"
         android:layout_width="370dp"
-        android:layout_height="410dp"
-        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
         android:fillViewport="true"
-        android:measureAllChildren="false"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.333">
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/innerLay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <com.example.myapplication2.HeatMapViewL
+                android:id="@+id/heatmapViewL"
+                android:layout_width="350dp"
+                android:layout_height="480dp" />
 
-            <View
-                android:id="@+id/circle1"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="190dp"
-                android:layout_marginTop="95dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="200dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ1"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle2"
-                android:layout_width="80dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="105dp"
-                android:layout_marginTop="100dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="329dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ2"
-                android:rotation="-45"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle3"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="125dp"
-                android:layout_marginTop="210dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="274dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ3"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle4"
-                android:layout_width="33dp"
-                android:layout_height="34dp"
-                android:layout_marginStart="155dp"
-                android:layout_marginTop="170dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="279dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ4"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle5"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="200dp"
-                android:layout_marginTop="165dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="279dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ5"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle6"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="135dp"
-                android:layout_marginTop="260dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="202dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ6"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle7"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="145dp"
-                android:layout_marginTop="299dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="120dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ7"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle8"
-                android:layout_width="28dp"
-                android:layout_height="29dp"
-                android:layout_marginStart="155dp"
-                android:layout_marginTop="354dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="55dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ8"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle9"
-                android:layout_width="27dp"
-                android:layout_height="28dp"
-                android:layout_marginStart="190dp"
-                android:layout_marginTop="354dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="56dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ9"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <ImageView
-                android:id="@+id/PressureMap2"
-                android:layout_width="268dp"
-                android:layout_height="471dp"
-                android:layout_marginStart="50dp"
-                app:srcCompat="@drawable/footcleanleft" />
-
-            <ImageView
-                android:id="@+id/PressureMap"
-                android:layout_width="268dp"
-                android:layout_height="471dp"
-                android:layout_marginStart="400dp"
-                android:layout_marginEnd="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.333"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/footcleanright" />
-
-            <View
-                android:id="@+id/circle1right"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="480dp"
-                android:layout_marginTop="95dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="200dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ1"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle2right"
-                android:layout_width="80dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="525dp"
-                android:layout_marginTop="120dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="329dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ2"
-                android:rotation="45"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle3right"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="560dp"
-                android:layout_marginTop="200dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="274dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ3"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle4right"
-                android:layout_width="33dp"
-                android:layout_height="34dp"
-                android:layout_marginStart="525dp"
-                android:layout_marginTop="170dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="279dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ4"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle5right"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="485dp"
-                android:layout_marginTop="165dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="279dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ5"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle6right"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="555dp"
-                android:layout_marginTop="260dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="202dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ6"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle7right"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="535dp"
-                android:layout_marginTop="305dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="120dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ7"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle8right"
-                android:layout_width="28dp"
-                android:layout_height="29dp"
-                android:layout_marginStart="535dp"
-                android:layout_marginTop="354dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="55dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ8"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <View
-                android:id="@+id/circle9right"
-                android:layout_width="27dp"
-                android:layout_height="28dp"
-                android:layout_marginStart="500dp"
-                android:layout_marginTop="354dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="56dp"
-                android:background="@drawable/circle_shape"
-                android:backgroundTint="@color/circ9"
-                app:layout_constraintBottom_toBottomOf="@+id/PressureMap"
-                app:layout_constraintEnd_toEndOf="@+id/PressureMap"
-                app:layout_constraintStart_toStartOf="@+id/PressureMap"
-                app:layout_constraintTop_toTopOf="@+id/PressureMap"
-                tools:ignore="MissingConstraints" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/group3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="circle4,circle2,circle8,circle7,circle1,circle5,circle6,circle9,circle3,PressureMap" />
-
-        </FrameLayout>
-
+            <com.example.myapplication2.HeatMapViewR
+                android:id="@+id/heatmapViewR"
+                android:layout_width="350dp"
+                android:layout_height="480dp" />
+        </LinearLayout>
     </HorizontalScrollView>
 
     <TextView
@@ -423,7 +110,7 @@
         android:layout_height="wrap_content"
         android:text="Última atualização:"
         android:textColor="@color/blue2"
-        android:textSize="15sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
