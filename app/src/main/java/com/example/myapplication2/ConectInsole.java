@@ -226,21 +226,7 @@ public class ConectInsole { // tratamento palmilha direita
                         receivedData.SR8.add(s.getInt("S8"));
                         receivedData.SR9.add(s.getInt("S9"));
 
-                        /*
-
-                        SharedPreferences keep_readingsR = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-                        SharedPreferences.Editor eventEditor = keep_readingsR.edit();
-                        eventEditor.putString("S1_1", String.valueOf(receivedData.SR1));
-                        eventEditor.putString("S2_1", String.valueOf(receivedData.SR2));
-                        eventEditor.putString("S3_1", String.valueOf(receivedData.SR3));
-                        eventEditor.putString("S4_1", String.valueOf(receivedData.SR4));
-                        eventEditor.putString("S5_1", String.valueOf(receivedData.SR5));
-                        eventEditor.putString("S6_1", String.valueOf(receivedData.SR6));
-                        eventEditor.putString("S7_1", String.valueOf(receivedData.SR7));
-                        eventEditor.putString("S8_1", String.valueOf(receivedData.SR8));
-                        eventEditor.putString("S9_1", String.valueOf(receivedData.SR9));
-
-                        */
+                        storeReadings(context);
 
 
                     }
@@ -394,7 +380,21 @@ public class ConectInsole { // tratamento palmilha direita
             context.getSystemService(NotificationManager.class).createNotificationChannel(channel);
         }
     }
-
+    private void storeReadings(Context ctx) {
+        Log.d(TAG, "storeReadings: saving to SharedPreferences");
+        SharedPreferences sp = ctx.getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("S1_1", receivedData.SR1.toString());
+        editor.putString("S2_1", receivedData.SR2.toString());
+        editor.putString("S3_1", receivedData.SR3.toString());
+        editor.putString("S4_1", receivedData.SR4.toString());
+        editor.putString("S5_1", receivedData.SR5.toString());
+        editor.putString("S6_1", receivedData.SR6.toString());
+        editor.putString("S7_1", receivedData.SR7.toString());
+        editor.putString("S8_1", receivedData.SR8.toString());
+        editor.putString("S9_1", receivedData.SR9.toString());
+        editor.apply();
+    }
     private String checkforevent(Context context) {
         Log.d(TAG, "checkforevent: start");
         SharedPreferences prefs = context.getSharedPreferences("My_Appregions", MODE_PRIVATE);

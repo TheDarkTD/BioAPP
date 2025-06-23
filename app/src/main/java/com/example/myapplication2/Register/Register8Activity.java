@@ -169,7 +169,7 @@ public class Register8Activity extends AppCompatActivity {
                 conectar.SendConfigData(cmd, PEST, INT, TMEST, INEST);
                 System.out.println(cmd + ","+ PEST+ ","+INT+ ","+TMEST+ ","+INEST);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    conectar.receiveData(Register8Activity.this);
+                    conectar.receiveData();
                 }, 1000);
 
             }

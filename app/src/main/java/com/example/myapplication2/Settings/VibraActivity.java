@@ -175,7 +175,7 @@ public class VibraActivity extends AppCompatActivity {
                 editor.putString("interval", String.valueOf(INEST));
                 editor.apply();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    conectar.receiveData(VibraActivity.this);
+                    conectar.receiveData();
                 }, 1000);
 
 
