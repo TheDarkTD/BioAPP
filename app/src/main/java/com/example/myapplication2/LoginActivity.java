@@ -2,6 +2,8 @@ package com.example.myapplication2;
 
 import static android.content.ContentValues.TAG;
 
+import static com.example.myapplication2.Settings.SettingsActivity.SHARED_PREFS;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,124 +31,80 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
-    public static final String SHARED_PREFS = "sharedprefs_login";
     EditText mEmail, mPassword;
     Button mLoginBtn;
     TextView mCreateBtn;
     FirebaseAuth fAuth;
-    DatabaseReference databaseReference;
     ConectInsole conectInsole;
     ConectInsole2 conectInsole2;
-    String uid = null; // Definir o uid como null
-    String left,right;
+    String uid = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        conectInsole = new ConectInsole(this);
+        // Inicializa FirebaseAuth e ConectInsoles
+        fAuth = FirebaseAuth.getInstance();
+        conectInsole  = new ConectInsole(this);
         conectInsole2 = new ConectInsole2(this);
 
-        // Limpar qualquer sessão anterior
-        fAuth = FirebaseAuth.getInstance();
-        fAuth.signOut();  // Garantir que o FirebaseAuth comece sem usuário logado
+        // Views
+        mEmail      = findViewById(R.id.email);
+        mPassword   = findViewById(R.id.password);
+        mLoginBtn   = findViewById(R.id.btnLogin);
+        mCreateBtn  = findViewById(R.id.textRegister);
 
-        // Definir uid como null para garantir que ele seja redefinido ao abrir a tela de login
-        uid = null;
+        // Define idioma para mensagens do Firebase (opcional)
+        fAuth.setLanguageCode("pt-BR");
 
+        // Botão registrar
+        mCreateBtn.setOnClickListener(v ->
+                startActivity(new Intent(this, Register1Activity.class))
+        );
+
+        // Botão login
+        mLoginBtn.setOnClickListener(v -> {
+            String email    = mEmail.getText().toString().trim();
+            String password = mPassword.getText().toString().trim();
+
+            if (TextUtils.isEmpty(email)) {
+                mEmail.setError("Email obrigatório.");
+                return;
+            }
+            if (TextUtils.isEmpty(password)) {
+                mPassword.setError("Senha obrigatória.");
+                return;
+            }
+
+            fAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "Login bem-sucedido", Toast.LENGTH_LONG).show();
+                            FirebaseUser user = fAuth.getCurrentUser();
+                            if (user != null) {
+                                uid = user.getUid();
+                                loadUserData(uid, v);
+                            }
+                        } else {
+                            Toast.makeText(this,
+                                    "Erro no login: " + task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-
-        mEmail = findViewById(R.id.email);
-        mPassword = findViewById(R.id.password);
-        mLoginBtn = findViewById(R.id.btnLogin);
-        mCreateBtn = findViewById(R.id.textRegister);
-
-        // Definindo o idioma explicitamente para português do Brasil
-        fAuth.setLanguageCode("pt-BR");
-
-        //checar login automático
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String check = sharedPreferences.getString("name", "");
-        if(check.equals("true")){
-            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-            startActivity(intent);
+        // Se já estiver logado, pula direto para HomeActivity
+        FirebaseUser currentUser = fAuth.getCurrentUser();
+        if (currentUser != null) {
+            startActivity(new Intent(this, HomeActivity.class));
             finish();
         }
 
-
-
-        mLoginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String email = mEmail.getText().toString().trim();
-                String password = mPassword.getText().toString().trim();
-
-                if (TextUtils.isEmpty(email)) {
-                    mEmail.setError("Email obrigatório.");
-                    return;
-                }
-
-                if (TextUtils.isEmpty(password)) {
-                    mPassword.setError("Senha obrigatória.");
-                    return;
-                }
-
-                // Autenticar o usuário
-                fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Login bem-sucedido", Toast.LENGTH_LONG).show();
-                            FirebaseUser user = fAuth.getCurrentUser();
-                            if (user != null) {
-                                uid = user.getUid();  // Pega o UID do usuário autenticado
-                                loadUserData(uid, v);
-
-                                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                                SharedPreferences.Editor editor_login = sharedPreferences.edit();
-                                editor_login.putString("name", "true");
-                                editor_login.apply();
-
-
-                                SharedPreferences sp = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sp.edit();
-                                editor.putString("S1_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S2_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S3_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S4_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S5_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S6_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S7_2", "9,9,9,9,9,9,9,9,9");
-                                editor.putString("S8_2", "1,1,1,1,1,1,1,1,1");
-                                editor.putString("S9_2", "1,1,1,1,1,1,1,1,1");
-                                editor.apply();
-
-                                SharedPreferences sp1 = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-                                SharedPreferences.Editor editor1 = sp1.edit();
-                                editor1.putString("S1_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S2_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S3_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S4_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S5_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S6_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S7_1", "9,9,9,9,9,9,9,9,9");
-                                editor1.putString("S8_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.putString("S9_1", "1,1,1,1,1,1,1,1,1");
-                                editor1.apply();
-
-                            }
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Erro no login: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        });
 
         mCreateBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RadialGradient;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -33,14 +35,30 @@ public class HeatMapViewR extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // desenha o PNG ajustado ao tamanho da view
-        canvas.drawBitmap(footBitmap, null, new Rect(0,0,getWidth(),getHeight()), null);
 
-        // desenha o heatmap: círculos com cores baseadas na pressão
-        for (SensorRegionR r : regions) {
-            paint.setColor(getHeatColor(r.pressure));
-            paint.setAlpha(180); // semitransparente
-            canvas.drawCircle(r.x * getWidth(), r.y * getHeight(), r.radius * getWidth(), paint);
+        // Desenha a imagem do pé
+        canvas.drawBitmap(footBitmap, null, new Rect(0, 0, getWidth(), getHeight()), null);
+
+        // Desenha os pontos suavizados
+        for (HeatMapViewR.SensorRegionR r : regions) {
+            float centerX = r.x * getWidth();
+            float centerY = r.y * getHeight();
+            float radius = r.radius * getWidth();
+
+            // Define cor do centro baseado na pressão
+            int centerColor = getHeatColor(r.pressure);
+            int edgeColor = Color.TRANSPARENT;
+
+            RadialGradient gradient = new RadialGradient(
+                    centerX, centerY, radius,
+                    centerColor, edgeColor,
+                    Shader.TileMode.CLAMP
+            );
+
+            paint.setShader(gradient);
+            paint.setAlpha(180);
+            canvas.drawCircle(centerX, centerY, radius, paint);
+            paint.setShader(null); // limpa para próximo ponto
         }
     }
 

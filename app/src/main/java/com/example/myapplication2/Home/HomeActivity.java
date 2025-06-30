@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,6 +51,7 @@ public class HomeActivity extends AppCompatActivity {
     FloatingActionButton mPopBtn;
     private SharedPreferences sharedPreferences;
     BottomNavigationView bottomNavigationView;
+    FrameLayout frameL, frameR;
     private View[] circlesleft, circlesright;
     Button mBtnRead;
     private String followInRight, followInLeft;
@@ -64,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     ArrayList<String> Listevents = new ArrayList<String>();
 
+    ImageView maskL, maskR;
 
     HeatMapViewL heatmapViewL;
     HeatMapViewR heatmapViewR;
@@ -84,6 +87,9 @@ public class HomeActivity extends AppCompatActivity {
 
         heatmapViewL = findViewById(R.id.heatmapViewL);
         heatmapViewR = findViewById(R.id.heatmapViewR);
+        maskL = findViewById(R.id.imageView5);
+        maskR = findViewById(R.id.imageView8);
+        frameL = findViewById(R.id.frameL);
 
 
     }
@@ -99,6 +105,17 @@ public class HomeActivity extends AppCompatActivity {
         ConectInsole conectar = new ConectInsole(HomeActivity.this);
         ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
 
+        if(followInLeft.equals("false")){
+            heatmapViewL.setVisibility(View.GONE);
+            maskL.setVisibility(View.GONE);
+            frameL.setVisibility(View.GONE);
+        }
+
+        if (followInRight.equals("false")){
+            heatmapViewR.setVisibility(View.GONE);
+            maskR.setVisibility(View.GONE);
+            frameR.setVisibility(View.GONE);
+        }
 
         //Buscar valores de limiares já calculados para enviar com o comando 3C-leitura de dados (padronização do pacote de envio)
         sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
@@ -252,17 +269,20 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         sensoresR.clear();
-        float raioRelativo = 0.1f;
+        float raioRelativo = 0.3f;
 
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.74f, 0.12f, leituraAtual[0], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.37f, 0.13f, leituraAtual[1], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.26f, leituraAtual[2], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.66f, 0.36f, leituraAtual[3], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.33f, 0.41f, leituraAtual[4], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.38f, 0.54f, leituraAtual[5], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.39f, 0.66f, leituraAtual[6], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.75f, leituraAtual[7], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.61f, 0.75f, leituraAtual[8], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.28f, 0.12f, leituraAtual[0], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.55f, 0.15f, leituraAtual[1], raioRelativo));
+        //3
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.62f, 0.45f, leituraAtual[2], raioRelativo));
+        //4
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.30f, leituraAtual[3], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.30f, 0.40f, leituraAtual[4], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.53f, 0.59f, leituraAtual[5], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.72f, leituraAtual[6], raioRelativo));
+        //8
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.85f, leituraAtual[7], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.34f, 0.85f, leituraAtual[8], raioRelativo));
 
         heatmapViewR.setRegions(sensoresR);
     }
@@ -301,17 +321,23 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         sensoresL.clear();
-        float raioRelativo = 0.05f;
+        float raioRelativo = 0.3f;
 
+        //1
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.74f, 0.12f, leituraAtual[0], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.37f, 0.13f, leituraAtual[1], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.26f, leituraAtual[2], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.66f, 0.36f, leituraAtual[3], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.33f, 0.41f, leituraAtual[4], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.38f, 0.54f, leituraAtual[5], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.39f, 0.66f, leituraAtual[6], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.75f, leituraAtual[7], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.61f, 0.75f, leituraAtual[8], raioRelativo));
+        //2
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.18f, leituraAtual[1], raioRelativo));
+        //4
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.32f, leituraAtual[3], raioRelativo));
+        //3
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.69f, 0.38f, leituraAtual[2], raioRelativo));
+        //5
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.42f, 0.45f, leituraAtual[4], raioRelativo));
+        //6
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.44f, 0.61f, leituraAtual[5], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.48f, 0.75f, leituraAtual[6], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.87f, leituraAtual[7], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.65f, 0.87f, leituraAtual[8], raioRelativo));
 
         heatmapViewL.setRegions(sensoresL);
     }

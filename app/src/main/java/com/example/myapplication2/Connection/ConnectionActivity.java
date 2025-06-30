@@ -113,7 +113,7 @@ public class ConnectionActivity extends AppCompatActivity {
         connectedR  = sharedPreferences1.getBoolean("connectedinsole1", false);
         connectedL  = sharedPreferences1.getBoolean("connectedinsole2", false);
 
-        if (InRight.equals("false") && InLeft.equals("true")) {
+        /*if (InRight.equals("false") && InLeft.equals("true")) {
             conect1L.setChecked(connectedL);
 
             conect1R.setVisibility(View.GONE);
@@ -135,7 +135,7 @@ public class ConnectionActivity extends AppCompatActivity {
             batlevel.setText("Nível de bateria palmilhas direita e esquerda:");
             batp.setText(batInsoleleft + batInsoleright);
 
-        }
+        }*/
 
 
         sharedPreferences1 = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
