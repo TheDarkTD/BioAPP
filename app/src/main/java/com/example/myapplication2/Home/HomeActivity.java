@@ -1,10 +1,7 @@
 package com.example.myapplication2.Home;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,13 +19,9 @@ import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.Connection.ConnectionActivity;
 import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.DataCaptureService;
-
 import com.example.myapplication2.HeatMapViewL;
 import com.example.myapplication2.HeatMapViewR;
-
 import com.example.myapplication2.R;
-import com.example.myapplication2.Register.Register4Activity;
-import com.example.myapplication2.Register.Register5Activity;
 import com.example.myapplication2.Settings.SettingsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,444 +32,321 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
-
 public class HomeActivity extends AppCompatActivity {
-    private Register4Activity udpr;
-    private Register5Activity udpl;
-    FirebaseAuth fAuth;
-    FloatingActionButton mPopBtn;
+    private static final String TAG = HomeActivity.class.getSimpleName();
+
     private SharedPreferences sharedPreferences;
-    BottomNavigationView bottomNavigationView;
-    FrameLayout frameL, frameR;
-    private View[] circlesleft, circlesright;
-    Button mBtnRead;
+    private FloatingActionButton mPopBtn;
+    private FrameLayout frameL, frameR;
+    private HeatMapViewL heatmapViewL;
+    private HeatMapViewR heatmapViewR;
+    private ImageView maskL, maskR;
+    private Button mBtnRead;
+
     private String followInRight, followInLeft;
-    String listeventsleft = "";
-    String  listeventsright= "";
-    String uid = null;
-    Calendar calendar;
-    Boolean restart;
-    short S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2;
-    Intent serviceIntent, serviceIntent_notify;
-    private TextView atualizacao;
-    DatabaseReference databaseReference;
-    ArrayList<String> Listevents = new ArrayList<String>();
-
-    ImageView maskL, maskR;
-
-    HeatMapViewL heatmapViewL;
-    HeatMapViewR heatmapViewR;
-    List<HeatMapViewL.SensorRegionL> sensoresL = new ArrayList<>();
-    List<HeatMapViewR.SensorRegionR> sensoresR = new ArrayList<>();
-    float raioRelativo = 0.05f; // proporcional ao tamanho da imagem
-
+    private short S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1;
+    private short S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2;
+    private List<HeatMapViewL.SensorRegionL> sensoresL = new ArrayList<>();
+    private List<HeatMapViewR.SensorRegionR> sensoresR = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        super.onStart();
+        Log.d(TAG, "onCreate: entered");
 
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
+        Log.d(TAG, "onCreate: followInRight=" + followInRight + ", followInLeft=" + followInLeft);
+
 
         heatmapViewL = findViewById(R.id.heatmapViewL);
         heatmapViewR = findViewById(R.id.heatmapViewR);
         maskL = findViewById(R.id.imageView5);
         maskR = findViewById(R.id.imageView8);
         frameL = findViewById(R.id.frameL);
+        frameR = findViewById(R.id.frameR);
 
-
+        Log.d(TAG, "onCreate: views initialized");
     }
-    public void onStart(){
+
+    @Override
+    protected void onStart() {
         super.onStart();
-        Intent serviceIntent1 = new Intent(this, AppForegroundService.class);
-        Intent serviceIntent2 = new Intent(this, DataCaptureService.class);
-        startService(serviceIntent1);
-        startService(serviceIntent2);
+        Log.d(TAG, "onStart: entered");
+
+        // Start services
+        startService(new Intent(this, AppForegroundService.class));
+        startService(new Intent(this, DataCaptureService.class));
+        Log.d(TAG, "onStart: Services started");
+
         byte freq = 1;
         byte cmd = 0x3A;
+        ConectInsole conectar = new ConectInsole(this);
+        ConectInsole2 conectar2 = new ConectInsole2(this);
 
-        ConectInsole conectar = new ConectInsole(HomeActivity.this);
-        ConectInsole2 conectar2 = new ConectInsole2(HomeActivity.this);
-
-        if(followInLeft.equals("false")){
+        if ("false".equals(followInLeft)) {
             heatmapViewL.setVisibility(View.GONE);
             maskL.setVisibility(View.GONE);
             frameL.setVisibility(View.GONE);
+            Log.d(TAG, "onStart: Left insole hidden");
         }
-
-        if (followInRight.equals("false")){
+        if ("false".equals(followInRight)) {
             heatmapViewR.setVisibility(View.GONE);
             maskR.setVisibility(View.GONE);
             frameR.setVisibility(View.GONE);
+            Log.d(TAG, "onStart: Right insole hidden");
         }
 
-        //Buscar valores de limiares já calculados para enviar com o comando 3C-leitura de dados (padronização do pacote de envio)
-        sharedPreferences = getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
-        S1_1 = (short) sharedPreferences.getInt("Lim1I1", 0xffff);
-        S2_1 = (short) sharedPreferences.getInt("Lim2I1", 0xffff);
-        S3_1 = (short) sharedPreferences.getInt("Lim3I1", 0xffff);
-        S4_1 = (short) sharedPreferences.getInt("Lim4I1", 0xffff);
-        S5_1 = (short) sharedPreferences.getInt("Lim5I1", 0xffff);
-        S6_1 = (short) sharedPreferences.getInt("Lim6I1", 0xffff);
-        S7_1 = (short) sharedPreferences.getInt("Lim7I1", 0xffff);
-        S8_1 = (short) sharedPreferences.getInt("Lim8I1", 0xffff);
-        S9_1 = (short) sharedPreferences.getInt("Lim9I1", 0xffff);
+        // Load thresholds
+        sharedPreferences = getSharedPreferences("ConfigPrefs1", MODE_PRIVATE);
+        short[] rightThresh = new short[]{
+                S1_1 = (short) sharedPreferences.getInt("S1", 0xffff),
+                S2_1 = (short) sharedPreferences.getInt("S2", 0xffff),
+                S3_1 = (short) sharedPreferences.getInt("S3", 0xffff),
+                S4_1 = (short) sharedPreferences.getInt("S4", 0xffff),
+                S5_1 = (short) sharedPreferences.getInt("S5", 0xffff),
+                S6_1 = (short) sharedPreferences.getInt("S6", 0xffff),
+                S7_1 = (short) sharedPreferences.getInt("S7", 0xffff),
+                S8_1 = (short) sharedPreferences.getInt("S8", 0xffff),
+                S9_1 = (short) sharedPreferences.getInt("S9", 0xffff)
+        };
+        Log.d(TAG, "onStart: Right thresholds=" + Arrays.toString(rightThresh));
 
-        //Limiares da palmilha esquerda
-        sharedPreferences = getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-        S1_2 = (short) sharedPreferences.getInt("Lim1I2", 0xffff);
-        S2_2 = (short) sharedPreferences.getInt("Lim2I2", 0xffff);
-        S3_2 = (short) sharedPreferences.getInt("Lim3I2", 0xffff);
-        S4_2 = (short) sharedPreferences.getInt("Lim4I2", 0xffff);
-        S5_2 = (short) sharedPreferences.getInt("Lim5I2", 0xffff);
-        S6_2 = (short) sharedPreferences.getInt("Lim6I2", 0xffff);
-        S7_2 = (short) sharedPreferences.getInt("Lim7I2", 0xffff);
-        S8_2 = (short) sharedPreferences.getInt("Lim8I2", 0xffff);
-        S9_2 = (short) sharedPreferences.getInt("Lim9I2", 0xffff);
+        sharedPreferences = getSharedPreferences("ConfigPrefs2", MODE_PRIVATE);
+        short[] leftThresh = new short[]{
+                S1_2 = (short) sharedPreferences.getInt("S1", 0xffff),
+                S2_2 = (short) sharedPreferences.getInt("S2", 0xffff),
+                S3_2 = (short) sharedPreferences.getInt("S3", 0xffff),
+                S4_2 = (short) sharedPreferences.getInt("S4", 0xffff),
+                S5_2 = (short) sharedPreferences.getInt("S5", 0xffff),
+                S6_2 = (short) sharedPreferences.getInt("S6", 0xffff),
+                S7_2 = (short) sharedPreferences.getInt("S7", 0xffff),
+                S8_2 = (short) sharedPreferences.getInt("S8", 0xffff),
+                S9_2 = (short) sharedPreferences.getInt("S9", 0xffff)
+        };
+        Log.d(TAG, "onStart: Left thresholds=" + Arrays.toString(leftThresh));
 
-
-        if (followInRight.equals("true")){
-            conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
-
+        if ("true".equals(followInRight)) {
+            conectar.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+            Log.d(TAG, "onStart: Config sent to right insole");
         }
-        if (followInLeft.equals("true")){
+        if ("true".equals(followInLeft)) {
             conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
-
+            Log.d(TAG, "onStart: Config sent to left insole");
         }
 
-        //plotagem heatmap inicial
-        loadColorsL();
-        loadColorsR();
 
+        Log.d(TAG, "onStart: Heatmaps initialized");
 
-        //Barra inferior de navegação
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomnavview1);
-        bottomNavigationView.setSelectedItemId(R.id.home);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
+        BottomNavigationView nav = findViewById(R.id.bottomnavview1);
+        nav.setSelectedItemId(R.id.home);
+        nav.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.home:
-                    return true;
+                    Log.d(TAG, "Nav: Home"); return true;
                 case R.id.settings:
-                    startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                    finish();
-                    return true;
+                    Log.d(TAG, "Nav: Settings"); startActivity(new Intent(this, SettingsActivity.class)); finish(); return true;
                 case R.id.connection:
-                    startActivity(new Intent(getApplicationContext(), ConnectionActivity.class));
-                    finish();
-                    return true;
+                    Log.d(TAG, "Nav: Connection"); startActivity(new Intent(this, ConnectionActivity.class)); finish(); return true;
                 case R.id.data:
-                    startActivity(new Intent(getApplicationContext(), DataActivity.class));
-                    finish();
-                    return true;
+                    Log.d(TAG, "Nav: Data"); startActivity(new Intent(this, DataActivity.class)); finish(); return true;
             }
             return false;
         });
 
-
-        //Botão float que expande lista das atualizações
-        mPopBtn =(FloatingActionButton) findViewById(R.id.floatingActionButton2);
-        mPopBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(HomeActivity.this, Pop.class));
-            }
+        mPopBtn = findViewById(R.id.floatingActionButton2);
+        mPopBtn.setOnClickListener(v -> {
+            Log.d(TAG, "PopBtn: Open Pop");
+            startActivity(new Intent(this, Pop.class));
         });
 
-
-        //Botão para atualizar leitura do sensor
-        mBtnRead = findViewById((R.id.buttonread));
-        mBtnRead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //Envia solicitação de leitura a palmilha
-                byte cmd3c = 0X3C;
-
-                if (followInRight.equals("true")){
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar.createAndSendConfigData(cmd3c, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
-                    }, 1000);
-
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    conectar.receiveData(HomeActivity.this);}, 1500);
-
-                    //atualiza plotagem heatmap
+        mBtnRead = findViewById(R.id.buttonread);
+        mBtnRead.setOnClickListener(v -> {
+            Log.d(TAG, "ReadBtn: request readings");
+            byte cmd3c = 0x3C;
+            if ("true".equals(followInRight)) {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Log.d(TAG, "ReadBtn: send read cmd to right");
+                    conectar.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+                }, 1000);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    //conectar.receiveData(this);
+                    Log.d(TAG, "ReadBtn: received data from right");
                     loadColorsR();
-
-
-                }
-
-
-                if (followInLeft.equals("true")){
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
-                    }, 1000);
-
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        conectar2.receiveData(HomeActivity.this);}, 1500);
-
-                    //atualiza plotagem heatmap
-                    loadColorsL();
-                }
-
+                }, 2500);
             }
-
+            if ("true".equals(followInLeft)) {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Log.d(TAG, "ReadBtn: send read cmd to left");
+                    conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+                }, 1000);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    //conectar2.receiveData(this);
+                    Log.d(TAG, "ReadBtn: received data from left");
+                    loadColorsL();
+                }, 2500);
+            }
         });
+        if ("false".equals(followInLeft)) {
+            loadColorsL();
+
+        }
+        if ("false".equals(followInRight)) {
+            loadColorsR();
+        }
         Insole_RightIP();
         Insole_leftIP();
     }
 
-
-
-
-    private void loadColorsR(){
-        sharedPreferences = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
-        short[][] sensorReadings = loadSensorReadings(sharedPreferences);
-
+    private void loadColorsR() {
+        Log.d(TAG, "loadColorsR: called");
+        SharedPreferences prefs = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
+        short[][] sensorReadings = loadSensorReadings(prefs);
+        Log.d(TAG, "loadColorsR: sensorReadings=" + Arrays.deepToString(sensorReadings));
         if (sensorReadings == null || sensorReadings.length < 9) {
-            Log.e("HeatMap", "Dados insuficientes: sensorReadings está nulo ou incompleto.");
-            return;
+            Log.e(TAG, "loadColorsR: insufficient data"); return;
         }
-
-        int numSensores = sensorReadings.length;
-        int numLeituras = sensorReadings[0].length;
-
-        if (numLeituras == 0) {
-            Log.e("HeatMap", "Nenhuma leitura encontrada nos sensores.");
-            return;
-        }
-
-        int ultimo = numLeituras - 1;
-
-        // Certifique-se que todos os vetores têm o mesmo tamanho
-        for (int i = 0; i < numSensores; i++) {
-            if (sensorReadings[i] == null || sensorReadings[i].length <= ultimo) {
-                Log.e("HeatMap", "Sensor " + i + " não tem leitura no índice " + ultimo);
-                return;
-            }
-        }
-
+        int ultimo = sensorReadings[0].length - 1;
         float[] leituraAtual = new float[9];
         for (int i = 0; i < 9; i++) {
             leituraAtual[i] = sensorReadings[i][ultimo];
         }
-
+        Log.d(TAG, "loadColorsR: leituraAtual=" + Arrays.toString(leituraAtual));
         sensoresR.clear();
-        float raioRelativo = 0.3f;
-
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.28f, 0.12f, leituraAtual[0], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.55f, 0.15f, leituraAtual[1], raioRelativo));
+        float r = 0.3f;
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.28f, 0.12f, leituraAtual[0], r));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.55f, 0.15f, leituraAtual[1], r));
         //3
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.62f, 0.45f, leituraAtual[2], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.62f, 0.45f, leituraAtual[2], r));
         //4
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.30f, leituraAtual[3], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.30f, 0.40f, leituraAtual[4], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.53f, 0.59f, leituraAtual[5], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.72f, leituraAtual[6], raioRelativo));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.30f, leituraAtual[3], r));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.30f, 0.40f, leituraAtual[4], r));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.53f, 0.59f, leituraAtual[5], r));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.72f, leituraAtual[6], r));
         //8
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.85f, leituraAtual[7], raioRelativo));
-        sensoresR.add(new HeatMapViewR.SensorRegionR(0.34f, 0.85f, leituraAtual[8], raioRelativo));
-
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.85f, leituraAtual[7], r));
+        sensoresR.add(new HeatMapViewR.SensorRegionR(0.34f, 0.85f, leituraAtual[8], r));
         heatmapViewR.setRegions(sensoresR);
+        Log.d(TAG, "loadColorsR: regions set");
     }
-
 
     private void loadColorsL() {
-        sharedPreferences = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
-        short[][] sensorReadings = loadSensorReadings2(sharedPreferences);
-
+        Log.d(TAG, "loadColorsL: called");
+        SharedPreferences prefs = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
+        short[][] sensorReadings = loadSensorReadings2(prefs);
+        Log.d(TAG, "loadColorsL: sensorReadings=" + Arrays.deepToString(sensorReadings));
         if (sensorReadings == null || sensorReadings.length < 9) {
-            Log.e("HeatMap", "Dados insuficientes: sensorReadings está nulo ou incompleto.");
-            return;
+            Log.e(TAG, "loadColorsL: insufficient data"); return;
         }
-
-        int numSensores = sensorReadings.length;
-        int numLeituras = sensorReadings[0].length;
-
-        if (numLeituras == 0) {
-            Log.e("HeatMap", "Nenhuma leitura encontrada nos sensores.");
-            return;
-        }
-
-        int ultimo = numLeituras - 1;
-
-        // Certifique-se que todos os vetores têm o mesmo tamanho
-        for (int i = 0; i < numSensores; i++) {
-            if (sensorReadings[i] == null || sensorReadings[i].length <= ultimo) {
-                Log.e("HeatMap", "Sensor " + i + " não tem leitura no índice " + ultimo);
-                return;
-            }
-        }
-
+        int ultimo = sensorReadings[0].length - 1;
         float[] leituraAtual = new float[9];
         for (int i = 0; i < 9; i++) {
             leituraAtual[i] = sensorReadings[i][ultimo];
         }
-
+        Log.d(TAG, "loadColorsL: leituraAtual=" + Arrays.toString(leituraAtual));
         sensoresL.clear();
-        float raioRelativo = 0.3f;
-
-        //1
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.74f, 0.12f, leituraAtual[0], raioRelativo));
+        float r = 0.3f;
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.28f, 0.12f, leituraAtual[0], r));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.74f, 0.12f, leituraAtual[0], r));
         //2
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.18f, leituraAtual[1], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.18f, leituraAtual[1], r));
         //4
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.32f, leituraAtual[3], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.32f, leituraAtual[3], r));
         //3
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.69f, 0.38f, leituraAtual[2], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.69f, 0.38f, leituraAtual[2], r));
         //5
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.42f, 0.45f, leituraAtual[4], raioRelativo));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.42f, 0.45f, leituraAtual[4], r));
         //6
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.44f, 0.61f, leituraAtual[5], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.48f, 0.75f, leituraAtual[6], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.87f, leituraAtual[7], raioRelativo));
-        sensoresL.add(new HeatMapViewL.SensorRegionL(0.65f, 0.87f, leituraAtual[8], raioRelativo));
-
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.44f, 0.61f, leituraAtual[5], r));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.48f, 0.75f, leituraAtual[6], r));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.87f, leituraAtual[7], r));
+        sensoresL.add(new HeatMapViewL.SensorRegionL(0.65f, 0.87f, leituraAtual[8], r));
         heatmapViewL.setRegions(sensoresL);
+        Log.d(TAG, "loadColorsL: regions set");
     }
 
-
     private short[][] loadSensorReadings(SharedPreferences prefs) {
-        String[] sensorKeys = {"S1_1", "S2_1", "S3_1", "S4_1", "S5_1", "S6_1", "S7_1", "S8_1", "S9_1"};
+        Log.d(TAG, "loadSensorReadings: called");
+        String[] keys = {"S1_1","S2_1","S3_1","S4_1","S5_1","S6_1","S7_1","S8_1","S9_1"};
         short[][] readings = new short[9][];
-
         for (int i = 0; i < 9; i++) {
-            String data = prefs.getString(sensorKeys[i], "[0,0,0,0,0]");
-            if (data != null && !data.equals("")) {
-                readings[i] = stringToShortArray(data);
-            } else {
-                readings[i] = new short[]{0, 0, 0, 0, 0};
-            }
+            String data = prefs.getString(keys[i], "[]");
+            Log.d(TAG, "loadSensorReadings: " + keys[i] + "=" + data);
+            readings[i] = stringToShortArray(data);
         }
         return readings;
     }
 
     private short[][] loadSensorReadings2(SharedPreferences prefs) {
-        String[] sensorKeys = {"S1_2", "S2_2", "S3_2", "S4_2", "S5_2", "S6_2", "S7_2", "S8_2", "S9_2"};
+        Log.d(TAG, "loadSensorReadings2: called");
+        String[] keys = {"S1_2","S2_2","S3_2","S4_2","S5_2","S6_2","S7_2","S8_2","S9_2"};
         short[][] readings = new short[9][];
-
         for (int i = 0; i < 9; i++) {
-            String data = prefs.getString(sensorKeys[i], "[0,0,0,0,0]");
-            if (data != null && !data.equals("")) {
-                readings[i] = stringToShortArray(data);
-            } else {
-                readings[i] = new short[]{0, 0, 0, 0, 0};
-            }
+            String data = prefs.getString(keys[i], "[]");
+            Log.d(TAG, "loadSensorReadings2: " + keys[i] + "=" + data);
+            readings[i] = stringToShortArray(data);
         }
         return readings;
     }
 
-
-    /*
-    private int[] loadThresholds(SharedPreferences prefs) {
-        int[] thresholds = new int[9];
-        for (int i = 0; i < 9; i++) {
-            thresholds[i] = (short) prefs.getInt("S" + (i + 1), 8191);
-        }
-        return thresholds;
-    }
-     */
-
-    private Boolean comparevalues(short[] array, int threshold) {
-        return array.length > 0 && array[array.length - 1] > threshold;
-    }
-
-
-
-
-    public static short[] findMinMax(short[][] array) {
-        short min = Short.MAX_VALUE;
-        short max = Short.MIN_VALUE;
-
-        for (short[] subArray : array) {
-            if (subArray != null) {
-                for (short value : subArray) {
-                    if (value < min) min = value;
-                    if (value > max) max = value;
-                }
-            }
-        }
-
-        return new short[]{min, max, (short) (max - min)};
-    }
-
     private short[] stringToShortArray(String input) {
         input = input.replace("[", "").replace("]", "").trim();
-
         if (input.isEmpty()) return new short[0];
-
         String[] parts = input.split(",");
         short[] result = new short[parts.length];
-
         for (int i = 0; i < parts.length; i++) {
             try {
                 result[i] = (short) Integer.parseInt(parts[i].trim());
             } catch (NumberFormatException e) {
+                Log.e(TAG, "stringToShortArray: invalid number=" + parts[i]);
                 result[i] = 0;
             }
         }
-
         return result;
     }
 
-
     public void Insole_RightIP() {
-        final int udpPortr = 20000; // Porta do ESP
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DatagramSocket socket = new DatagramSocket(udpPortr);
-                    byte[] buffer = new byte[1024];
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-                    while (true) {
-                        socket.receive(packet);
-                        String IPR = new String(packet.getData(), 0, packet.getLength());
-                        Log.e("UDP", "Received IP: " + IPR + " on port: " + udpPortr);
-                        // Armazene o IP conforme necessário
-                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("IP", IPR);
-                        editor.apply();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Log.d(TAG, "Insole_RightIP: listener start");
+        final int port = 20000;
+        new Thread(() -> {
+            try {
+                DatagramSocket s = new DatagramSocket(port);
+                DatagramPacket p = new DatagramPacket(new byte[1024], 1024);
+                while (true) {
+                    s.receive(p);
+                    String ip = new String(p.getData(), 0, p.getLength());
+                    Log.d(TAG, "Insole_RightIP: got IP=" + ip);
+                    SharedPreferences ipPrefs = getSharedPreferences("My_Appips", MODE_PRIVATE);
+                    ipPrefs.edit().putString("IP", ip).apply();
+                    Log.d(TAG, "Insole_RightIP: saved IP");
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Insole_RightIP: error", e);
             }
         }).start();
     }
+
     public void Insole_leftIP() {
-        final int udpPortl = 20001; // Porta do ESP
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DatagramSocket socket = new DatagramSocket(udpPortl);
-                    byte[] buffer = new byte[1024];
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-                    while (true) {
-                        socket.receive(packet);
-                        String IPL = new String(packet.getData(), 0, packet.getLength());
-                        Log.e("UDP", "Received IP left: " + IPL + " on port: " + udpPortl);
-                        // Armazene o IP conforme necessário
-                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("IP2", IPL);
-                        editor.apply();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Log.d(TAG, "Insole_leftIP: listener start");
+        final int port = 20001;
+        new Thread(() -> {
+            try {
+                DatagramSocket s = new DatagramSocket(port);
+                DatagramPacket p = new DatagramPacket(new byte[1024], 1024);
+                while (true) {
+                    s.receive(p);
+                    String ip = new String(p.getData(), 0, p.getLength());
+                    Log.d(TAG, "Insole_leftIP: got IP=" + ip);
+                    SharedPreferences ipPrefs = getSharedPreferences("My_Appips", MODE_PRIVATE);
+                    ipPrefs.edit().putString("IP2", ip).apply();
+                    Log.d(TAG, "Insole_leftIP: saved IP");
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Insole_leftIP: error", e);
             }
         }).start();
     }

@@ -262,7 +262,11 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("LoadUserData", "Nenhuns dados de vibração encontrados no DataSnapshot.");
                     }
                     // --- Fim da recuperação de vibração ---
-
+                    SharedPreferences shared = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
+                    SharedPreferences.Editor editorP = shared.edit();
+                    editorP.putString("Sleft", flagInsoleL);
+                    editorP.putString("Sright", flagInsoleR);
+                    editorP.apply();
                     // Após carregar os dados, inicia a HomeActivity
                     Log.d("LoadUserData", "Iniciando HomeActivity...");
                     Intent intent = new Intent(view.getContext(), HomeActivity.class);

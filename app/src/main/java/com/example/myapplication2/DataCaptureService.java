@@ -37,7 +37,7 @@ public class DataCaptureService extends Service {
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
         followInRight = sharedPreferences.getString("Sright", "default");
         followInLeft = sharedPreferences.getString("Sleft", "default");
-        //startReceivingData();
+        startReceivingData();
 
 
         sharedPreferences = getSharedPreferences("My_Appinsolesamount", MODE_PRIVATE);
