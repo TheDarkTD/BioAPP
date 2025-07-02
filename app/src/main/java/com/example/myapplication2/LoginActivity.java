@@ -179,6 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putInt("S7", configData1.S7);
                         editor.putInt("S8", configData1.S8);
                         editor.putInt("S9", configData1.S9);
+                        editor.apply();
                     } else {
                         Log.d("LoadUserData", "FlagInsoleR não está 'true'. Não carregou ConfigData1.");
                     }
@@ -215,6 +216,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putInt("S7", configData2.S7);
                         editor.putInt("S8", configData2.S8);
                         editor.putInt("S9", configData2.S9);
+                        editor.apply();
                     } else {
                         Log.d("LoadUserData", "FlagInsoleL não está 'true'. Não carregou ConfigData2.");
                     }

@@ -85,6 +85,7 @@ public class Register7Activity extends AppCompatActivity {
             }
             if ("true".equals(followInLeft)) {
                 handler.postDelayed(() -> {
+
                     Log.d(TAG, "handleStopCommand2 scheduled for left");
                     handleStopCommand2((byte) 0x3B, freq);
                 }, 10000);

@@ -59,7 +59,8 @@ public class ConectInsole2 {
     private boolean spikeOnCooldown = false;
     private boolean pendingSpike    = false;
     private final Handler cooldownHandler = new Handler(Looper.getMainLooper());
-
+    private Boolean recebimentoinsole2 = true;
+    private Boolean envioinsole2 = true;
     private Calendar calendar;
     private SendData receivedData = new SendData();
 
@@ -205,6 +206,7 @@ public class ConectInsole2 {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "receiveData failure", e);
+                recebimentoinsole2=false;
             }
 
             @Override
@@ -215,6 +217,7 @@ public class ConectInsole2 {
                     return;
                 }
                 try {
+                    recebimentoinsole2=true;
                     String json = response.body().string();
                     Log.d(TAG, "receiveData raw JSON: " + json);
                     parseJson(json);

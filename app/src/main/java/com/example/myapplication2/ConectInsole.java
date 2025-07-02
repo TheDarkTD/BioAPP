@@ -58,7 +58,8 @@ public class ConectInsole { // tratamento palmilha direita
     private SharedPreferences sharedPreferences;
     private String ipAddressp1s;
     private Calendar calendar;
-    private Boolean connectedinsole1 = false;
+    private Boolean recebimentoinsole1 = true;
+    private Boolean envioinsole1 = true;
     private List<String> eventlist = new ArrayList<>();
     private boolean spikeOnCooldown = false;
     private boolean pendingSpike    = false;
@@ -172,11 +173,12 @@ public class ConectInsole { // tratamento palmilha direita
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                envioinsole1= false;
                 Log.e(TAG, "sendConfigData onFailure", e);
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) Log.d(TAG, "sendConfigData success");
+                if (response.isSuccessful()) {Log.d(TAG, "sendConfigData success");envioinsole1= true;}
                 else Log.e(TAG, "sendConfigData error: " + response.message());
             }
         });
@@ -190,6 +192,7 @@ public class ConectInsole { // tratamento palmilha direita
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "receiveData onFailure", e);
+                recebimentoinsole1=false;
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -199,6 +202,7 @@ public class ConectInsole { // tratamento palmilha direita
                     return;
                 }
                 try {
+                    recebimentoinsole1=true;
                     String body = response.body().string();
                     Log.d(TAG, "Raw JSON: " + body);
                     JSONObject jsonObject = new JSONObject(body);

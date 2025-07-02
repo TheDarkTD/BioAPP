@@ -44,6 +44,8 @@ public class HomeActivity extends AppCompatActivity {
     private HeatMapViewR heatmapViewR;
     private ImageView maskL, maskR;
     private Button mBtnRead;
+    private float[] lastLeituraR = null;
+    private float[] lastLeituraL = null;
 
     private String followInRight, followInLeft;
     private short S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1;
@@ -170,11 +172,12 @@ public class HomeActivity extends AppCompatActivity {
             byte cmd3c = 0x3C;
             if ("true".equals(followInRight)) {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Log.d(TAG, "onStart: Right thresholds=" + Arrays.toString(rightThresh));
                     Log.d(TAG, "ReadBtn: send read cmd to right");
                     conectar.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                 }, 1000);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    //conectar.receiveData(this);
+
                     Log.d(TAG, "ReadBtn: received data from right");
                     loadColorsR();
                 }, 2500);
@@ -182,6 +185,7 @@ public class HomeActivity extends AppCompatActivity {
             if ("true".equals(followInLeft)) {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     Log.d(TAG, "ReadBtn: send read cmd to left");
+                    Log.d(TAG, "onStart: Left thresholds=" + Arrays.toString(leftThresh));
                     conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                 }, 1000);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -207,60 +211,73 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
         short[][] sensorReadings = loadSensorReadings(prefs);
         Log.d(TAG, "loadColorsR: sensorReadings=" + Arrays.deepToString(sensorReadings));
-        if (sensorReadings == null || sensorReadings.length < 9) {
-            Log.e(TAG, "loadColorsR: insufficient data"); return;
+
+        float[] leituraAtual = null;
+
+        if (sensorReadings != null && sensorReadings.length >= 9 && sensorReadings[0].length > 0) {
+            int ultimo = sensorReadings[0].length - 1;
+            leituraAtual = new float[9];
+            for (int i = 0; i < 9; i++) {
+                leituraAtual[i] = sensorReadings[i][ultimo];
+            }
+            lastLeituraR = leituraAtual; // atualiza ultimo dado
+        } else if (lastLeituraR != null) {
+            Log.w(TAG, "loadColorsR: usando última leitura salva por dados nulos");
+            leituraAtual = lastLeituraR;
+        } else {
+            Log.e(TAG, "loadColorsR: dados nulos e sem último valor");
+            return;
         }
-        int ultimo = sensorReadings[0].length - 1;
-        float[] leituraAtual = new float[9];
-        for (int i = 0; i < 9; i++) {
-            leituraAtual[i] = sensorReadings[i][ultimo];
-        }
+
         Log.d(TAG, "loadColorsR: leituraAtual=" + Arrays.toString(leituraAtual));
         sensoresR.clear();
         float r = 0.3f;
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.28f, 0.12f, leituraAtual[0], r));
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.55f, 0.15f, leituraAtual[1], r));
-        //3
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.62f, 0.45f, leituraAtual[2], r));
-        //4
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.30f, leituraAtual[3], r));
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.30f, 0.40f, leituraAtual[4], r));
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.53f, 0.59f, leituraAtual[5], r));
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.51f, 0.72f, leituraAtual[6], r));
-        //8
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.49f, 0.85f, leituraAtual[7], r));
         sensoresR.add(new HeatMapViewR.SensorRegionR(0.34f, 0.85f, leituraAtual[8], r));
         heatmapViewR.setRegions(sensoresR);
         Log.d(TAG, "loadColorsR: regions set");
     }
 
+
     private void loadColorsL() {
         Log.d(TAG, "loadColorsL: called");
         SharedPreferences prefs = getSharedPreferences("My_Appinsolereadings2", MODE_PRIVATE);
         short[][] sensorReadings = loadSensorReadings2(prefs);
         Log.d(TAG, "loadColorsL: sensorReadings=" + Arrays.deepToString(sensorReadings));
-        if (sensorReadings == null || sensorReadings.length < 9) {
-            Log.e(TAG, "loadColorsL: insufficient data"); return;
+
+        float[] leituraAtual = null;
+
+        if (sensorReadings != null && sensorReadings.length >= 9 && sensorReadings[0].length > 0) {
+            int ultimo = sensorReadings[0].length - 1;
+            leituraAtual = new float[9];
+            for (int i = 0; i < 9; i++) {
+                leituraAtual[i] = sensorReadings[i][ultimo];
+            }
+            lastLeituraL = leituraAtual; // atualiza ultimo dado
+        } else if (lastLeituraL != null) {
+            Log.w(TAG, "loadColorsL: usando última leitura salva por dados nulos");
+            leituraAtual = lastLeituraL;
+        } else {
+            Log.e(TAG, "loadColorsL: dados nulos e sem último valor");
+            return;
         }
-        int ultimo = sensorReadings[0].length - 1;
-        float[] leituraAtual = new float[9];
-        for (int i = 0; i < 9; i++) {
-            leituraAtual[i] = sensorReadings[i][ultimo];
-        }
+
         Log.d(TAG, "loadColorsL: leituraAtual=" + Arrays.toString(leituraAtual));
         sensoresL.clear();
         float r = 0.3f;
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.28f, 0.12f, leituraAtual[0], r));
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.74f, 0.12f, leituraAtual[0], r));
-        //2
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.18f, leituraAtual[1], r));
-        //4
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.32f, leituraAtual[3], r));
-        //3
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.69f, 0.38f, leituraAtual[2], r));
-        //5
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.42f, 0.45f, leituraAtual[4], r));
-        //6
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.44f, 0.61f, leituraAtual[5], r));
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.48f, 0.75f, leituraAtual[6], r));
         sensoresL.add(new HeatMapViewL.SensorRegionL(0.51f, 0.87f, leituraAtual[7], r));
@@ -268,6 +285,7 @@ public class HomeActivity extends AppCompatActivity {
         heatmapViewL.setRegions(sensoresL);
         Log.d(TAG, "loadColorsL: regions set");
     }
+
 
     private short[][] loadSensorReadings(SharedPreferences prefs) {
         Log.d(TAG, "loadSensorReadings: called");
