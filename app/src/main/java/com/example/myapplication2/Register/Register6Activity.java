@@ -26,7 +26,7 @@ public class Register6Activity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        mNext6Btn = findViewById(R.id.btnNext7);
+        mNext6Btn = findViewById(R.id.btnNext5);
 
 
 
@@ -35,7 +35,6 @@ public class Register6Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                StimulatorIP();
                 startActivity(new Intent(getApplicationContext(), Register6_1Activity.class));
 
             }
@@ -43,32 +42,5 @@ public class Register6Activity extends AppCompatActivity {
 
     }
 
-    public void StimulatorIP() {
-        final int udpPortv = 10000; // Porta do ESP
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DatagramSocket socket = new DatagramSocket(udpPortv);
-                    byte[] buffer = new byte[1024];
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-                    while (true) {
-                        socket.receive(packet);
-                        String IPV = new String(packet.getData(), 0, packet.getLength());
-                        Log.e("UDP", "Received IP: " + IPV + " on port: " + udpPortv);
-                        // Armazene o IP conforme necessário
-                        SharedPreferences sharedPreferences = getSharedPreferences("My_Appips", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("IPv", IPV);
-                        editor.apply();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
 
 }

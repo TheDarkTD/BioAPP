@@ -31,7 +31,7 @@ public class Register6_1Activity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        mNext6Btn = findViewById(R.id.btnNext7);
+        mNext6Btn = findViewById(R.id.btnNext4_1);
         wregister6 = findViewById(R.id.web6);
 
 
@@ -53,7 +53,7 @@ public class Register6_1Activity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
 
         // Carrega uma URL
-        wregister6.loadUrl("http://192.168.4.1.com");
+        wregister6.loadUrl("http://192.168.4.1");
 
     }
 

@@ -60,7 +60,7 @@ public class Register5_1Activity  extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
 
         // Carrega uma URL
-        wregister5.loadUrl("http://192.168.4.1.com");
+        wregister5.loadUrl("http://192.168.4.1");
 
     }
 

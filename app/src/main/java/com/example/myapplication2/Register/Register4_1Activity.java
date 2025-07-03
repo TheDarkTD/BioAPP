@@ -50,7 +50,7 @@ public class Register4_1Activity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
 
         // Carrega uma URL
-        wregister4.loadUrl("http://192.168.4.1.com");
+        wregister4.loadUrl("http://192.168.4.1");
     }
 
     public void Insole_RightIP() {

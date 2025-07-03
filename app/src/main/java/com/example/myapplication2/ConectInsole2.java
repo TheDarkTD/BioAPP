@@ -2,6 +2,8 @@ package com.example.myapplication2;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.core.content.SharedPreferencesKt.edit;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -132,6 +134,7 @@ public class ConectInsole2 {
     }
 
     private void sendConfigData(ConfigData cfg) {
+
         Log.d(TAG, "sendConfigData: building payload");
         StringBuilder data = new StringBuilder();
         data.append(cfg.cmd).append(",")
@@ -436,6 +439,7 @@ public class ConectInsole2 {
 
     private static class LoggingCallback implements Callback {
         private final String name;
+        boolean envioinsole2 = true;
 
         LoggingCallback(String name) {
             this.name = name;
@@ -444,6 +448,8 @@ public class ConectInsole2 {
         @Override
         public void onFailure(Call call, IOException e) {
             Log.e(TAG, name + " failed", e);
+            envioinsole2 = false;
+
         }
 
         @Override
