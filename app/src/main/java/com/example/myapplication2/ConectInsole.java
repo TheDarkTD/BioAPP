@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -48,8 +49,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ConectInsole { // tratamento palmilha direita
+
     private static final String TAG = "ConectInsole";
-    private static final String CHANNEL_ID = "notify_pressure";
+    public static final String CHANNEL_ID = "notify_pressure";
     private final ConectVibra conectar;
     private FirebaseAuth fAuth;
     private FirebaseHelper firebasehelper;
@@ -241,7 +243,17 @@ public class ConectInsole { // tratamento palmilha direita
                     if (receivedData.cmd == 0x3D) {
                         Log.d(TAG, "Evento: pico de pressão (cmd=0x3D)");
 
-                        // lê parâmetros
+                        createNotificationChannel(context);
+                        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+                        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED){
+                            return;
+
+                        }
+                        nm.notify(2, buildNotification(context));
+                        Log.d(TAG, "Notification dispatched");
+
+
+                            // lê parâmetros
                         SharedPreferences prefs = context.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
                         byte INT    = Byte.parseByte(prefs.getString("int",      "0"));
                         byte PEST   = Byte.parseByte(prefs.getString("pulse",    "0"));
@@ -377,13 +389,16 @@ public class ConectInsole { // tratamento palmilha direita
         }
     }
 
-    private void createNotificationChannel(Context context) {
+    private void createNotificationChannel(Context ctx) {
         Log.d(TAG, "createNotificationChannel: init");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Alertas", NotificationManager.IMPORTANCE_HIGH);
-            context.getSystemService(NotificationManager.class).createNotificationChannel(channel);
+            NotificationChannel chan = new NotificationChannel(CHANNEL_ID, "Alertas de Pressão", NotificationManager.IMPORTANCE_HIGH);
+            chan.setDescription("Notificações de pressão plantar");
+            NotificationManager nm = ctx.getSystemService(NotificationManager.class);
+            if (nm != null) nm.createNotificationChannel(chan);
         }
     }
+
     private void storeReadings(Context ctx) {
         Log.d(TAG, "storeReadings: saving to SharedPreferences");
         SharedPreferences sp = ctx.getSharedPreferences("My_Appinsolereadings", MODE_PRIVATE);
@@ -427,4 +442,66 @@ public class ConectInsole { // tratamento palmilha direita
     }
 
     private ConfigData configData;
+
+    private Notification buildNotification(Context ctx) {
+        Log.d(TAG, "buildNotification: creating notif");
+        Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.rightfoot2);
+        String txt = "Sensor(es): " /*+ String.join(", ", getEventList(ctx))*/;
+        return new NotificationCompat.Builder(ctx, CHANNEL_ID)
+                .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)
+                .setContentTitle("Pico de Pressão Plantar detectado!")
+                .setContentText(txt)
+                .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bmp).bigLargeIcon(null))
+                .setLargeIcon(bmp)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+    }
+
+   /*private List<String> getEventList(Context ctx) {
+        /*SharedPreferences reg = ctx.getSharedPreferences("My_Appregions", MODE_PRIVATE);
+        SharedPreferences thr = ctx.getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
+        List<String> events = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            boolean on = reg.getBoolean("S" + (i + 1), false);
+            int lim = thr.getInt("Lim" + (i + 1) + "I2", 8191);
+            int val = getLastReading(i);
+            if (on && val > lim) {
+                events.add(String.valueOf(i + 1));
+                Log.d(TAG, "Event sensor" + (i + 1) + ":" + val);
+            }
+        }
+        return events;
+        return java.util.Collections.emptyList();
+
+
+    }
+
+    public static class Header3Result {
+        public final List<Integer> positions;  // índices onde header é 0x3
+        public final List<Short> values;       // valores 12 bits correspondentes
+
+        public Header3Result(List<Integer> positions, List<Short> values) {
+            this.positions = positions;
+            this.values = values;
+        }
+    }
+
+    public static Header3Result extractHeader3(List<Short> data) {
+        List<Integer> positions = new ArrayList<>();
+        List<Short> values = new ArrayList<>();
+
+        for (int i = 0; i < data.size(); i++) {
+            short value = data.get(i);
+            int header = (value >> 12) & 0xF;
+
+            if (header == 0x3) {
+                short extractedValue = (short)(value & 0x0FFF); // apenas os 12 bits
+                positions.add(i);       // guarda o índice
+                values.add(extractedValue);  // guarda o valor
+            }
+        }
+
+        return new Header3Result(positions, values);
+    }*/
+
 }

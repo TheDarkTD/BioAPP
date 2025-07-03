@@ -227,7 +227,7 @@ public class ConectInsole2 {
                     if (user != null) {
                         if (isNetworkAvailable(ctx)) {
                             Log.d(TAG, "Network available: saving to Firebase");
-                            firebaseHelper.saveSendData2(receivedData, getEventList(ctx));
+                            /*firebaseHelper.saveSendData2(receivedData, getEventList(ctx));*/
                         } else {
                             String today = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
                             Log.d(TAG, "Network unavailable: saving locally with date=" + today);
@@ -386,15 +386,15 @@ public class ConectInsole2 {
             Log.d("ConectInsole2", "Received null ConfigData, skipping substitution.");
         }
     }
-    private List<String> getEventList(Context ctx) {
+    /*private List<String> getEventList(Context ctx) {
         Log.d(TAG, "getEventList: evaluating thresholds");
         return new ArrayList<>();
-    }
+    }*/
 
     private Notification buildNotification(Context ctx) {
         Log.d(TAG, "buildNotification: constructing notification");
         Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.leftfoot2);
-        String txt = "Sensor(es): " + String.join(", ", getEventList(ctx));
+        String txt = "Sensor(es): "/* + String.join(", ", getEventList(ctx))*/;
         Log.d(TAG, "Notification text: " + txt);
         return new NotificationCompat.Builder(ctx, CHANNEL_ID)
                 .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)

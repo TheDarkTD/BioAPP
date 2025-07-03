@@ -70,6 +70,27 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".Register.Register4_1Activity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".Register.Register5_1Activity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".Register.Register6_1Activity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".Register.Register4Activity"
             android:exported="true">
             <intent-filter>

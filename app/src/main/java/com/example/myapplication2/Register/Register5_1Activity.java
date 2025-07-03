@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -17,25 +19,26 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class Register5Activity extends AppCompatActivity {
+public class Register5_1Activity  extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
     Button mNext5Btn, mWebVBtn;
+    WebView wregister5;
     String ipAddressp2s;
     FirebaseAuth fAuth;
     EditText ipAddressp2;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register5);
+        setContentView(R.layout.activity_register5_1);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mNext5Btn = findViewById(R.id.btnNext5);
-
+        mNext5Btn = findViewById(R.id.btnNext5_1);
+        wregister5 = findViewById(R.id.web5);
         fAuth = FirebaseAuth.getInstance();
 
 
@@ -45,10 +48,19 @@ public class Register5Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Insole_leftIP();
-                startActivity(new Intent(getApplicationContext(), Register5_1Activity.class));
+                startActivity(new Intent(getApplicationContext(), Register3Activity.class));
 
             }
         });
+
+        wregister5.setWebViewClient(new WebViewClient());
+
+        // Habilita JavaScript se necessário
+        WebSettings webSettings = wregister5.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        // Carrega uma URL
+        wregister5.loadUrl("http://192.168.4.1.com");
 
     }
 

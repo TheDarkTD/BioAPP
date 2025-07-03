@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 
 import java.net.DatagramPacket;
@@ -14,12 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.R;
 
-public class Register6Activity extends AppCompatActivity {
+public class Register6_1Activity extends AppCompatActivity {
     Button mNext6Btn, mWebVBtn;
+    WebView wregister6;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register6);
+        setContentView(R.layout.activity_register6_1);
     }
 
     @Override
@@ -27,7 +32,7 @@ public class Register6Activity extends AppCompatActivity {
         super.onStart();
 
         mNext6Btn = findViewById(R.id.btnNext7);
-
+        wregister6 = findViewById(R.id.web6);
 
 
         mNext6Btn.setOnClickListener(new View.OnClickListener() {
@@ -36,10 +41,19 @@ public class Register6Activity extends AppCompatActivity {
             public void onClick(View v) {
 
                 StimulatorIP();
-                startActivity(new Intent(getApplicationContext(), Register6_1Activity.class));
+                startActivity(new Intent(getApplicationContext(), Register8Activity.class));
 
             }
         });
+
+        wregister6.setWebViewClient(new WebViewClient());
+
+        // Habilita JavaScript se necessário
+        WebSettings webSettings = wregister6.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        // Carrega uma URL
+        wregister6.loadUrl("http://192.168.4.1.com");
 
     }
 
