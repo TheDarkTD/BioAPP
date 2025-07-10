@@ -26,7 +26,6 @@ public class HeatMapViewL extends View {
         footBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.footleftt);
     }
 
-
     public void setRegions(List<SensorRegionL> regs) {
         regions = regs;
         invalidate();
@@ -39,41 +38,51 @@ public class HeatMapViewL extends View {
         // Desenha a imagem do pé
         canvas.drawBitmap(footBitmap, null, new Rect(0, 0, getWidth(), getHeight()), null);
 
-        // Desenha os pontos suavizados
+        // Desenha os pontos suavizados com degradê multicolorido
         for (SensorRegionL r : regions) {
-            float centerX = r.x * getWidth();
-            float centerY = r.y * getHeight();
+            float cx = r.x * getWidth();
+            float cy = r.y * getHeight();
             float radius = r.radius * getWidth();
 
-            // Define cor do centro baseado na pressão
-            int centerColor = getHeatColor(r.pressure);
-            int edgeColor = Color.TRANSPARENT;
+            // Degradê de várias cores: azul -> ciano -> verde -> amarelo -> vermelho -> transparente
+            int[] colors = new int[]{
+                    Color.BLUE,
+                    Color.CYAN,
+                    Color.GREEN,
+                    Color.YELLOW,
+                    Color.RED,
+                    Color.TRANSPARENT
+            };
+            float[] stops = new float[]{ 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
 
             RadialGradient gradient = new RadialGradient(
-                    centerX, centerY, radius,
-                    centerColor, edgeColor,
+                    cx, cy, radius,
+                    colors,
+                    stops,
                     Shader.TileMode.CLAMP
             );
 
             paint.setShader(gradient);
             paint.setAlpha(180);
-            canvas.drawCircle(centerX, centerY, radius, paint);
-            paint.setShader(null); // limpa para próximo ponto
+            canvas.drawCircle(cx, cy, radius, paint);
+            paint.setShader(null);
         }
     }
 
+    // Opcional: continua mantendo gradiente baseado em HSV caso queira cores dinâmicas
     private int getHeatColor(float p) {
-        // gradiente de azul (baixo) a vermelho (alto)
         float frac = Math.min(1f, Math.max(0f, p / 100f));
-        int r = (int)(frac * 255);
-        int b = 255 - r;
-        return Color.rgb(r, 0, b);
+        float hue = (1f - frac) * 240f; // 240° (azul) a 0° (vermelho)
+        return Color.HSVToColor(new float[]{ hue, 1f, 1f });
     }
 
     public static class SensorRegionL {
         public float x, y, pressure, radius;
         public SensorRegionL(float x, float y, float p, float rad) {
-            this.x = x; this.y = y; this.pressure = p; this.radius = rad;
+            this.x = x;
+            this.y = y;
+            this.pressure = p;
+            this.radius = rad;
         }
     }
 }

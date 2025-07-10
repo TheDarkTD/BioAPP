@@ -254,9 +254,9 @@ public class ConectInsole2 {
 
                         // função para enviar o comando
                         Runnable sendSpike = () -> {
-                            Log.d(TAG, "Enviando comando de pico (1A) — PEST=" + PEST + ", INT=" + INT
+                            Log.d(TAG, "Enviando comando de pico (1B) — PEST=" + PEST + ", INT=" + INT
                                     + ", TMEST=" + TMEST + ", INEST=" + INEST);
-                            conectar.SendConfigData((byte)0x1A, PEST, INT, TMEST, INEST);
+                            conectar.SendConfigData((byte)0x1B, PEST, INT, TMEST, INEST);
                         };
 
                         if (!spikeOnCooldown) {

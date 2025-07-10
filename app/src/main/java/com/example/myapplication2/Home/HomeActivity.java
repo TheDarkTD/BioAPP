@@ -133,7 +133,7 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(TAG, "onStart: Left thresholds=" + Arrays.toString(leftThresh));
 
         if ("true".equals(followInRight)) {
-            conectar.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+            conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
             Log.d(TAG, "onStart: Config sent to right insole");
         }
         if ("true".equals(followInLeft)) {
@@ -174,12 +174,12 @@ public class HomeActivity extends AppCompatActivity {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     Log.d(TAG, "onStart: Right thresholds=" + Arrays.toString(rightThresh));
                     Log.d(TAG, "ReadBtn: send read cmd to right");
-                    conectar.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+                    conectar.createAndSendConfigData(cmd3c, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
                 }, 1000);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-
                     Log.d(TAG, "ReadBtn: received data from right");
                     loadColorsR();
+                    conectar.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                 }, 2500);
             }
             if ("true".equals(followInLeft)) {
@@ -189,8 +189,8 @@ public class HomeActivity extends AppCompatActivity {
                     conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                 }, 1000);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    //conectar2.receiveData(this);
                     Log.d(TAG, "ReadBtn: received data from left");
+                    conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                     loadColorsL();
                 }, 2500);
             }
