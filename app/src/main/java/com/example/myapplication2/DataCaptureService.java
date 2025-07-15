@@ -85,7 +85,7 @@ public class DataCaptureService extends Service {
                         conect2.checkForNewData(DataCaptureService.this);
                     }
                     try {
-                        Thread.sleep(250);
+                        Thread.sleep(450);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

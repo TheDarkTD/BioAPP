@@ -38,51 +38,43 @@ public class HeatMapViewR extends View {
         // Desenha a imagem do pé
         canvas.drawBitmap(footBitmap, null, new Rect(0, 0, getWidth(), getHeight()), null);
 
-        // Desenha os pontos suavizados com degradê multicolorido
+        // Desenha os pontos suavizados com degradê HSV dinâmico
         for (SensorRegionR r : regions) {
             float cx = r.x * getWidth();
             float cy = r.y * getHeight();
             float radius = r.radius * getWidth();
 
-            // Degradê de várias cores: azul -> ciano -> verde -> amarelo -> vermelho -> transparente
-            int[] colors = new int[]{
-                    Color.BLUE,
-                    Color.CYAN,
-                    Color.GREEN,
-                    Color.YELLOW,
-                    Color.RED,
-                    Color.TRANSPARENT
-            };
-            float[] stops = new float[]{ 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
+            // Cor baseada na pressão bruta (0–4095) mapeada para o espectro de cores
+            int centerColor = getHeatColor(r.pressure);
+            int edgeColor = Color.TRANSPARENT;
 
             RadialGradient gradient = new RadialGradient(
                     cx, cy, radius,
-                    colors,
-                    stops,
+                    centerColor, edgeColor,
                     Shader.TileMode.CLAMP
             );
 
             paint.setShader(gradient);
-            paint.setAlpha(180);
             canvas.drawCircle(cx, cy, radius, paint);
             paint.setShader(null);
         }
     }
-
-    // Opcional: método para gerar cores dinâmicas via HSV
-    private int getHeatColor(float p) {
-        float frac = Math.min(1f, Math.max(0f, p / 100f));
-        float hue = (1f - frac) * 240f; // 240° (azul) a 0° (vermelho)
+    private int getHeatColor(float rawValue) {
+        // Normaliza para [0f,1f]
+        float frac = Math.min(1f, Math.max(0f, rawValue / 4095f));
+        // Inverte frac para que 0 seja azul e 1 seja vermelho
+        float hue = (1f - frac) * 240f;
         return Color.HSVToColor(new float[]{ hue, 1f, 1f });
     }
 
     public static class SensorRegionR {
         public float x, y, pressure, radius;
-        public SensorRegionR(float x, float y, float p, float rad) {
+
+        public SensorRegionR(float x, float y, float pressure, float radius) {
             this.x = x;
             this.y = y;
-            this.pressure = p;
-            this.radius = rad;
+            this.pressure = pressure;
+            this.radius = radius;
         }
     }
 }
