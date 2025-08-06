@@ -243,27 +243,17 @@ public class ConectInsole { // tratamento palmilha direita
                     if (receivedData.cmd == 0x3D) {
                         Log.d(TAG, "Evento: pico de pressão (cmd=0x3D)");
 
-                        createNotificationChannel(context);
-                        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
-                        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED){
-                            return;
-
-                        }
-                        nm.notify(2, buildNotification(context));
-                        Log.d(TAG, "Notification dispatched");
-
-
-                            // lê parâmetros
+                        // lê parâmetros
                         SharedPreferences prefs = context.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
-                        byte INT    = Byte.parseByte(prefs.getString("int",      "0"));
-                        byte PEST   = Byte.parseByte(prefs.getString("pulse",    "0"));
-                        short INEST = Short.parseShort(prefs.getString("interval","0"));
-                        short TMEST = Short.parseShort(prefs.getString("time",    "0"));
+                        byte INT    = Byte.parseByte(prefs.getString("int",       "0"));
+                        byte PEST   = Byte.parseByte(prefs.getString("pulse",     "0"));
+                        short INEST = Short.parseShort(prefs.getString("interval",  "0"));
+                        short TMEST = Short.parseShort(prefs.getString("time",      "0"));
 
                         // função para enviar o comando
                         Runnable sendSpike = () -> {
-                            Log.d(TAG, "Enviando comando de pico (1A) — PEST=" + PEST + ", INT=" + INT
-                                    + ", TMEST=" + TMEST + ", INEST=" + INEST);
+                            Log.d(TAG, "Enviando comando de pico (0x1B) — PEST=" + PEST
+                                    + ", INT=" + INT + ", TMEST=" + TMEST + ", INEST=" + INEST);
                             conectar.SendConfigData((byte)0x1B, PEST, INT, TMEST, INEST);
                         };
 
@@ -272,36 +262,20 @@ public class ConectInsole { // tratamento palmilha direita
                             sendSpike.run();
                             spikeOnCooldown = true;
 
-                            // agenda término do cooldown
-                            cooldownHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (pendingSpike) {
-                                        // havia spike durante cooldown: limpa flag e envia de novo
-                                        pendingSpike = false;
-                                        Log.d(TAG, "Spike pendente detectada — reenviando após TMEST");
-                                        sendSpike.run();
-                                        // re-agenda novo término de cooldown
-                                        cooldownHandler.postDelayed(this, TMEST);
-                                    } else {
-                                        // nenhum spike pendente: sai do cooldown
-                                        spikeOnCooldown = false;
-                                        Log.d(TAG, "Cooldown finalizado sem spikes pendentes");
-                                    }
-                                }
+                            // agenda término do cooldown: após TMEST, libera novo envio
+                            cooldownHandler.postDelayed(() -> {
+                                spikeOnCooldown = false;
+                                Log.d(TAG, "Cooldown finalizado — pronto para novo spike");
                             }, TMEST);
+
                         } else {
-                            // já estamos em cooldown: marca que chegou mais um spike
-                            pendingSpike = true;
-                            Log.d(TAG, "Spike recebido durante cooldown — marcado como pendente");
+                            // em cooldown: ignora qualquer spike extra
+                            Log.d(TAG, "Spike recebido durante cooldown — ignorado");
                         }
-                        createNotificationChannel(context);
-                        NotificationCompat.Builder nb = new NotificationCompat.Builder(context, CHANNEL_ID)
-                                .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)
-                                .setContentTitle("Pico de Pressão Plantar detectado!")
-                                .setContentText(checkforevent(context))
-                                .setPriority(NotificationCompat.PRIORITY_HIGH);
-                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+
+
+                        /*createNotificationChannel(ctx);
+                        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                             // TODO: Consider calling
                             //    ActivityCompat#requestPermissions
                             // here to request the missing permissions, and then overriding
@@ -311,8 +285,8 @@ public class ConectInsole { // tratamento palmilha direita
                             // for ActivityCompat#requestPermissions for more details.
                             return;
                         }
-                        NotificationManagerCompat.from(context).notify(1, nb.build());
-                        Log.d(TAG, "Notification sent");
+                        NotificationManagerCompat.from(ctx).notify(2, buildNotification(ctx));
+                        Log.d(TAG, "Notification dispatched");*/
                     }
 
                     Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context, eventlist);

@@ -71,7 +71,7 @@ public class FirebaseHelper {
     }
 
     // Método para salvar SendData2 no Firebase para o usuário logado
-    public void saveSendData2(ConectInsole2.SendData sendData, List<String> eventlist2) {
+    public void saveSendData2(ConectInsole2.SendData sendData) {
         String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
         if (NetworkUtils.isNetworkAvailable(context)) {
