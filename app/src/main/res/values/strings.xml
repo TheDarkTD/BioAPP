@@ -48,11 +48,11 @@
     <string name="none">Não há.</string>
 
     <string name="onmodules">1 - Ligue a palmilha e o roteador wifi de seu dispositivo.</string>
-    <string name="onmodules2">2 - Nas configurações de wifi do seu celular, clique em DSD.</string>
+    <string name="onmodules2">2 - Nas configurações de wifi do seu celular, clique em USD(Unidade de Sensoriamento Direito).</string>
     <string name="onmodules3">3 - Abaixo, clique na opção "Configure o wifi". Escolha a rede que seu celular fornece e digite a senha.</string>
 
     <string name="onmodules4">1 - Ligue a palmilha e o roteador wifi de seu dispositivo. </string>
-    <string name="onmodules5">2 - Nas configurações de wifi, clique em DSE.</string>
+    <string name="onmodules5">2 - Nas configurações de wifi do seu celular, clique em USE(Unidade de Sensoriamento Esquerdo).</string>
     <string name="onmodules6">1 - Ligue a unidade de alerta. Garanta que o roteador wifi de seu dispositivo está acionado. </string>
     <string name="onmodules7">2 - Novamente, nas configurações de wifi, clique na rede UA.</string>
     <string name="onmod">Por fim, conectamos a Unidade de Alerta:</string>

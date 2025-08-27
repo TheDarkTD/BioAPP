@@ -119,7 +119,7 @@ public class ConectInsole2 {
         Log.d(TAG, "createAndSendConfigData called with cmd=" + kcmd + " freq=" + kfreq);
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.freq = kfreq;
+        configData.freq = (byte)1;
         configData.S1 = kS1;
         configData.S2 = kS2;
         configData.S3 = kS3;

@@ -20,6 +20,7 @@ import com.example.myapplication2.Data.DataActivity;
 import com.example.myapplication2.Home.HomeActivity;
 import com.example.myapplication2.LoginActivity;
 import com.example.myapplication2.R;
+import com.example.myapplication2.Register.Register1Activity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,11 +33,12 @@ import com.google.firebase.database.ValueEventListener;
 public class SettingsActivity extends AppCompatActivity {
     Button mLogoutBtn;
     public static final String SHARED_PREFS = "sharedprefs_login";
-    TextView mAccountBtn, mParametersBtn, mVibraBtn, mNotificationsBtn, mUpdatesBtn, mUseInstructionsBtn;
+    TextView mAccountBtn, mParametersBtn, mVibraBtn, mNotificationsBtn, mUpdatesBtn, mUseInstructionsBtn, reconfig;
     FirebaseAuth fAuth;
     ImageView fotoid;
     String userName, userEmail;
     DatabaseReference databaseReference;
+    Boolean re=false;
     private SharedPreferences sharedPreferences;
     private String uid;
 
@@ -99,7 +101,7 @@ public class SettingsActivity extends AppCompatActivity {
         mVibraBtn = findViewById(R.id.Vibra);
         mUseInstructionsBtn = findViewById(R.id.Manual);
         fotoid = findViewById(R.id.fotoid);
-
+        reconfig = findViewById(R.id.reconfigurar);
         mLogoutBtn = findViewById(R.id.btnLogout);
         fAuth = FirebaseAuth.getInstance();
 
@@ -160,6 +162,17 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), VibraActivity.class));
+            }
+        });
+        reconfig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), Register1Activity.class ));
+                re=true;
+                SharedPreferences.Editor editor = getSharedPreferences("reconfigurar", MODE_PRIVATE).edit();
+                editor.putBoolean("reconfigurar", re);
+                editor.apply();
+
             }
         });
 

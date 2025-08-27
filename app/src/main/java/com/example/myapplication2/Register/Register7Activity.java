@@ -20,6 +20,11 @@ import com.example.myapplication2.ConectInsole;
 import com.example.myapplication2.ConectInsole2;
 import com.example.myapplication2.DataCaptureService;
 import com.example.myapplication2.R;
+import com.example.myapplication2.Settings.SettingsActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,13 +33,14 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class Register7Activity extends AppCompatActivity {
     private static final String TAG = "Register7";
-
+    private DatabaseReference mDatabase;
     private ConectInsole conectar;
     private ConectInsole2 conectar2;
+    RegisterActivity register;
     private SharedPreferences sharedPreferences;
     private Calendar calendar;
     private Intent serviceIntent;
-    private String followInRight, followInLeft;
+    private String followInRight, followInLeft,re;
     private short S1, S2, S3, S4, S5, S6, S7, S8, S9;
     private byte freq = 1;
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -42,7 +48,7 @@ public class Register7Activity extends AppCompatActivity {
     private TextView instruct;
     private GifImageView gifimagewait;
     Boolean foot = false;
-
+    private String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +63,8 @@ public class Register7Activity extends AppCompatActivity {
 
         conectar  = new ConectInsole(this);
         conectar2 = new ConectInsole2(this);
+        register = new RegisterActivity();
+
         Log.d(TAG, "onCreate: ConectInsole initialized");
         Log.d(TAG, "onCreate: ConectInsole2 initialized");
 
@@ -105,12 +113,29 @@ public class Register7Activity extends AppCompatActivity {
         gifimagewait.setVisibility(View.GONE);
 
         mNext7Btn.setOnClickListener(v -> {
-            Log.d(TAG, "Next7 button clicked");
-            verificar = false;
-            SharedPreferences.Editor editor = getSharedPreferences("My_Appcalibrar", MODE_PRIVATE).edit();
-            editor.putBoolean("verificar", verificar);
-            editor.apply();
-            startActivity(new Intent(getApplicationContext(), Register6Activity.class));
+            sharedPreferences = getSharedPreferences("reconfigurar", MODE_PRIVATE);
+            re= String.valueOf(sharedPreferences.getBoolean("reconfigurar",false));
+
+            if (re.equals("true")){
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    userId = user.getUid();  // Pega o UID do usuário logado
+                    mDatabase = FirebaseDatabase.getInstance("https://bioapp-496ae-default-rtdb.firebaseio.com/")
+                            .getReference()
+                            .child("Users")
+                            .child(userId);  // Salvar dados no nó "Users/{UID}"
+                register.saveUserData2(userId);
+            }
+            else {
+                Log.d(TAG, "Next7 button clicked");
+                verificar = false;
+                SharedPreferences.Editor editor = getSharedPreferences("My_Appcalibrar", MODE_PRIVATE).edit();
+                editor.putBoolean("verificar", verificar);
+                editor.apply();
+                startActivity(new Intent(getApplicationContext(), Register6Activity.class));
+            }
+
         });
     }
 
@@ -133,7 +158,7 @@ public class Register7Activity extends AppCompatActivity {
         handler.postDelayed(() -> {
             Log.d(TAG, "handleStopCommand: invoking conectar.receiveData");
             conectar.receiveData(this);
-        }, 450);
+        }, 500);
         handler.postDelayed(() -> {
             Log.d(TAG, "handleStopCommand: stopping service and processing data");
             processReceivedData(conectar);
@@ -146,11 +171,11 @@ public class Register7Activity extends AppCompatActivity {
         handler.postDelayed(() -> {
             Log.d(TAG, "handleStopCommand2: invoking conectar2.receiveData");
             conectar2.receiveData(this);
-        }, 450);
+        }, 500);
         handler.postDelayed(() -> {
             Log.d(TAG, "handleStopCommand2: processing data2");
             processReceivedData2(conectar2);
-        }, 1500);
+        }, 1050);
     }
 
     private void processReceivedData(@NonNull ConectInsole insole) {

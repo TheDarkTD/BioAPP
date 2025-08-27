@@ -46,7 +46,6 @@ public class ConnectionActivity extends AppCompatActivity {
         conect2 = findViewById(R.id.switch2);
         batp = findViewById(R.id.batinsole);
         batv = findViewById(R.id.batvibra);
-        batlevel = findViewById(R.id.textView7);
 
         conectar = new ConectInsole(this);
         conectar2 = new ConectInsole2(this);

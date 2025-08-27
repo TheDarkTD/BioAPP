@@ -177,7 +177,7 @@ public class RegisterActivity extends AppCompatActivity
         return configData;
     }
 
-    private void saveUserData(String uid) {
+    void saveUserData(String uid) {
         // Inicializando as instâncias para os insole
         conectar = new ConectInsole(this);
         conectar2 = new ConectInsole2(this);
@@ -237,6 +237,34 @@ public class RegisterActivity extends AppCompatActivity
                         Toast.makeText(RegisterActivity.this, "Dados do usuário salvos", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
                         Toast.makeText(RegisterActivity.this, "Erro ao salvar dados: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+    void saveUserData2(String uid) {
+        // Inicializando as instâncias para os insole
+        conectar = new ConectInsole(this);
+        conectar2 = new ConectInsole2(this);
+
+
+        // Criando o HashMap para salvar os dados do usuário
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        // Carrega os dados de configurações dos sensores (S1 a S9) em HashMaps
+        HashMap<String, Integer> configData1 = loadConfigDataFromPrefs(this);
+        HashMap<String, Integer> configData2 = loadConfigData2FromPrefs(this);
+
+        // Se os flags indicarem, adiciona as configurações
+        if (followInRight.equals("true")) {
+            hashMap.put("ConfigData1", configData1);
+        }
+        if (followInLeft.equals("true")) {
+            hashMap.put("ConfigData2", configData2);
+        }
+
+        // Envia os dados para o Firebase
+        databaseReference.child("Users").child(uid).setValue(hashMap)
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(this, "Dados do usuário salvos", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Erro ao salvar dados: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
 }

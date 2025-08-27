@@ -202,7 +202,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="60dp"
         android:background="@drawable/roundstyle"
-        android:backgroundTint="@color/blue1"
+        android:backgroundTint="@color/light_blue_600"
         android:text="Próximo"
         android:textColor="@color/white"
         android:textColorHighlight="#4D6A96"

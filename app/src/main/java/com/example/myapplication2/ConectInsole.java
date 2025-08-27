@@ -138,7 +138,7 @@ public class ConectInsole { // tratamento palmilha direita
         Log.d(TAG, String.format("createAndSendConfigData: cmd=0x%02X, freq=%d", kcmd, kfreq));
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.freq = kfreq;
+        configData.freq = (byte)1;
         configData.S1 = kS1; configData.S2 = kS2; configData.S3 = kS3;
         configData.S4 = kS4; configData.S5 = kS5; configData.S6 = kS6;
         configData.S7 = kS7; configData.S8 = kS8; configData.S9 = kS9;
@@ -266,6 +266,7 @@ public class ConectInsole { // tratamento palmilha direita
                             cooldownHandler.postDelayed(() -> {
                                 spikeOnCooldown = false;
                                 Log.d(TAG, "Cooldown finalizado — pronto para novo spike");
+                                createAndSendConfigData((byte) 0x3A, (byte) 1, (short) configData.S1, (short) configData.S2,(short)configData.S3,(short)configData.S4,(short)configData.S5,(short)configData.S6,(short)configData.S7,(short)configData.S8,(short)configData.S9);
                             }, TMEST);
 
                         } else {
