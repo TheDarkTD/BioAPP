@@ -20,7 +20,7 @@ import java.net.DatagramSocket;
 public class Register5Activity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
-    Button mNext5Btn, mWebVBtn;
+    Button mNext5Btn, Backbtn;
     String ipAddressp2s;
     FirebaseAuth fAuth;
     EditText ipAddressp2;
@@ -35,11 +35,16 @@ public class Register5Activity extends AppCompatActivity {
         super.onStart();
 
         mNext5Btn = findViewById(R.id.btnNext5);
-
+        Backbtn = findViewById(R.id.btnback);
         fAuth = FirebaseAuth.getInstance();
 
 
-
+        Backbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), Register1Activity.class));
+            }
+        });
         mNext5Btn.setOnClickListener(new View.OnClickListener() {
 
             @Override

@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication2.DataCaptureService;
+import com.example.myapplication2.LoginActivity;
 import com.example.myapplication2.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -21,10 +22,10 @@ import java.util.HashMap;
 public class Register1Activity extends AppCompatActivity {
 
     CheckBox mboth, mright, mleft;
-    Button mNext1Btn;
+    Button mNext1Btn,BackBtn ;
     String jleft, jright;
     Intent serviceIntent;
-
+    boolean re;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -45,9 +46,14 @@ public class Register1Activity extends AppCompatActivity {
         mright = findViewById(R.id.justright);
         mleft = findViewById(R.id.justleft);
         mNext1Btn = findViewById(R.id.btnNext1);
+        BackBtn = findViewById(R.id.btnback);
 
-
-
+        BackBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            }
+        });
         mNext1Btn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -95,6 +101,7 @@ public class Register1Activity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), Register5Activity.class));
                 }
                 if (jright.equals("true") && jleft.equals("false")){
+
                     startActivity(new Intent(getApplicationContext(), Register4Activity.class));
                 }
             }

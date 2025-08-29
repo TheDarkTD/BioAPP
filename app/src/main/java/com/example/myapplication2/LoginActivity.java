@@ -38,12 +38,17 @@ public class LoginActivity extends AppCompatActivity {
     ConectInsole conectInsole;
     ConectInsole2 conectInsole2;
     String uid = null;
+    boolean re;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
+        setContentView(R.layout.activity_login);
+        re=false;
+        SharedPreferences.Editor edit = getSharedPreferences("reconfigurar", MODE_PRIVATE).edit();
+        edit.putBoolean("reconfigurar", re);
+        edit.apply();
         // Inicializa FirebaseAuth e ConectInsoles
         fAuth = FirebaseAuth.getInstance();
         conectInsole  = new ConectInsole(this);
