@@ -181,9 +181,12 @@ public class HomeActivity extends AppCompatActivity {
                     handlerRight.postDelayed(() -> {
                         Log.d(TAG, "ReadBtn: received data from right");
                         conectar.receiveData(HomeActivity.this);
-                        loadColorsR();
-                        conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                        //conectar.createAndSendConfigData((byte) 0x3A, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
                     }, 250); // atraso interno entre enviar e receber
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        loadColorsR();
+                        // conectar.createAndSendConfigData((byte) 0x3A, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                    }, 255);
 
                     handlerRight.postDelayed(this, 1500);
                 }
@@ -200,11 +203,15 @@ public class HomeActivity extends AppCompatActivity {
                     Log.d(TAG, "ReadBtn: send read cmd to left");
                     conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
 
-                    handlerLeft.postDelayed(() -> {
+                   handlerLeft.postDelayed(() -> {
                         Log.d(TAG, "ReadBtn: received data from left");
-                        conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
-                        loadColorsL();
+                       conectar2.receiveData(HomeActivity.this);
+                        //conectar2.createAndSendConfigData((byte) 0x3A, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
                     }, 250);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        loadColorsL();
+                        //conectar.createAndSendConfigData((byte) 0x3A, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                    }, 255);
 
                     handlerLeft.postDelayed(this, 1500);
                 }
@@ -213,6 +220,7 @@ public class HomeActivity extends AppCompatActivity {
 
         att.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
+                stopService(new Intent(this, DataCaptureService.class));
                 Log.d(TAG, "Switch ON");
                 Toast.makeText(HomeActivity.this, "iniciando atualização", Toast.LENGTH_SHORT).show();
 
@@ -226,7 +234,7 @@ public class HomeActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Switch OFF");
                 Toast.makeText(HomeActivity.this, "atualizaçao desligada ", Toast.LENGTH_SHORT).show();
-
+                startService(new Intent(this, DataCaptureService.class));
                 // interrompe os loops
                 handlerRight.removeCallbacks(runnableRight);
                 handlerLeft.removeCallbacks(runnableLeft);
@@ -243,31 +251,38 @@ public class HomeActivity extends AppCompatActivity {
         mBtnRead.setOnClickListener(v -> {
             Log.d(TAG, "ReadBtn: request readings");
             byte cmd3c = 0x3C;
+            stopService(new Intent(this, DataCaptureService.class));
             if ("true".equals(followInRight)) {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
                     Log.d(TAG, "onStart: Right thresholds=" + Arrays.toString(rightThresh));
                     Log.d(TAG, "ReadBtn: send read cmd to right");
                     conectar.createAndSendConfigData(cmd3c, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
-                }, 100);
+
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     Log.d(TAG, "ReadBtn: received data from right");
                     conectar.receiveData(this);
+                }, 350);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     loadColorsR();
-                    conectar.createAndSendConfigData(cmd, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
-                }, 250);
+                    startService(new Intent(this, DataCaptureService.class));
+                    // conectar.createAndSendConfigData((byte) 0x3A, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                }, 355);
             }
             if ("true".equals(followInLeft)) {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
                     Log.d(TAG, "ReadBtn: send read cmd to left");
                     Log.d(TAG, "onStart: Left thresholds=" + Arrays.toString(leftThresh));
                     conectar2.createAndSendConfigData(cmd3c, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
-                }, 100);
+
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     Log.d(TAG, "ReadBtn: received data from left");
+                    conectar2.receiveData(this);
 
-                    conectar2.createAndSendConfigData(cmd, freq, S1_2, S2_2, S3_2, S4_2, S5_2, S6_2, S7_2, S8_2, S9_2);
+                }, 350);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     loadColorsL();
-                }, 250);
+                    // conectar.createAndSendConfigData((byte) 0x3A, freq, S1_1, S2_1, S3_1, S4_1, S5_1, S6_1, S7_1, S8_1, S9_1);
+                }, 355);
             }
         });
         if ("true".equals(followInLeft)) {

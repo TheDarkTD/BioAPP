@@ -119,7 +119,7 @@ public class ConectInsole2 {
         Log.d(TAG, "createAndSendConfigData called with cmd=" + kcmd + " freq=" + kfreq);
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.freq = (byte)10;
+        configData.freq = (byte)5;
         configData.S1 = kS1;
         configData.S2 = kS2;
         configData.S3 = kS3;
@@ -268,27 +268,13 @@ public class ConectInsole2 {
                             cooldownHandler.postDelayed(() -> {
                                 spikeOnCooldown = false;
                                 Log.d(TAG, "Cooldown finalizado — pronto para novo spike");
-                            }, TMEST);
+                            }, 10   );
 
                         } else {
                             // em cooldown: ignora qualquer spike extra
                             Log.d(TAG, "Spike recebido durante cooldown — ignorado");
                         }
 
-
-                        /*createNotificationChannel(ctx);
-                        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-                        NotificationManagerCompat.from(ctx).notify(2, buildNotification(ctx));
-                        Log.d(TAG, "Notification dispatched");*/
                     }
 
                 } catch (JSONException e) {

@@ -115,7 +115,7 @@ public class Register7Activity extends AppCompatActivity {
         mNext7Btn.setOnClickListener(v -> {
             sharedPreferences = getSharedPreferences("reconfigurar", MODE_PRIVATE);
             re= String.valueOf(sharedPreferences.getBoolean("reconfigurar",false));
-
+            Log.d(TAG, "RE="+ re);
             if (re.equals("true")){
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

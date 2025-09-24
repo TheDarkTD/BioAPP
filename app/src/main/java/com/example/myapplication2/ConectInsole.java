@@ -1,6 +1,7 @@
 package com.example.myapplication2;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.os.Build.VERSION_CODES.R;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -64,12 +65,14 @@ public class ConectInsole { // tratamento palmilha direita
     private Boolean envioinsole1 = true;
     private List<String> eventlist = new ArrayList<>();
     private boolean spikeOnCooldown = false;
-    private boolean pendingSpike    = false;
+    private boolean pendingSpike = false;
+    Boolean produzindo = false;
     private final Handler cooldownHandler = new Handler(Looper.getMainLooper());
 
     public static class ConfigData {
         public int cmd, freq;
         public int S1, S2, S3, S4, S5, S6, S7, S8, S9;
+
         @Override
         public String toString() {
             return "ConfigData{" +
@@ -138,10 +141,16 @@ public class ConectInsole { // tratamento palmilha direita
         Log.d(TAG, String.format("createAndSendConfigData: cmd=0x%02X, freq=%d", kcmd, kfreq));
         ConfigData configData = new ConfigData();
         configData.cmd = kcmd;
-        configData.freq = (byte)10;
-        configData.S1 = kS1; configData.S2 = kS2; configData.S3 = kS3;
-        configData.S4 = kS4; configData.S5 = kS5; configData.S6 = kS6;
-        configData.S7 = kS7; configData.S8 = kS8; configData.S9 = kS9;
+        configData.freq = (byte) 5;
+        configData.S1 = kS1;
+        configData.S2 = kS2;
+        configData.S3 = kS3;
+        configData.S4 = kS4;
+        configData.S5 = kS5;
+        configData.S6 = kS6;
+        configData.S7 = kS7;
+        configData.S8 = kS8;
+        configData.S9 = kS9;
         Log.d(TAG, "ConfigData: " + configData);
         sendConfigData(configData);
     }
@@ -175,13 +184,16 @@ public class ConectInsole { // tratamento palmilha direita
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                envioinsole1= false;
+                envioinsole1 = false;
                 Log.e(TAG, "sendConfigData onFailure", e);
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {Log.d(TAG, "sendConfigData success");envioinsole1= true;}
-                else Log.e(TAG, "sendConfigData error: " + response.message());
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "sendConfigData success");
+                    envioinsole1 = true;
+                } else Log.e(TAG, "sendConfigData error: " + response.message());
             }
         });
     }
@@ -194,8 +206,9 @@ public class ConectInsole { // tratamento palmilha direita
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "receiveData onFailure", e);
-                recebimentoinsole1=false;
+                recebimentoinsole1 = false;
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.d(TAG, "receiveData response: " + response.code());
@@ -204,7 +217,7 @@ public class ConectInsole { // tratamento palmilha direita
                     return;
                 }
                 try {
-                    recebimentoinsole1=true;
+                    recebimentoinsole1 = true;
                     String body = response.body().string();
                     Log.d(TAG, "Raw JSON: " + body);
                     JSONObject jsonObject = new JSONObject(body);
@@ -217,10 +230,16 @@ public class ConectInsole { // tratamento palmilha direita
                     receivedData.battery = jsonObject.getInt("battery");
 
                     JSONArray sensors = jsonObject.getJSONArray("sensors_reads");
-                    receivedData.SR1.clear(); receivedData.SR2.clear(); receivedData.SR3.clear();
-                    receivedData.SR4.clear(); receivedData.SR5.clear(); receivedData.SR6.clear();
-                    receivedData.SR7.clear(); receivedData.SR8.clear(); receivedData.SR9.clear();
-                    for (int i=0; i<sensors.length(); i++) {
+                    receivedData.SR1.clear();
+                    receivedData.SR2.clear();
+                    receivedData.SR3.clear();
+                    receivedData.SR4.clear();
+                    receivedData.SR5.clear();
+                    receivedData.SR6.clear();
+                    receivedData.SR7.clear();
+                    receivedData.SR8.clear();
+                    receivedData.SR9.clear();
+                    for (int i = 0; i < sensors.length(); i++) {
                         JSONObject s = sensors.getJSONObject(i);
                         receivedData.SR1.add(s.getInt("S1"));
                         receivedData.SR2.add(s.getInt("S2"));
@@ -241,53 +260,7 @@ public class ConectInsole { // tratamento palmilha direita
 
                     if (receivedData.cmd == 0x3F) Log.d(TAG, "Memory full event");
                     if (receivedData.cmd == 0x3D) {
-                        Log.d(TAG, "Evento: pico de pressão (cmd=0x3D)");
-
-                        // lê parâmetros
-                        SharedPreferences prefs = context.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
-                        byte INT    = Byte.parseByte(prefs.getString("int",       "0"));
-                        byte PEST   = Byte.parseByte(prefs.getString("pulse",     "0"));
-                        short INEST = Short.parseShort(prefs.getString("interval",  "0"));
-                        short TMEST = Short.parseShort(prefs.getString("time",      "0"));
-
-                        // função para enviar o comando
-                        Runnable sendSpike = () -> {
-                            Log.d(TAG, "Enviando comando de pico (0x1B) — PEST=" + PEST
-                                    + ", INT=" + INT + ", TMEST=" + TMEST + ", INEST=" + INEST);
-                            conectar.SendConfigData((byte)0x1B, PEST, INT, TMEST, INEST);
-                        };
-
-                        if (!spikeOnCooldown) {
-                            // 1º envio imediato e entra em cooldown
-                            sendSpike.run();
-                            spikeOnCooldown = true;
-
-                            // agenda término do cooldown: após TMEST, libera novo envio
-                            cooldownHandler.postDelayed(() -> {
-                                spikeOnCooldown = false;
-                                Log.d(TAG, "Cooldown finalizado — pronto para novo spike");
-                                createAndSendConfigData((byte) 0x3A, (byte) 1, (short) configData.S1, (short) configData.S2,(short)configData.S3,(short)configData.S4,(short)configData.S5,(short)configData.S6,(short)configData.S7,(short)configData.S8,(short)configData.S9);
-                            }, TMEST);
-
-                        } else {
-                            // em cooldown: ignora qualquer spike extra
-                            Log.d(TAG, "Spike recebido durante cooldown — ignorado");
-                        }
-
-
-                        /*createNotificationChannel(ctx);
-                        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-                        NotificationManagerCompat.from(ctx).notify(2, buildNotification(ctx));
-                        Log.d(TAG, "Notification dispatched");*/
+                        produzirpico(context);
                     }
 
                     Utils.checkLoginAndSaveSendData(firebasehelper, receivedData, context, eventlist);
@@ -307,6 +280,7 @@ public class ConectInsole { // tratamento palmilha direita
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "checkForNewData onFailure", e);
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.d(TAG, "checkForNewData response: " + response.code());
@@ -325,7 +299,7 @@ public class ConectInsole { // tratamento palmilha direita
             }
         });
     }
-
+    private ConfigData configData;
     public void setConfigData(ConfigData configData) {
         Log.d(TAG, "setConfigData: called");
         if (configData != null) {
@@ -345,7 +319,7 @@ public class ConectInsole { // tratamento palmilha direita
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 if (NetworkUtils.isNetworkAvailable(ctx)) {
-                    fh.saveSendData(sd, ev);
+                    fh.saveSendData(sd);
                     showToast(ctx, "SendData enviado com sucesso!");
                 } else {
                     String today = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
@@ -356,21 +330,12 @@ public class ConectInsole { // tratamento palmilha direita
                 showToast(ctx, "Você precisa fazer login antes de enviar os dados.");
             }
         }
+
         private static void showToast(Context ctx, String msg) {
             Log.d(TAG, "showToast: " + msg);
             if (ctx instanceof AppCompatActivity) {
                 ((AppCompatActivity) ctx).runOnUiThread(() -> Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show());
             }
-        }
-    }
-
-    private void createNotificationChannel(Context ctx) {
-        Log.d(TAG, "createNotificationChannel: init");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel chan = new NotificationChannel(CHANNEL_ID, "Alertas de Pressão", NotificationManager.IMPORTANCE_HIGH);
-            chan.setDescription("Notificações de pressão plantar");
-            NotificationManager nm = ctx.getSystemService(NotificationManager.class);
-            if (nm != null) nm.createNotificationChannel(chan);
         }
     }
 
@@ -389,94 +354,25 @@ public class ConectInsole { // tratamento palmilha direita
         editor.putString("S9_1", receivedData.SR9.toString());
         editor.apply();
     }
-    private String checkforevent(Context context) {
-        Log.d(TAG, "checkforevent: start");
-        SharedPreferences prefs = context.getSharedPreferences("My_Appregions", MODE_PRIVATE);
-        int[] thr = new int[9];
-        boolean[] reg = new boolean[9];
-        for (int i=0; i<9; i++) {
-            reg[i] = prefs.getBoolean("S"+(i+1)+"r", false);
-        }
-        prefs = context.getSharedPreferences("Treshold_insole1", MODE_PRIVATE);
-        for (int i=0; i<9; i++) {
-            thr[i] = prefs.getInt("Lim"+(i+1)+"I1", 8191);
-        }
-        List<String> ev = new ArrayList<>();
-        for (int i=0; i<9; i++) {
-            if (reg[i] && comparevalues(receivedData.SR1, thr[i])) ev.add(String.valueOf(i+1));
-        }
-        String result = String.join(", ", ev);
-        Log.d(TAG, "checkforevent: sensors=" + result);
-        return "Sensor(es): " + result;
-    }
 
-    private Boolean comparevalues(List<Integer> array, int threshold) {
-        int last = array.isEmpty() ? 0 : array.get(array.size()-1);
-        Log.d(TAG, String.format("comparevalues: last=%d threshold=%d", last, threshold));
-        return last > threshold;
-    }
+    public void produzirpico(Context context){
 
-    private ConfigData configData;
+        if (!produzindo){
+            Log.d(TAG, "Evento: pico de pressão (cmd=0x3D)");
 
-    private Notification buildNotification(Context ctx) {
-        Log.d(TAG, "buildNotification: creating notif");
-        Bitmap bmp = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.rightfoot2);
-        String txt = "Sensor(es): " /*+ String.join(", ", getEventList(ctx))*/;
-        return new NotificationCompat.Builder(ctx, CHANNEL_ID)
-                .setSmallIcon(R.drawable.alert_triangle_svgrepo_com)
-                .setContentTitle("Pico de Pressão Plantar detectado!")
-                .setContentText(txt)
-                .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bmp).bigLargeIcon(null))
-                .setLargeIcon(bmp)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .build();
-    }
+            // lê parâmetros
+            SharedPreferences prefs = context.getSharedPreferences("My_Appvibra", MODE_PRIVATE);
+            byte INT    = Byte.parseByte(prefs.getString("int",       "0"));
+            byte PEST   = Byte.parseByte(prefs.getString("pulse",     "0"));
+            short INEST = Short.parseShort(prefs.getString("interval",  "0"));
+            short TMEST = Short.parseShort(prefs.getString("time",      "0"));
 
-   /*private List<String> getEventList(Context ctx) {
-        /*SharedPreferences reg = ctx.getSharedPreferences("My_Appregions", MODE_PRIVATE);
-        SharedPreferences thr = ctx.getSharedPreferences("Treshold_insole2", MODE_PRIVATE);
-        List<String> events = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            boolean on = reg.getBoolean("S" + (i + 1), false);
-            int lim = thr.getInt("Lim" + (i + 1) + "I2", 8191);
-            int val = getLastReading(i);
-            if (on && val > lim) {
-                events.add(String.valueOf(i + 1));
-                Log.d(TAG, "Event sensor" + (i + 1) + ":" + val);
+                // 1º envio imediato e entra em cooldown
+                Log.d(TAG, "Enviando comando de pico (0x1B) — PEST=" + PEST
+                        + ", INT=" + INT + ", TMEST=" + TMEST + ", INEST=" + INEST);
+                conectar.SendConfigData((byte)0x1B, PEST, INT, TMEST, INEST);
+
+
             }
         }
-        return events;
-        return java.util.Collections.emptyList();
-
-
     }
-
-    public static class Header3Result {
-        public final List<Integer> positions;  // índices onde header é 0x3
-        public final List<Short> values;       // valores 12 bits correspondentes
-
-        public Header3Result(List<Integer> positions, List<Short> values) {
-            this.positions = positions;
-            this.values = values;
-        }
-    }
-
-    public static Header3Result extractHeader3(List<Short> data) {
-        List<Integer> positions = new ArrayList<>();
-        List<Short> values = new ArrayList<>();
-
-        for (int i = 0; i < data.size(); i++) {
-            short value = data.get(i);
-            int header = (value >> 12) & 0xF;
-
-            if (header == 0x3) {
-                short extractedValue = (short)(value & 0x0FFF); // apenas os 12 bits
-                positions.add(i);       // guarda o índice
-                values.add(extractedValue);  // guarda o valor
-            }
-        }
-
-        return new Header3Result(positions, values);
-    }*/
-
-}

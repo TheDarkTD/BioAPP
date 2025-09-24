@@ -44,7 +44,7 @@ public class FirebaseHelper {
     }
 
     // Método para salvar SendData no Firebase para o usuário logado
-    public void saveSendData(ConectInsole.SendData sendData, List<String> eventlist) {
+    public void saveSendData(ConectInsole.SendData sendData) {
         String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
         if (NetworkUtils.isNetworkAvailable(context)) {
@@ -57,13 +57,6 @@ public class FirebaseHelper {
                     .addOnFailureListener(e -> {
                         System.err.println("Erro ao salvar SendData: " + e.getMessage());
                     });
-            /*mDatabase.child("DATA").child(currentDate).child(id).setValue(eventlist.toString()) // Envia a String diretamente
-                    .addOnSuccessListener(aVoid -> {
-                        System.out.println("SendData salvo no Firebase com sucesso!");
-                    })
-                    .addOnFailureListener(e -> {
-                        System.err.println("Erro ao salvar SendData: " + e.getMessage());
-                    });*/
         } else {
             // Se não há conexão com a internet, salva localmente com um ID único
             saveSendDataLocally(sendData, currentDate);
@@ -84,13 +77,6 @@ public class FirebaseHelper {
                     .addOnFailureListener(e -> {
                         System.err.println("Erro ao salvar SendData2: " + e.getMessage());
                     });
-            /*mDatabase.child("DATA2").child(currentDate).child(id).setValue(eventlist2.toString()) // Envia a String diretamente
-                    .addOnSuccessListener(aVoid -> {
-                        System.out.println("SendData2 salvo no Firebase com sucesso!");
-                    })
-                    .addOnFailureListener(e -> {
-                        System.err.println("Erro ao salvar SendData2: " + e.getMessage());
-                    });*/
         } else {
             // Se não há conexão com a internet, salva localmente com um ID único
             saveSendData2Locally(sendData, currentDate);
@@ -155,8 +141,6 @@ public class FirebaseHelper {
                     dataSynced = true;
                 }
             }
-
-            // Se os dados foram sincronizados, remove-os do SharedPreferences
             if (dataSynced) {
                 editor.apply();
             }
